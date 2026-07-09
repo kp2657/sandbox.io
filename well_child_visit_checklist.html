@@ -1,0 +1,1785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Well-Child Visit Checklist — Sub-I Tool</title>
+<style>
+  :root{
+    --navy:#1c3d5a; --teal:#2a7f8c; --light:#f4f8fa; --border:#d7e2e8; --accent:#e8a33d; --text:#22333b;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;background:var(--light);margin:0;color:var(--text);}
+  header{background:var(--navy);color:white;padding:18px 24px;}
+  header h1{margin:0;font-size:1.35em;}
+  header p{margin:4px 0 0;font-size:0.85em;color:#cfe0ea;}
+  .wrap{max-width:980px;margin:0 auto;padding:18px 20px 60px;}
+  .disclaimer{background:#fff4e0;border:1px solid var(--accent);border-radius:8px;padding:12px 16px;font-size:0.85em;margin-bottom:18px;line-height:1.45;}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px;position:sticky;top:0;background:var(--light);padding:10px 0;z-index:10;}
+  select{font-size:1em;padding:8px 12px;border-radius:6px;border:1px solid var(--border);background:white;}
+  button.reset{padding:8px 14px;border-radius:6px;border:1px solid var(--border);background:white;cursor:pointer;font-size:0.85em;}
+  button.reset:hover{background:#eef3f5;}
+  .progress{font-size:0.85em;color:#555;}
+  .visit-title{font-size:1.4em;color:var(--navy);margin:10px 0 2px;}
+  .visit-sub{color:#607080;font-size:0.9em;margin-bottom:16px;}
+  section.card{background:white;border:1px solid var(--border);border-radius:10px;margin-bottom:16px;overflow:hidden;}
+  .card-head{background:#eaf2f5;padding:10px 16px;font-weight:600;color:var(--navy);border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+  .card-body{padding:12px 16px;}
+  .subgroup{margin-bottom:12px;}
+  .subgroup:last-child{margin-bottom:0;}
+  .subgroup-title{font-size:0.78em;font-weight:700;text-transform:uppercase;letter-spacing:0.03em;color:var(--teal);margin-bottom:4px;}
+  .item{display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:1px dashed #e5edf0;}
+  .item:last-child{border-bottom:none;}
+  .item input{margin-top:4px;width:16px;height:16px;flex-shrink:0;}
+  .item label{font-size:0.93em;line-height:1.4;cursor:pointer;}
+  .item.checked{background:#eaf5ee;border-radius:6px;padding-left:6px;margin-left:-6px;}
+  .item.checked label{color:var(--text);text-decoration:none;font-weight:600;}
+  .item .gist{display:block;font-size:0.83em;color:#607080;font-style:italic;text-decoration:none;margin-top:2px;}
+  .item.checked .gist{color:#5a7a68;font-weight:normal;}
+  .empty-note{font-style:italic;color:#8a9aa5;font-size:0.9em;}
+  footer{text-align:center;font-size:0.75em;color:#8a9aa5;margin-top:20px;}
+  @media print{
+    .controls, .disclaimer, .log-actions, .log-table-wrap{display:none;}
+    section.card{break-inside:avoid;}
+  }
+  @media (max-width:640px){
+    header{padding:14px 14px;}
+    header h1{font-size:1.1em;}
+    header p{font-size:0.8em;}
+    .wrap{padding:12px 10px 60px;}
+    .controls{gap:8px;padding:8px 0;}
+    .controls select, .controls button{font-size:0.95em;padding:9px 10px;}
+    select{width:100%;}
+    .visit-title{font-size:1.2em;}
+    .card-head{padding:10px 12px;font-size:0.95em;}
+    .card-body{padding:10px 12px;}
+    .patient-grid{grid-template-columns:1fr 1fr;gap:8px;}
+    .keynum-row{flex-direction:column;gap:2px;padding:8px 0;}
+    .keynum-label{flex:none;}
+    .item input{width:20px;height:20px;}
+    .item label{font-size:0.97em;}
+    .ros-item{flex-wrap:wrap;}
+    .ros-item .ros-body{flex:1 1 100%;}
+    .ros-yn{margin-top:6px;}
+    .ros-yn button{width:44px;height:34px;font-size:0.85em;}
+    .log-actions{flex-direction:column;}
+    .log-actions button{width:100%;padding:11px 14px;font-size:0.9em;}
+    table.logtable{font-size:0.75em;}
+    .feedcalc-row input{width:100%;}
+    .feedcalc-row{flex-direction:column;align-items:stretch;}
+    .subpanel-head{padding:10px;}
+    .subpanel-body{padding:4px 8px 4px;}
+  }
+  .patient-card{background:white;border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:16px;}
+  .patient-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;}
+  .patient-grid label{font-size:0.75em;color:#607080;display:block;margin-bottom:3px;}
+  .patient-grid input{width:100%;padding:7px 9px;border:1px solid var(--border);border-radius:6px;font-size:0.9em;}
+  textarea.notes{width:100%;min-height:60px;border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:0.88em;font-family:inherit;margin-top:8px;resize:vertical;}
+  .notes-label{font-size:0.75em;color:#607080;margin-top:4px;}
+  .log-actions{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0;}
+  .log-actions button{padding:9px 16px;border-radius:6px;border:1px solid var(--border);background:white;cursor:pointer;font-size:0.85em;}
+  .log-actions button.primary{background:var(--teal);color:white;border-color:var(--teal);}
+  .log-actions button:hover{opacity:0.9;}
+  #noteOutput{width:100%;min-height:220px;font-family:ui-monospace,Menlo,monospace;font-size:0.82em;padding:12px;border:1px solid var(--border);border-radius:8px;white-space:pre-wrap;}
+  .log-table-wrap{overflow-x:auto;margin-top:10px;}
+  table.logtable{width:100%;border-collapse:collapse;font-size:0.82em;background:white;}
+  table.logtable th, table.logtable td{border:1px solid var(--border);padding:6px 8px;text-align:left;vertical-align:top;}
+  table.logtable th{background:#eaf2f5;}
+  table.logtable td.notecell{max-width:260px;white-space:pre-wrap;}
+  .small-btn{padding:3px 8px;font-size:0.75em;border-radius:5px;border:1px solid var(--border);background:white;cursor:pointer;}
+  .keynum-row{display:flex;gap:12px;padding:7px 0;border-bottom:1px dashed #e5edf0;align-items:baseline;}
+  .keynum-row:last-child{border-bottom:none;}
+  .keynum-label{flex:0 0 220px;font-size:0.85em;font-weight:600;color:var(--navy);}
+  .keynum-value{flex:1;font-size:0.9em;}
+  .keynum-value b{color:#b5501f;}
+  .subpanel{border:1px solid var(--border);border-radius:8px;margin-bottom:8px;overflow:hidden;}
+  .subpanel:last-child{margin-bottom:0;}
+  .subpanel-head{background:#f0f5f7;padding:8px 12px;font-size:0.82em;font-weight:700;text-transform:uppercase;letter-spacing:0.03em;color:var(--teal);cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;}
+  .subpanel-head:hover{background:#e6eef1;}
+  .subpanel-head .subpanel-count{font-size:0.85em;font-weight:600;color:var(--navy);text-transform:none;letter-spacing:normal;}
+  .subpanel-body{padding:4px 12px 4px;}
+  .item.no-strike.checked label{color:var(--text);text-decoration:none;}
+  .item.no-strike.checked{background:#eaf5ee;border-radius:6px;padding-left:6px;margin-left:-6px;}
+  .item.no-strike.checked .gist{color:#5a7a68;}
+  .item.no-strike label::before{content:"";}
+  .panel-collapsed .item:not(.checked){display:none;}
+  .panel-collapsed .item.checked{border-bottom:none;}
+  .card-body.panel-collapsed{padding-bottom:4px;}
+  .card-body.panel-collapsed .empty-note{display:none;}
+  .subpanel-hint{font-size:0.78em;color:#8a9aa5;font-style:italic;padding:2px 0 4px;}
+  .ros-item{display:flex;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid #eef2f4;}
+  .ros-item:last-child{border-bottom:none;}
+  .ros-item .ros-label{flex:1;font-size:0.92em;}
+  .ros-yn{display:flex;gap:4px;flex:0 0 auto;}
+  .ros-yn button{width:30px;padding:3px 0;font-size:0.78em;font-weight:700;border-radius:5px;border:1px solid var(--border);background:white;cursor:pointer;color:#8a9aa5;}
+  .ros-yn button.y-btn.active{background:#c0392b;border-color:#c0392b;color:white;}
+  .ros-yn button.n-btn.active{background:#e8eef0;border-color:var(--border);color:#4a6a5a;font-weight:700;}
+  .ros-item.answered-y{background:#fdecea;border-radius:6px;padding-left:6px;margin-left:-6px;}
+  .ros-item.answered-y .ros-label{font-weight:600;color:#8b2f22;}
+  .panel-collapsed .ros-item:not(.answered-y):not(.answered-n){display:none;}
+  .feedcalc{margin-top:12px;border:1px solid var(--border);border-radius:8px;padding:10px 12px;background:#fbfdfe;}
+  .feedcalc-title{font-size:0.8em;font-weight:700;text-transform:uppercase;letter-spacing:0.03em;color:var(--teal);margin-bottom:8px;}
+  .feedcalc-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:8px;}
+  .feedcalc-row label{font-size:0.85em;color:#607080;}
+  .feedcalc-row input{width:90px;padding:6px 8px;border:1px solid var(--border);border-radius:6px;font-size:0.88em;}
+  .feedcalc-result{font-size:0.88em;line-height:1.6;background:white;border:1px dashed var(--border);border-radius:6px;padding:8px 10px;}
+  .feedcalc-result b{color:#b5501f;}
+  .feedcalc-flag{color:#b5501f;font-weight:600;}
+</style>
+</head>
+<body>
+<header>
+  <h1>Well-Child Visit Checklist</h1>
+  <p>Sub-I / student quick-reference tool — milestones, screening, vaccines, anticipatory guidance &amp; visit log</p>
+</header>
+<div class="wrap">
+  <div class="disclaimer">
+    <strong>For educational use — not a substitute for institutional protocol.</strong> Milestones and screening content follow the AAP Bright Futures periodicity schedule. As of 2026, the federal CDC immunization schedule and the AAP's published schedule diverge on several recommendations following a January 2026 change made outside the usual ACIP process; the vaccine lists below reflect the long-standing AAP/ACIP-style schedule and may not match your site's current EHR order set. <strong>Always confirm vaccines due against your clinic's current schedule and the parent's home records before counseling or ordering.</strong>
+  </div>
+
+  <div class="controls">
+    <select id="visitSelect"></select>
+    <button class="reset" id="resetBtn">Reset checkboxes for this visit</button>
+    <span class="progress" id="progressText"></span>
+  </div>
+
+  <div class="visit-title" id="visitTitle"></div>
+  <div class="visit-sub" id="visitSub"></div>
+
+  <!-- 1. PATIENT / VISIT INFO -->
+  <div class="patient-card">
+    <div class="patient-grid">
+      <div><label for="pName">Patient initials/ID</label><input id="pName" placeholder="e.g. A.B. or MRN"></div>
+      <div><label for="pSex">Sex</label><input id="pSex" list="sexOptions" placeholder="male/female"><datalist id="sexOptions"><option value="male"><option value="female"></datalist></div>
+      <div><label for="pDOB">DOB</label><input id="pDOB" type="date"></div>
+      <div><label for="vDate">Visit date</label><input id="vDate" type="date"></div>
+      <div><label for="examiner">Examiner (you)</label><input id="examiner" placeholder="Your name/role"></div>
+      <div><label for="attending">Attending/preceptor</label><input id="attending" placeholder="Supervising provider"></div>
+    </div>
+    <div style="margin-top:10px;"><label for="chiefConcern" style="font-size:0.75em;color:#607080;display:block;margin-bottom:3px;">Chief concern (patient's/parent's own words)</label><input id="chiefConcern" style="width:100%;padding:7px 9px;border:1px solid var(--border);border-radius:6px;font-size:0.9em;" placeholder="e.g. &quot;Here for a routine checkup&quot; or &quot;2 days of fever and cough&quot;"></div>
+    <div class="log-actions" style="margin:10px 0 0;">
+      <button id="oneLinerBtn">Generate one-liner</button>
+    </div>
+    <textarea class="notes" id="oneLinerBox" style="min-height:40px;" placeholder="Click 'Generate one-liner' for a draft opening line, e.g. 'This is A.B., a 4-year-old female with no significant PMHx presenting for a routine well child check.' Edit freely."></textarea>
+  </div>
+
+  <!-- 2. INTERVAL HISTORY / HPI -->
+  <section class="card" id="sec-interval">
+    <div class="card-head" onclick="toggleCard('sec-interval')">Interval History / HPI <span>▾</span></div>
+    <div class="card-body">
+      <div class="notes-label" style="margin-top:0;">For well visits: illnesses/ER visits/med changes since last visit, parent concerns. For sick visits: full HPI (onset, duration, associated symptoms, sick contacts, what's been tried).</div>
+      <textarea class="notes" id="notes-interval" style="min-height:90px;"></textarea>
+    </div>
+  </section>
+
+  <!-- 3. MEDICAL HISTORY (birth hx/PMHx + allergies/meds/vaccine status) -->
+  <section class="card" id="sec-pmhx">
+    <div class="card-head" onclick="toggleCard('sec-pmhx')">Medical History <span>▾</span></div>
+    <div class="card-body">
+      <div class="patient-grid" style="margin-bottom:10px;">
+        <div><label for="allergies">Allergies</label><input id="allergies" placeholder="NKDA or list"></div>
+        <div><label for="medications">Medications</label><input id="medications" placeholder="None or list"></div>
+        <div><label for="vaccStatus">Vaccination status</label><input id="vaccStatus" placeholder="UTD / behind / declined"></div>
+      </div>
+      <div class="notes-label" style="margin-top:0;">Birth history &amp; PMHx — applies across all visits for this patient.</div>
+      <div id="body-pmhx"></div>
+      <div class="notes-label">Notes (specifics: GA at birth, actual birth weight, complication details, NICU course, chronic conditions/surgeries, etc.)</div>
+      <textarea class="notes" id="notes-pmhx"></textarea>
+    </div>
+  </section>
+
+  <!-- 4. REVIEW OF SYSTEMS -->
+  <section class="card" id="sec-ros">
+    <div class="card-head" onclick="toggleCard('sec-ros')">Review of Systems <span>▾</span></div>
+    <div class="card-body">
+      <div class="notes-label" style="margin-top:0;">Check items that are POSITIVE/pertinent findings — assume negative for anything unchecked unless noted otherwise.</div>
+      <div id="body-ros"></div>
+      <div class="notes-label">Notes (details on any positives)</div>
+      <textarea class="notes" id="notes-ros"></textarea>
+    </div>
+  </section>
+
+  <!-- SSHADESS — Bright Futures' strengths-based adolescent psychosocial interview: Strengths, School, Home, Activities, Drugs, Emotions/Eating/dEpression, Sexuality, Safety, from ~age 13 -->
+  <section class="card" id="sec-sshadess">
+    <div class="card-head" onclick="toggleCard('sec-sshadess')">SSHADESS Interview (Adolescent Psychosocial) <span>▾</span></div>
+    <div class="card-body">
+      <div class="notes-label" style="margin-top:0;">SSHADESS (Strengths, School, Home, Activities, Drugs, Emotions/Eating/dEpression, Sexuality, Safety) is Bright Futures' strengths-based adolescent psychosocial interview. Conduct confidentially, 1:1 without a parent in the room, starting around age 13 and at every visit through young adulthood. Only populated for adolescent/young-adult visit types. Prompt questions are shown for reference — write your own free-text summary of the conversation in each box.</div>
+      <div id="body-sshadess"></div>
+    </div>
+  </section>
+
+  <!-- 5. STANDARDIZED SCREENS -->
+  <section class="card" id="sec-screening">
+    <div class="card-head" onclick="toggleCard('sec-screening')">Standardized Screens Administered <span>▾</span></div>
+    <div class="card-body">
+      <div id="body-screening"></div>
+      <div class="notes-label">Notes (scores, answers, follow-up needed)</div>
+      <textarea class="notes" id="notes-screening"></textarea>
+    </div>
+  </section>
+
+  <!-- 6. GROWTH & DEVELOPMENT -->
+  <section class="card" id="sec-keynums">
+    <div class="card-head" onclick="toggleCard('sec-keynums')">Growth &amp; Development — Key Numbers <span>▾</span></div>
+    <div class="card-body">
+      <div id="body-keynums"></div>
+    </div>
+  </section>
+
+  <section class="card" id="sec-milestones">
+    <div class="card-head" onclick="toggleCard('sec-milestones')">Developmental Milestones <span>▾</span></div>
+    <div class="card-body">
+      <div id="body-milestones"></div>
+      <div class="notes-label">Notes (findings, parent report, concerns)</div>
+      <textarea class="notes" id="notes-milestones"></textarea>
+    </div>
+  </section>
+
+  <!-- 7. DIET, SLEEP, BEHAVIOR, HABITS -->
+  <section class="card" id="sec-diet">
+    <div class="card-head" onclick="toggleCard('sec-diet')">Diet, Sleep, Behavior, Habits <span>▾</span></div>
+    <div class="card-body">
+      <div id="body-diet"></div>
+      <div class="notes-label">Notes (actual diet pattern, sleep schedule, behavior specifics)</div>
+      <textarea class="notes" id="notes-diet"></textarea>
+    </div>
+  </section>
+
+  <!-- 8. FAMILY / SOCIAL HISTORY -->
+  <section class="card" id="sec-social">
+    <div class="card-head" onclick="toggleCard('sec-social')">Family/Social History <span>▾</span></div>
+    <div class="card-body">
+      <div id="body-social"></div>
+      <div class="notes-label">Notes (household, school/daycare, recent changes, family history details)</div>
+      <textarea class="notes" id="notes-social"></textarea>
+    </div>
+  </section>
+
+  <!-- 9. SAFETY & PREVENTIVE TOPICS -->
+  <section class="card" id="sec-guidance">
+    <div class="card-head" onclick="toggleCard('sec-guidance')">Safety &amp; Preventive Topics (Anticipatory Guidance) <span>▾</span></div>
+    <div class="card-body">
+      <div id="body-guidance"></div>
+      <div class="notes-label">Notes (topics actually discussed, family questions)</div>
+      <textarea class="notes" id="notes-guidance"></textarea>
+    </div>
+  </section>
+
+  <!-- 10. PHYSICAL EXAM -->
+  <section class="card" id="sec-exam">
+    <div class="card-head" onclick="toggleCard('sec-exam')">Physical Exam Summary <span>▾</span></div>
+    <div class="card-body">
+      <div id="body-exam"></div>
+      <div class="notes-label">Notes (vitals, growth %iles, exam findings by system)</div>
+      <textarea class="notes" id="notes-exam"></textarea>
+    </div>
+  </section>
+
+  <!-- 11. LABS/IMAGING -->
+  <section class="card" id="sec-labs">
+    <div class="card-head" onclick="toggleCard('sec-labs')">Labs/Imaging <span>▾</span></div>
+    <div class="card-body">
+      <div class="notes-label" style="margin-top:0;">e.g. "None today," or list tests + results/pending status.</div>
+      <textarea class="notes" id="notes-labs"></textarea>
+    </div>
+  </section>
+
+  <!-- VACCINES (given/due — referenced in Plan) -->
+  <section class="card" id="sec-vaccines">
+    <div class="card-head" onclick="toggleCard('sec-vaccines')">Vaccines Due <span>▾</span></div>
+    <div class="card-body">
+      <div id="body-vaccines"></div>
+      <div class="notes-label">Notes (given today, deferred/declined, lot#s)</div>
+      <textarea class="notes" id="notes-vaccines"></textarea>
+    </div>
+  </section>
+
+  <!-- 12. ASSESSMENT -->
+  <section class="card" id="sec-assessment">
+    <div class="card-head" onclick="toggleCard('sec-assessment')">Assessment <span>▾</span></div>
+    <div class="card-body">
+      <div class="notes-label" style="margin-top:0;">Summary statement + differential if applicable (supports/against for each).</div>
+      <textarea class="notes" id="notes-assessment" style="min-height:80px;"></textarea>
+    </div>
+  </section>
+
+  <!-- 13. PLAN -->
+  <section class="card" id="sec-plan">
+    <div class="card-head" onclick="toggleCard('sec-plan')">Plan <span>▾</span></div>
+    <div class="card-body">
+      <div class="notes-label" style="margin-top:0;">Vaccines given, guidance given, tests ordered, follow-up timing/return precautions.</div>
+      <textarea class="notes" id="notes-plan" style="min-height:80px;"></textarea>
+    </div>
+  </section>
+
+  <section class="card" id="sec-doc">
+    <div class="card-head" onclick="toggleCard('sec-doc')">Visit Log &amp; Documentation <span>▾</span></div>
+    <div class="card-body">
+      <div class="log-actions">
+        <button class="primary" id="generateBtn">Generate visit note</button>
+        <button id="copyBtn">Copy note</button>
+        <button id="downloadBtn">Download note (.txt)</button>
+        <button id="saveLogBtn">Save this visit to log</button>
+        <button id="exportCsvBtn">Export log as CSV</button>
+        <button id="clearLogBtn">Clear log</button>
+      </div>
+      <textarea id="noteOutput" placeholder="Click 'Generate visit note' to compile a documentation draft, ordered to match a standard oral presentation, from everything entered above."></textarea>
+
+      <div class="notes-label" style="margin-top:16px;">Saved visits this session/device (<span id="logCount">0</span>)</div>
+      <div class="log-table-wrap">
+        <table class="logtable" id="logTable">
+          <thead><tr><th>Visit date</th><th>Visit type</th><th>Patient</th><th>Examiner</th><th>Note</th><th></th></tr></thead>
+          <tbody id="logTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <footer>Built as a study aid. Verify all content against Bright Futures Guidelines (4th/5th ed.), current AAP/CDC schedules, and your site's protocols. Log data is stored only in this browser (localStorage) — export/copy anything you need to keep before clearing browser data.</footer>
+</div>
+
+<script>
+// ---------- Safe storage shim (falls back to in-memory if localStorage is blocked, e.g. sandboxed previews) ----------
+const _memStore = {};
+let _storageBlocked = false;
+const localStorage = {
+  getItem(k){ try{ return window.localStorage.getItem(k); }catch(e){ _storageBlocked = true; return (k in _memStore) ? _memStore[k] : null; } },
+  setItem(k,v){ try{ window.localStorage.setItem(k,v); }catch(e){ _storageBlocked = true; _memStore[k] = v; } },
+  removeItem(k){ try{ window.localStorage.removeItem(k); }catch(e){ _storageBlocked = true; delete _memStore[k]; } }
+};
+// ---------- Generic collapsible-panel-by-group renderer ----------
+// groups: [{label, items:[string or {item,gist}]}]
+// Panels are click-to-expand; checkbox state persists independent of expand/collapse.
+// Checked items get a highlight style (no strikethrough) since these are findings/history, not to-dos.
+function renderCollapsibleGroups(containerId, groups, keyPrefix, notesId, notesStorageKey, defaultOpen){
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  let flatIdx = 0;
+  groups.forEach(group=>{
+    const panel = document.createElement('div');
+    panel.className = 'subpanel';
+
+    const head = document.createElement('div');
+    head.className = 'subpanel-head';
+    const countSpan = document.createElement('span');
+    countSpan.className = 'subpanel-count';
+    head.innerHTML = `<span>${group.label}</span>`;
+    head.appendChild(countSpan);
+    const arrow = document.createElement('span');
+    arrow.textContent = defaultOpen ? '▾' : '▸';
+    head.appendChild(arrow);
+
+    const hint = document.createElement('div');
+    hint.className = 'subpanel-hint';
+    hint.textContent = 'Checked items stay visible here even when this panel is collapsed.';
+
+    const body = document.createElement('div');
+    body.className = 'subpanel-body' + (defaultOpen ? '' : ' panel-collapsed');
+
+    function updateCount(){
+      const checkedN = body.querySelectorAll('input:checked').length;
+      countSpan.textContent = checkedN > 0 ? `${checkedN} checked` : '';
+      hint.style.display = (body.classList.contains('panel-collapsed') && checkedN > 0) ? 'block' : 'none';
+    }
+
+    head.addEventListener('click', ()=>{
+      const collapsed = body.classList.toggle('panel-collapsed');
+      arrow.textContent = collapsed ? '▸' : '▾';
+      updateCount();
+    });
+
+    group.items.forEach(itemObj=>{
+      const idx = flatIdx++;
+      const key = `${keyPrefix}_${idx}`;
+      const checked = localStorage.getItem(key) === '1';
+      const text = typeof itemObj === 'string' ? itemObj : itemObj.item;
+      const gist = (typeof itemObj === 'object' && itemObj.gist) ? `<span class="gist">${itemObj.gist}</span>` : '';
+      const div = document.createElement('div');
+      div.className = 'item no-strike' + (checked ? ' checked' : '');
+      div.innerHTML = `<input type="checkbox" id="${key}" ${checked?'checked':''}><label for="${key}">${text}${gist}</label>`;
+      const cb = div.querySelector('input');
+      cb.addEventListener('change', ()=>{
+        localStorage.setItem(key, cb.checked ? '1':'0');
+        div.classList.toggle('checked', cb.checked);
+        updateCount();
+      });
+      body.appendChild(div);
+    });
+
+    updateCount();
+    panel.appendChild(head);
+    panel.appendChild(hint);
+    panel.appendChild(body);
+    el.appendChild(panel);
+  });
+
+  if(notesId){
+    const notesTa = document.getElementById(notesId);
+    notesTa.value = localStorage.getItem(notesStorageKey) || '';
+    notesTa.oninput = ()=> localStorage.setItem(notesStorageKey, notesTa.value);
+  }
+}
+
+function checkedGroupedFlat(groups, keyPrefix){
+  const out = [];
+  let flatIdx = 0;
+  groups.forEach(group=>{
+    group.items.forEach(itemObj=>{
+      const idx = flatIdx++;
+      const text = typeof itemObj === 'string' ? itemObj : itemObj.item;
+      if(localStorage.getItem(`${keyPrefix}_${idx}`)==='1'){ out.push(`${group.label}: ${text}`); }
+    });
+  });
+  return out;
+}
+
+// ---------- PMHx / Birth History (applies across all visits, not per-visit) — grouped panels ----------
+const pmhxGroups = [
+  {label:"Birth History", items:[
+    {item:"Gestational age at birth", gist:"Term = 37w0d–41w6d. Late preterm = 34w0d–36w6d. Preterm = <37w. Post-term = ≥42w. Preterm/post-term changes risk profile and catch-up growth expectations."},
+    {item:"Birth weight", gist:"Normal term range ≈ 2500–4000 g (5 lb 8 oz – 8 lb 13 oz). SGA = <2500g or <10th percentile for GA; LGA = >4000g or >90th percentile for GA — both warrant closer growth/glucose monitoring."},
+    {item:"Birth length/head circumference", gist:"Term norms ≈ length 48–53 cm (19–21 in), HC 33–37 cm (13–14.5 in) — record if available for later growth-curve context."},
+    {item:"Delivery type", gist:"Vaginal vs. C-section; if C-section, note indication (failure to progress, breech, fetal distress, repeat C/S, etc.) — informs future delivery counseling, not the infant's risk per se."},
+    {item:"APGAR scores", gist:"Normal ≥7 at 1 and 5 minutes. Score <7 at 5 minutes (especially if repeated at 10 min) raises concern for perinatal depression/hypoxic risk."}
+  ]},
+  {label:"Pregnancy Complications", items:[
+    {item:"Pregnancy complications", gist:"Ask specifically about gestational diabetes, preeclampsia/gestational hypertension, oligo/polyhydramnios, placental abruption/previa, and any hospitalizations during pregnancy."},
+    {item:"Maternal GBS status / intrapartum antibiotics", gist:"GBS-positive mothers should have received adequate intrapartum antibiotic prophylaxis (≥4h of penicillin/ampicillin before delivery) — inadequate prophylaxis affects newborn sepsis risk assessment."},
+    {item:"Maternal infections/exposures", gist:"Ask about chorioamnionitis, herpes, syphilis, HIV, hepatitis B status, and any fever during labor — each has specific newborn follow-up implications."},
+    {item:"Substance/medication exposure in pregnancy", gist:"Ask directly and nonjudgmentally about tobacco, alcohol, prescription, and recreational drug use during pregnancy — affects growth, neurodevelopmental risk, and withdrawal monitoring needs."}
+  ]},
+  {label:"Neonatal Course", items:[
+    {item:"NICU/nursery stay", gist:"Note level of care, duration, and reason (respiratory distress, hypoglycemia, jaundice, sepsis workup, feeding difficulty) — a longer or higher-acuity stay raises the bar for close follow-up."},
+    {item:"Neonatal jaundice/phototherapy", gist:"Note peak bilirubin and whether phototherapy was needed — history of significant jaundice affects hearing-risk stratification and follow-up bilirubin checks."},
+    {item:"Newborn screens", gist:"Confirm results were reviewed for: state metabolic/genetic panel, critical congenital heart disease screen (pulse oximetry, pass = ≥95% in right hand/foot with ≤3% difference), and hearing screen (pass/refer each ear)."},
+    {item:"Feeding difficulties at birth/discharge", gist:"Note any early feeding issues (poor latch, hypoglycemia requiring supplementation, weight loss >10%) — these predict ongoing feeding/growth concerns."}
+  ]},
+  {label:"Other PMHx / Family History", items:[
+    {item:"Congenital anomalies/genetic concerns", gist:"Document any structural anomalies noted on prenatal ultrasound or at birth, and any genetic testing performed or pending."},
+    {item:"Relevant family history", gist:"Ask about family history of developmental delay, autism, hearing loss, congenital heart disease, sudden cardiac death, and early-onset cardiovascular disease/hyperlipidemia — each changes screening thresholds."}
+  ]}
+];
+
+function renderPmhx(){
+  renderCollapsibleGroups('body-pmhx', pmhxGroups, 'wcv_pmhx_item', 'notes-pmhx', 'wcv_notes_pmhx', true);
+}
+
+function checkedPmhxItems(){
+  return checkedGroupedFlat(pmhxGroups, 'wcv_pmhx_item');
+}
+
+// ---------- Review of Systems (global, grouped by system; checking = POSITIVE finding) ----------
+const rosGroups = [
+  {label:"Constitutional", items:["Fever","Chills","Weight loss/poor weight gain","Fatigue/decreased activity level"]},
+  {label:"HEENT", items:["Headache","Vision changes","Ear pain/pulling at ears","Hearing concerns","Nasal congestion/rhinorrhea","Sore throat","Dental pain/problems"]},
+  {label:"Respiratory", items:["Cough","Wheezing","Shortness of breath/difficulty breathing"]},
+  {label:"Cardiac", items:["Chest pain","Palpitations","Cyanosis","Exercise intolerance/syncope with exertion"]},
+  {label:"GI", items:["Vomiting","Diarrhea","Constipation","Abdominal pain","Blood in stool"]},
+  {label:"GU", items:["Dysuria","Urinary frequency/urgency","Hematuria","Menstrual concerns (if applicable)"]},
+  {label:"Musculoskeletal", items:["Joint pain/swelling","Limp/gait change","Extremity injury"]},
+  {label:"Neuro", items:["Seizures","Developmental regression/loss of skills","Headaches","Balance/coordination concerns"]},
+  {label:"Skin", items:["Rash","Easy bruising/bleeding","New lesions/moles"]},
+  {label:"Psych/Behavioral", items:["Mood changes","Sleep disturbance","New behavioral concerns"]}
+];
+
+function renderRos(){
+  const el = document.getElementById('body-ros');
+  el.innerHTML = '';
+  let flatIdx = 0;
+  rosGroups.forEach(group=>{
+    const panel = document.createElement('div');
+    panel.className = 'subpanel';
+    const head = document.createElement('div');
+    head.className = 'subpanel-head';
+    const countSpan = document.createElement('span');
+    countSpan.className = 'subpanel-count';
+    head.innerHTML = `<span>${group.label}</span>`;
+    head.appendChild(countSpan);
+    const arrow = document.createElement('span');
+    arrow.textContent = '▾';
+    head.appendChild(arrow);
+    const hint = document.createElement('div');
+    hint.className = 'subpanel-hint';
+    hint.textContent = 'Answered items (Y or N) stay visible here even when this panel is collapsed.';
+    const body = document.createElement('div');
+    body.className = 'subpanel-body';
+    function updateCount(){
+      const answeredN = body.querySelectorAll('.ros-item.answered-y, .ros-item.answered-n').length;
+      const posN = body.querySelectorAll('.ros-item.answered-y').length;
+      countSpan.textContent = answeredN > 0 ? `${answeredN} answered${posN>0? ' · '+posN+' positive':''}` : '';
+      hint.style.display = (body.classList.contains('panel-collapsed') && answeredN > 0) ? 'block' : 'none';
+    }
+    head.addEventListener('click', ()=>{
+      const collapsed = body.classList.toggle('panel-collapsed');
+      arrow.textContent = collapsed ? '▸' : '▾';
+      updateCount();
+    });
+    group.items.forEach(text=>{
+      const idx = flatIdx++;
+      const key = `wcv_ros_item_${idx}`;
+      const val = localStorage.getItem(key) || '';
+      const row = document.createElement('div');
+      row.className = 'ros-item' + (val==='Y' ? ' answered-y' : val==='N' ? ' answered-n' : '');
+      row.innerHTML = `<span class="ros-label">${text}</span><div class="ros-yn"><button type="button" class="y-btn${val==='Y'?' active':''}">Y</button><button type="button" class="n-btn${val==='N'?' active':''}">N</button></div>`;
+      const yBtn = row.querySelector('.y-btn');
+      const nBtn = row.querySelector('.n-btn');
+      function setVal(newVal){
+        const current = localStorage.getItem(key) || '';
+        const next = current === newVal ? '' : newVal;
+        localStorage.setItem(key, next);
+        row.classList.remove('answered-y','answered-n');
+        yBtn.classList.remove('active');
+        nBtn.classList.remove('active');
+        if(next==='Y'){ row.classList.add('answered-y'); yBtn.classList.add('active'); }
+        else if(next==='N'){ row.classList.add('answered-n'); nBtn.classList.add('active'); }
+        updateCount();
+      }
+      yBtn.addEventListener('click', ()=>setVal('Y'));
+      nBtn.addEventListener('click', ()=>setVal('N'));
+      body.appendChild(row);
+    });
+    updateCount();
+    panel.appendChild(head);
+    panel.appendChild(hint);
+    panel.appendChild(body);
+    el.appendChild(panel);
+  });
+  const notesTa = document.getElementById('notes-ros');
+  notesTa.value = localStorage.getItem('wcv_notes_ros') || '';
+  notesTa.oninput = ()=> localStorage.setItem('wcv_notes_ros', notesTa.value);
+}
+
+function checkedRosItems(){
+  const positives = [];
+  const negatives = [];
+  let flatIdx = 0;
+  rosGroups.forEach(group=>{
+    group.items.forEach(text=>{
+      const idx = flatIdx++;
+      const val = localStorage.getItem(`wcv_ros_item_${idx}`);
+      if(val==='Y') positives.push(`${group.label}: ${text}`);
+      else if(val==='N') negatives.push(`${group.label}: ${text}`);
+    });
+  });
+  const out = [];
+  if(positives.length){ out.push('Positive: ' + positives.join('; ')); }
+  if(negatives.length){ out.push('Denies/negative: ' + negatives.join('; ')); }
+  return out;
+}
+
+// ---------- SSHADESS Interview (Bright Futures strengths-based adolescent psychosocial interview) ----------
+// Stored per-visit since it's only populated for adolescent/young-adult visit types.
+const sshadessGroups = [
+  {label:"S — Strengths", items:[
+    {item:"What do you like about yourself? What are you good at?", gist:"Open with strengths, not problems — sets a collaborative tone and often surfaces protective factors (a sport, a mentor, a hobby) worth reinforcing."},
+    {item:"Who do you turn to for support?", gist:"Identify at least one trusted adult outside the household — a strong predictor of resilience."}
+  ]},
+  {label:"S — School", items:[
+    {item:"Attendance and grades", gist:"Ask about recent changes in attendance or performance — often the first sign of a mental health or home problem."},
+    {item:"School connectedness / bullying", gist:"Ask directly: 'Do you feel safe at school? Has anyone been bullying you, in person or online?'"}
+  ]},
+  {label:"H — Home", items:[
+    {item:"Household composition and relationships", gist:"Who they live with, and how relationships with family members are going — ask the teen directly, not just the parent."},
+    {item:"Safety/conflict at home", gist:"Ask about arguments, violence, or feeling unsafe at home in a private, confidential setting."}
+  ]},
+  {label:"A — Activities", items:[
+    {item:"Peer relationships and extracurriculars", gist:"Ask about friend groups, hobbies, sports, jobs — gauges social connection and healthy time use."},
+    {item:"Social media/screen use", gist:"Ask how much time and how it makes them feel — social comparison and cyberbullying are common contributors to mood symptoms."}
+  ]},
+  {label:"D — Drugs", items:[
+    {item:"Tobacco/vaping, alcohol, marijuana, other substances", gist:"Ask plainly and nonjudgmentally: 'Have you tried vaping, drinking, or other drugs?' If yes, quantify risk with CRAFFT (a 6-question screen — Car, Relax, Alone, Forget, Friends, Trouble — scored 0-6, ≥2 = positive)."}
+  ]},
+  {label:"E — Emotions/Eating/dEpression", items:[
+    {item:"Mood screen (PHQ-9/PHQ-A — a standardized 9-item depression questionnaire for teens)", gist:"Screen every visit; explicitly ask about self-harm and suicidal ideation — do not skip this even if the teen seems 'fine.'"},
+    {item:"Eating patterns/body image", gist:"Ask directly about body image, dieting, bingeing, purging, or excessive exercise — don't rely on BMI alone to decide whether to ask."}
+  ]},
+  {label:"S — Sexuality", items:[
+    {item:"Identity/orientation exploration", gist:"Ask open-endedly: 'Are you dating anyone? Do you like boys, girls, both, or are you still figuring it out?' — avoid assumptions."},
+    {item:"Sexual activity, contraception, STI risk/testing", gist:"Offer confidential counseling and testing regardless of whether the teen volunteers being sexually active."}
+  ]},
+  {label:"S — Safety", items:[
+    {item:"Violence exposure / weapons access", gist:"Ask about exposure to violence (home, school, community) and access to firearms in any home they spend time in."},
+    {item:"Texting/driving, online safety", gist:"Ask about distracted driving and safe/unsafe online interactions (sharing personal info, meeting strangers)."}
+  ]}
+];
+
+function sshadessNoteKey(visitId, domainIdx){ return `wcv_sshadess_note_${visitId}_${domainIdx}`; }
+
+function renderSshadess(visitId){
+  const el = document.getElementById('body-sshadess');
+  el.innerHTML = '';
+  const v = visits.find(x=>x.id===visitId);
+  if(!v.sshadess || v.sshadess.length===0){
+    el.innerHTML = '<div class="empty-note">Not applicable at this visit type — SSHADESS applies to adolescent/young-adult visits.</div>';
+    return;
+  }
+  v.sshadess.forEach((group, domainIdx)=>{
+    const panel = document.createElement('div');
+    panel.className = 'subpanel';
+
+    const head = document.createElement('div');
+    head.className = 'subpanel-head';
+    head.style.cursor = 'default';
+    head.innerHTML = `<span>${group.label}</span>`;
+
+    const body = document.createElement('div');
+    body.className = 'subpanel-body';
+    body.style.display = 'block';
+
+    group.items.forEach(entry=>{
+      const p = document.createElement('div');
+      p.style.padding = '4px 0';
+      p.innerHTML = `<div style="font-size:0.93em;font-weight:600;">${entry.item}</div><div class="gist" style="margin-top:1px;">${entry.gist}</div>`;
+      body.appendChild(p);
+    });
+
+    const key = sshadessNoteKey(visitId, domainIdx);
+    const ta = document.createElement('textarea');
+    ta.className = 'notes';
+    ta.style.minHeight = '50px';
+    ta.style.marginTop = '8px';
+    ta.placeholder = `Free-text summary for ${group.label}...`;
+    ta.value = localStorage.getItem(key) || '';
+    ta.addEventListener('input', ()=> localStorage.setItem(key, ta.value));
+    body.appendChild(ta);
+
+    panel.appendChild(head);
+    panel.appendChild(body);
+    el.appendChild(panel);
+  });
+}
+
+function sshadessNotesSummary(visitId, v){
+  if(!v.sshadess || v.sshadess.length===0) return null;
+  const out = [];
+  v.sshadess.forEach((group, domainIdx)=>{
+    const text = (localStorage.getItem(sshadessNoteKey(visitId, domainIdx)) || '').trim();
+    out.push(`  ${group.label}: ${text || '(not entered)'}`);
+  });
+  return out;
+}
+
+// ---------- Age band helper (used to filter Diet/Social items so irrelevant ones don't show) ----------
+const infantVisits = ["newborn","1mo","2mo","4mo","6mo","9mo","12mo"];
+const toddlerVisits = ["15mo","18mo","24mo","30mo","3yr","4yr"];
+const schoolVisits = ["5to10"];
+const adolescentVisits = ["11to14","15to17","18to21"];
+
+function bandForVisit(visitId){
+  if(infantVisits.includes(visitId)) return 'infant';
+  if(toddlerVisits.includes(visitId)) return 'toddler';
+  if(schoolVisits.includes(visitId)) return 'school';
+  if(adolescentVisits.includes(visitId)) return 'adolescent';
+  return 'infant';
+}
+
+// ---------- Diet, Sleep, Behavior, Habits — fully separate item lists per age band (no shared/generic text) ----------
+const dietItemsByBand = {
+  infant: [
+    {item:"Feeding pattern", gist:"Breast/formula volume or feeds per day, and (once started) how solids are going — amounts, textures tolerated, any refusal."},
+    {item:"Appetite/weight gain trend", gist:"Ask if feeding volumes and weight gain match what's expected for this age (see Key Numbers) or if intake has dropped off."},
+    {item:"Sleep pattern", gist:"Actual bedtime, night wakings, and nap pattern — not just 'sleeps fine.' Ask specifically about sleep position/environment (safe sleep check)."},
+    {item:"Behavioral/temperament concerns", gist:"Ask about excessive crying/fussiness, difficulty being consoled, or anything that worries the parent day to day."},
+    {item:"Habits", gist:"Ask about thumb-sucking or pacifier use and whether it's causing any feeding/sleep issues."}
+  ],
+  toddler: [
+    {item:"Diet pattern", gist:"Meals + snacks per day, milk intake (oz/day), picky eating, or any foods refused/restricted."},
+    {item:"Sleep schedule", gist:"Bedtime, nap status (1 nap vs. none), night wakings, and whether they still sleep in a crib vs. bed."},
+    {item:"Toilet training status", gist:"Ask specifically if age-appropriate (usually not started before ~18mo) — day/night dryness, any regression after being trained."},
+    {item:"Screen time", gist:"Ask actual hours/day and content type — compare to the age-based guidance for this visit (generally ≤1hr/day of quality content)."},
+    {item:"Behavioral concerns", gist:"Ask about tantrums, aggression, biting, or separation anxiety that worries the parent."},
+    {item:"Exercise/active play", gist:"Ask about typical daily active play time — running, climbing, outdoor time."},
+    {item:"Habits", gist:"Ask about thumb-sucking, pacifier use, or nail-biting and whether new/worsening."}
+  ],
+  school: [
+    {item:"Diet pattern", gist:"Meals + snacks per day, who prepares food, school lunch vs. packed, and any picky eating or restriction."},
+    {item:"Sleep schedule", gist:"Actual bedtime/wake time and total hours — compare to the 9-12 hr/night guideline for this age."},
+    {item:"Screen time/social media", gist:"Ask actual hours/day, what platforms/games, and whether it's cutting into sleep, homework, or activity time."},
+    {item:"Exercise/activity level", gist:"Ask about organized sports, active play, or a mostly sedentary pattern — compare to the ≥60 min/day activity guideline."},
+    {item:"Behavioral concerns", gist:"Ask about behavior at home and school (teacher reports), attention/focus concerns, or anxiety."},
+    {item:"Disordered eating / body image", gist:"Ask directly about body image concerns, dieting, bingeing, or purging — routine screening question starting around this age, not only if underweight."},
+    {item:"Habits", gist:"Ask about nail-biting or other repetitive habits and whether they're new or worsening."}
+  ],
+  adolescent: [
+    {item:"Diet pattern", gist:"Ask about typical meals/snacks, skipping meals, fad diets, or significant recent changes in eating."},
+    {item:"Sleep hygiene", gist:"Ask about actual bedtime/wake time on school days vs. weekends, caffeine intake, and phone/screens in bed — most teens sleep far less than the 8-10 hr/night recommendation."},
+    {item:"Screen time/social media use", gist:"Ask how much time is spent and how it affects mood, sleep, or self-esteem — distinct from the substance-use question asked in SSHADESS."},
+    {item:"Exercise/activity level", gist:"Ask about sports participation, active vs. sedentary time, and any excessive/compulsive exercise pattern."},
+    {item:"Disordered eating / body image", gist:"Ask directly about body image concerns, dieting, bingeing, purging, or excessive exercise — a routine screening question, not only if underweight."}
+  ]
+};
+
+function renderDiet(visitId){
+  const band = bandForVisit(visitId);
+  const items = dietItemsByBand[band];
+  const groups = [{label: band.charAt(0).toUpperCase()+band.slice(1)+' diet/sleep/behavior items', items: items}];
+  renderCollapsibleGroups('body-diet', groups, `wcv_diet_${visitId}`, 'notes-diet', notesKey(visitId,'diet'), true);
+}
+
+function checkedDietItems(visitId){
+  const band = bandForVisit(visitId);
+  const items = dietItemsByBand[band];
+  return items.filter((_, idx)=> localStorage.getItem(`wcv_diet_${visitId}_${idx}`)==='1').map(e=>e.item);
+}
+
+// ---------- Family/Social History (applies broadly across ages; stored per visit) ----------
+const socialItems = [
+  {item:"Household composition", gist:"Who the child lives with (parents, guardians, siblings) and whether custody is shared/split."},
+  {item:"Daycare/school", gist:"Name/type of daycare or school, grade level, and how the child is doing there academically/socially."},
+  {item:"Recent family changes/stressors", gist:"Ask about moves, divorce/separation, new siblings, job loss, or other recent household stressors."},
+  {item:"Household smoking/substance exposure", gist:"Ask directly about smoking (including vaping) or other substance use by household members — secondhand exposure risk."},
+  {item:"Food/housing security", gist:"Ask about consistent access to food and stable housing — screen sensitively, e.g. 'Within the past year, has food ever run out before you had money to buy more?'"},
+  {item:"Family history of relevant conditions", gist:"Ask about family history of developmental delay/autism, early cardiovascular disease, sudden cardiac death, hyperlipidemia, diabetes, and mental health conditions."},
+  {item:"Safety at home", gist:"Ask about firearm storage in the home and any homes the child regularly visits, and about intimate partner violence if clinically indicated."}
+];
+
+function renderSocial(visitId){
+  const groups = [{label:'Family/Social', items: socialItems}];
+  renderCollapsibleGroups('body-social', groups, `wcv_social_${visitId}`, 'notes-social', notesKey(visitId,'social'), true);
+}
+
+function checkedSocialItems(visitId){
+  return socialItems.filter((_, idx)=> localStorage.getItem(`wcv_social_${visitId}_${idx}`)==='1').map(e=>e.item);
+}
+
+// ---------- Simple persistent field helper (patient-level fields not tied to visit) ----------
+function wireSimpleField(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  const key = 'wcv_field_' + id;
+  el.value = localStorage.getItem(key) || '';
+  el.oninput = ()=> localStorage.setItem(key, el.value);
+}
+
+function calcAge(dobStr, visitDateStr){
+  if(!dobStr) return '';
+  const dob = new Date(dobStr);
+  const ref = visitDateStr ? new Date(visitDateStr) : new Date();
+  let months = (ref.getFullYear()-dob.getFullYear())*12 + (ref.getMonth()-dob.getMonth());
+  if(ref.getDate() < dob.getDate()) months--;
+  if(months < 24){
+    return `${months}-month-old`;
+  }
+  const years = Math.floor(months/12);
+  return `${years}-year-old`;
+}
+
+function buildOneLiner(){
+  const pName = document.getElementById('pName').value || '[patient]';
+  const pSex = (document.getElementById('pSex').value || 'patient').toLowerCase();
+  const pDOB = document.getElementById('pDOB').value;
+  const vDate = document.getElementById('vDate').value;
+  const cc = document.getElementById('chiefConcern').value;
+  const age = calcAge(pDOB, vDate) || '[age]';
+  const pm = checkedPmhxItems();
+  const pmhxPhrase = pm.length ? `with a history of ${pm.join(', ').toLowerCase()}` : 'with no significant past medical history';
+  const ccPhrase = cc ? cc : 'presenting for a routine well child check';
+  return `This is ${pName}, a ${age} ${pSex} ${pmhxPhrase}, presenting ${cc ? 'with ' + cc.replace(/^"|"$/g,'') : 'for a routine well child check'}.`;
+}
+
+document.getElementById('oneLinerBtn').addEventListener('click', ()=>{
+  document.getElementById('oneLinerBox').value = buildOneLiner();
+});
+
+// ---------- DATA ----------
+// milestones: array of {label, items:[...]}
+// guidance: array of {item, gist} — gist must state the actual advice/message, not just "discuss X"
+const visits = [
+{id:"newborn", label:"Newborn (3–5 days)", sub:"First visit after hospital discharge", kcalPerKg:100,
+  keynums:[
+    {label:"Feeds/day", value:"<b>8–12</b> feeds/24h (breast or bottle) — fewer than 8 is a flag"},
+    {label:"Wet diapers", value:"By day 5–7: <b>≥6</b> wet diapers/day (fewer in days 1–4 while milk comes in — roughly 1 wet diaper per day of life through day 4)"},
+    {label:"Stools", value:"By day 5–7: <b>≥3–4</b> stools/day, transitioning from black meconium → green/brown → seedy yellow (breastfed)"},
+    {label:"Weight loss/regain", value:"Up to <b>7%</b> loss from birth weight is expected (up to 10% still acceptable if regaining well); should regain birth weight by <b>10–14 days</b>"},
+    {label:"Bilirubin", value:"Plot on the Bhutani nomogram (a chart of bilirubin level vs. hour of life used to gauge phototherapy risk/threshold); jaundice in first 24h of life is <b>always</b> pathologic — never physiologic"},
+    {label:"Vital signs", value:"HR 100–160 bpm, RR 30–60/min, temp 36.5–37.5°C axillary"},
+    {label:"Vitamin D", value:"<b>400 IU/day</b> starting within days of birth for any breastfed or partially breastfed infant"}
+  ],
+  milestones:[
+    {label:"Social", items:["Regards examiner's face briefly, quiets to a familiar voice"]},
+    {label:"Gross Motor", items:["Symmetric spontaneous limb movements","Head lag with pull-to-sit (expected at this age)"]},
+    {label:"Fine Motor", items:["Hands fisted at rest"]},
+    {label:"Language/Communication", items:["Alerts or startles to loud sound","Cries to signal hunger/discomfort"]},
+    {label:"Primitive Reflexes (should be present now)", items:["Moro (startle) — symmetric; typically abates by ~4–6mo","Rooting/sucking — rooting fades ~3–4mo, sucking becomes voluntary","Palmar grasp — typically abates ~5–6mo","Plantar grasp — typically abates ~9–12mo","Tonic neck (fencer posture) — typically abates ~5–7mo","Stepping/placing — typically abates ~2mo"]}
+  ],
+  screening:["Feeding: breast/bottle, frequency, output (wet diapers/stools)","Jaundice: worsening or spreading below chest?","Newborn metabolic/hearing screen results reviewed?","Maternal mood check-in (postpartum depression; use the EPDS — Edinburgh Postnatal Depression Scale, a 10-item questionnaire — if concerns)","Safe sleep practices (back to sleep, no loose bedding, room-sharing not bed-sharing)","Umbilical cord care, circumcision care if applicable","Car seat use, smoke exposure, household safety"],
+  exam:[
+    {item:"Weight, length, head circumference", gist:"Plot and calculate % weight loss from birth weight. Normal: up to 7% loss (up to 10% acceptable if regaining well and otherwise well-appearing)."},
+    {item:"Red reflex", gist:"Shine ophthalmoscope light in each eye from ~18 inches — should see equal, symmetric red/orange reflex. Absent, white (leukocoria), or asymmetric reflex → urgent ophtho referral (cataract, retinoblastoma)."},
+    {item:"Hip exam (Barlow/Ortolani)", gist:"Barlow: adduct + posteriorly load hip, feel for a clunk (dislocatable). Ortolani: abduct + anteriorly lift a dislocated hip back into socket, feel/hear a clunk. A palpable clunk (not just a click) is positive → ultrasound and ortho referral for developmental dysplasia of the hip (DDH)."},
+    {item:"Femoral pulses", gist:"Palpate bilaterally, deep in the groin crease. Weak/absent or a big brachial-femoral delay → concern for coarctation of the aorta, needs 4-limb BP and further workup."},
+    {item:"Umbilical stump/cord exam", gist:"Should be drying, no periumbilical erythema, no foul discharge. Redness spreading onto the abdominal wall or purulent discharge → omphalitis, urgent evaluation."},
+    {item:"Repeat bilirubin if indicated", gist:"Plot on the Bhutani nomogram against hour of life — trajectory (not just the number) determines phototherapy threshold."}
+  ],
+  vaccines:["Hepatitis B #1 (if not given at birth in hospital)"],
+  guidance:[
+    {item:"Safe sleep (ABCs)", gist:"Alone, on the Back, in a Crib: supine, on a firm flat surface, in their own sleep space, with nothing else in it — no blankets, bumpers, pillows, or soft toys. Room-share, don't bed-share."},
+    {item:"Feeding pattern", gist:"Expect 8–12 feeds/day in the first weeks; count 6+ wet diapers/day as a rough hydration check once milk comes in. Cluster feeding in the evening is normal, not a sign of low supply."},
+    {item:"Cord/circumcision care", gist:"Keep the cord dry, folded diaper below it, no submerged baths until it falls off (~1–3 weeks). For circumcision: petroleum jelly on the tip with each diaper change until healed."},
+    {item:"When to call/go to ED", gist:"Call immediately for: rectal temp ≥100.4°F, refusing 2+ feeds in a row, fewer than 4 wet diapers/day, extreme lethargy (hard to wake), or jaundice spreading to arms/legs."},
+    {item:"Car seat & coping with crying", gist:"Rear-facing car seat in the back seat, every ride, no exceptions. For crying spells: it's OK to put baby down safely in the crib and step away for a few minutes to calm down — never shake a baby."}
+  ]
+},
+{id:"1mo", label:"1 Month", sub:"", kcalPerKg:100,
+  keynums:[
+    {label:"Weight gain", value:"<b>~20–30 g/day</b> (about 5–7 oz/week) after the initial regain"},
+    {label:"Feeds/day", value:"<b>8–12</b>/day breastfed; formula-fed roughly <b>~2–4 oz per feed, q3–4h</b>"},
+    {label:"Wet diapers/stools", value:"<b>≥6</b> wet diapers/day; stool frequency variable but should not go >5–7 days without a stool if formula-fed"},
+    {label:"Growth", value:"Weight, length, HC should track along a consistent percentile curve — crossing ≥2 major percentile lines is a flag"},
+    {label:"Vitamin D", value:"Continue <b>400 IU/day</b> if any breastfeeding"}
+  ],
+  milestones:[
+    {label:"Social", items:["Brief eye contact, begins to calm to caregiver's voice/touch"]},
+    {label:"Gross Motor", items:["Lifts head briefly when prone","Improving but still limited head control"]},
+    {label:"Fine Motor", items:["Hands mostly fisted, brings hand toward face/mouth"]},
+    {label:"Language/Communication", items:["Alerts to sound","Different cries for different needs (hunger vs discomfort)"]},
+    {label:"Primitive Reflexes", items:["Moro, rooting, palmar grasp, tonic neck all still present (normal at this age)"]}
+  ],
+  screening:["Feeding/weight gain trending well?","Maternal depression screen (EPDS — Edinburgh Postnatal Depression Scale — or PHQ, a general depression questionnaire)","Return-to-work/childcare plans","Tobacco/secondhand smoke exposure"],
+  exam:[
+    {item:"Weight/length/HC on growth curve", gist:"Should track along a consistent percentile — a big jump or drop across percentile lines is more worrisome than the absolute percentile itself."},
+    {item:"Red reflex", gist:"Repeat every well visit through at least age 3-4 — same technique as newborn. Asymmetry or leukocoria at any age is urgent."},
+    {item:"Hip exam", gist:"Continue Barlow/Ortolani through crawling age; after walking age, switch to checking for leg-length discrepancy and asymmetric skin folds instead (maneuvers become unreliable once ambulating)."},
+    {item:"Skin (birthmarks, rashes)", gist:"Note and measure any birthmarks for future reference (café-au-lait spots, hemangiomas) — ≥6 café-au-lait spots >5mm raises concern for neurofibromatosis."}
+  ],
+  vaccines:["None routinely (Hep B #2 may fall 1–2mo per brand)"],
+  guidance:[
+    {item:"Safe sleep (say it again)", gist:"Same ABCs as the newborn visit — supine, firm surface, nothing in the crib. Repeat this every visit through 12 months since SIDS risk peaks at 1–4 months."},
+    {item:"Tummy time", gist:"2–3 short (3–5 min) sessions/day while awake and supervised, building up as tolerated — strengthens neck/shoulders and prevents a flat spot on the head."},
+    {item:"Parental mood/fatigue", gist:"Ask directly: 'Have you felt down, hopeless, or unable to enjoy things most days?' Persistent sadness, anxiety, or scary thoughts beyond normal exhaustion needs same-week follow-up."},
+    {item:"Sibling adjustment", gist:"Regression (thumb-sucking, toileting accidents) or acting out in an older sibling is common — recommend scheduled 1:1 time with each parent."}
+  ]
+},
+{id:"2mo", label:"2 Months", sub:"", kcalPerKg:100,
+  keynums:[
+    {label:"Weight gain", value:"<b>~20–30 g/day</b> (0–3mo range), slowing slightly toward the end of this interval"},
+    {label:"Feeds/day", value:"Breastfed: <b>8–10</b>/day; formula: <b>4–5 oz per feed</b>, roughly q3–4h (~24–32 oz/day total)"},
+    {label:"Sleep", value:"~<b>14–17 hrs/24h</b> total (naps + night), often 1 longer stretch of 4–5h at night by now"},
+    {label:"Vital signs", value:"HR 100–150 bpm, RR 25–40/min"}
+  ],
+  milestones:[
+    {label:"Social", items:["Social smile — responds to caregiver's smile"]},
+    {label:"Gross Motor", items:["Holds head steadier when upright, less head lag on pull-to-sit"]},
+    {label:"Fine Motor", items:["Hands open more of the time","Tracks/follows an object past midline (180°)"]},
+    {label:"Language/Communication", items:["Coos, makes vowel sounds"]},
+    {label:"Primitive Reflexes", items:["Moro beginning to fade","Stepping/placing reflex typically resolved by now"]}
+  ],
+  screening:["ASQ-3 (Ages & Stages Questionnaire — a parent-reported developmental screen)","Feeding: exclusive breastfeeding vs formula, volumes","Tobacco exposure, second-hand smoke","Household/food security screen"],
+  exam:[
+    {item:"Growth parameters plotted", gist:"Head circumference growth is especially important now — crossing percentiles upward may suggest hydrocephalus, downward may suggest microcephaly/poor growth."},
+    {item:"Hip exam, red reflex", gist:"Same technique as prior visits — Barlow/Ortolani plus symmetric red reflex."},
+    {item:"Tone and reflexes", gist:"Check for symmetric tone (not stiff/floppy) and that Moro is beginning to fade — persistent strong Moro past 4-6mo, or asymmetric tone, warrants neuro follow-up."}
+  ],
+  vaccines:["DTaP (diphtheria-tetanus-acellular pertussis) #1","IPV (inactivated poliovirus) #1","Hib (Haemophilus influenzae type b) #1","PCV (pneumococcal conjugate) #1","RV (rotavirus, oral) #1"],
+  guidance:[
+    {item:"Avoid over-use of containers", gist:"Cap car seat/swing/bouncer time to travel or brief supervised use — extended container time when awake limits the floor/tummy time that builds motor strength."},
+    {item:"Coping with colic/crying", gist:"Peak crying is around 6–8 weeks and typically improves by 3–4 months. Try swaddling, white noise, and motion; if crying is inconsolable for hours daily, discuss further evaluation."},
+    {item:"Post-vaccine fever/fussiness", gist:"Give acetaminophen 10–15 mg/kg/dose q4–6h PRN (weight-based) for fussiness/low fever after shots; call if fever ≥104°F, seizure, or inconsolable crying >3 hours."},
+    {item:"Routine building", gist:"Start a loose feed-play-sleep sequence rather than a strict clock schedule — it helps the infant anticipate what's next without over-scheduling."}
+  ]
+},
+{id:"4mo", label:"4 Months", sub:"", kcalPerKg:100,
+  keynums:[
+    {label:"Weight gain", value:"<b>~15–20 g/day</b> (typically 2x birth weight by ~4 months)"},
+    {label:"Feeds/day", value:"Formula: <b>~5–7 oz per feed</b>, roughly q4h (~24–32 oz/day); breastfed: <b>6–8</b>/day"},
+    {label:"Sleep", value:"~<b>12–16 hrs/24h</b>; many infants have one 5–6h night stretch"}
+  ],
+  milestones:[
+    {label:"Social", items:["Laughs, enjoys social interaction","Recognizes and prefers familiar caregivers"]},
+    {label:"Gross Motor", items:["Rolls front-to-back","Pushes up on forearms/hands when prone","Minimal to no head lag"]},
+    {label:"Fine Motor", items:["Reaches for objects","Brings hands/objects to mouth","Hands open at rest"]},
+    {label:"Language/Communication", items:["Babbles, squeals","Turns head toward voices"]},
+    {label:"Primitive Reflexes", items:["Moro should be resolved by now — persistence is a red flag","Rooting and palmar grasp fading; tonic neck fading"]}
+  ],
+  screening:["ASQ-3 (Ages & Stages Questionnaire — a parent-reported developmental screen)","Sleep patterns/routines","Feeding readiness for solids (~6mo)","Return-to-work, childcare arrangements"],
+  exam:[
+    {item:"Growth parameters, head circumference trend", gist:"By 4mo, weight is typically ~2x birth weight — a much slower trajectory warrants a feeding/growth workup."},
+    {item:"Symmetry of movement, tone", gist:"Watch spontaneous movement of all 4 limbs and rolling attempts — persistent asymmetry (favoring one side) can be an early sign of hemiparesis/cerebral palsy."}
+  ],
+  vaccines:["DTaP (diphtheria-tetanus-acellular pertussis) #2","IPV (inactivated poliovirus) #2","Hib (Haemophilus influenzae type b) #2","PCV (pneumococcal conjugate) #2","RV (rotavirus, oral) #2"],
+  guidance:[
+    {item:"Solids readiness (not yet)", gist:"Hold off until ~6 months; look for good head/neck control, sitting with support, and leaning toward food before starting purees or infant cereal."},
+    {item:"Sleep repositioning", gist:"Continue placing supine to start every sleep, but once an infant can roll both ways independently, you don't need to flip them back if they roll over on their own."},
+    {item:"Babyproofing starts early", gist:"Install outlet covers and move cords/blind strings out of reach now — rolling and scooting mobility often arrives faster than parents expect."},
+    {item:"Screen time", gist:"AAP recommends no screen media before 18–24 months except live video chatting with family."}
+  ]
+},
+{id:"6mo", label:"6 Months", sub:"", kcalPerKg:100,
+  keynums:[
+    {label:"Weight gain", value:"<b>~10–15 g/day</b> (growth velocity normally slows through the second half of infancy)"},
+    {label:"Feeds/day", value:"Formula/breastmilk: <b>~24–32 oz/day (or 6–8 breastfeeds)</b> plus 1–2 solid feeds starting"},
+    {label:"Hemoglobin", value:"Normal ≥<b>11 g/dL</b>; screen for anemia given rapid growth + transition to solids"},
+    {label:"Sleep", value:"~<b>12–16 hrs/24h</b>, 2–3 naps typical"}
+  ],
+  milestones:[
+    {label:"Social", items:["Stranger anxiety may begin","Enjoys mirror play","Reaches to be picked up"]},
+    {label:"Gross Motor", items:["Sits with support or briefly unsupported","Rolls both directions"]},
+    {label:"Fine Motor", items:["Transfers objects hand to hand","Raking grasp"]},
+    {label:"Language/Communication", items:["Babbles with consonants (ba, da)","Responds to own name"]},
+    {label:"Primitive Reflexes", items:["Palmar grasp resolving, tonic neck resolved","Plantar grasp still present (normal)"]}
+  ],
+  screening:["ASQ-3 (Ages & Stages Questionnaire — a parent-reported developmental screen)","Iron-rich complementary foods started?","Fluoride/water source (well water?), oral health","Anemia risk factors (prematurity, low iron diet)","Lead risk screen (housing age, pica)"],
+  exam:[
+    {item:"Growth parameters", gist:"Weight gain velocity normally slows now (~10-15g/day) — don't mistake normal deceleration for failure to thrive."},
+    {item:"Emerging teeth, gum exam", gist:"Lower central incisors usually erupt first (~6-10mo). Note any natal teeth or early decay (baby-bottle caries pattern on upper incisors suggests prolonged bottle propping)."},
+    {item:"Hearing/vision behavioral check", gist:"Should localize to sound and track objects well — failure to orient to voice/sound by this age warrants formal audiology referral."}
+  ],
+  vaccines:["DTaP (diphtheria-tetanus-acellular pertussis) #3","Hib (Haemophilus influenzae type b) #3 (if needed by brand)","PCV (pneumococcal conjugate) #3","RV (rotavirus, oral) #3 (if 3-dose series)","Influenza (seasonal, if ≥6mo and in season)","Hepatitis B #3 (may be due 6–18mo)"],
+  guidance:[
+    {item:"Starting solids", gist:"Start with iron-fortified infant cereal or pureed iron-rich foods (meats, legumes); introduce one new single-ingredient food at a time, waiting ~3 days to watch for a reaction."},
+    {item:"Choking hazards", gist:"Avoid whole grapes, nuts/seeds, popcorn, whole hot dogs, hard raw carrots, chunks of peanut butter, and hard candy until well past the toddler years."},
+    {item:"No honey / no juice before 12mo", gist:"No honey (risk of infant botulism, including in baked goods). No juice — it displaces breastmilk/formula calories and offers little nutrition."},
+    {item:"Babyproofing update", gist:"Anchor tall/heavy furniture and TVs to the wall, install stair gates, and lock up cleaning products and medications — sitting/pulling-up mobility is imminent."}
+  ]
+},
+{id:"9mo", label:"9 Months", sub:"", kcalPerKg:100,
+  keynums:[
+    {label:"Weight gain", value:"<b>~7–10 g/day</b>"},
+    {label:"Feeding", value:"~<b>24 oz/day</b> milk plus 3 solid meals + 1–2 snacks; avoid milk >32oz/day (crowds out iron intake)"},
+    {label:"Sleep", value:"~<b>12–15 hrs/24h</b>, typically 2 naps"}
+  ],
+  milestones:[
+    {label:"Social", items:["Stranger anxiety, separation anxiety emerging","Plays peek-a-boo, waves bye-bye"]},
+    {label:"Gross Motor", items:["Sits well unsupported","Crawls","Pulls to stand"]},
+    {label:"Fine Motor", items:["Emerging pincer grasp","Bangs objects together"]},
+    {label:"Language/Communication", items:["Nonspecific mama/dada","Understands 'no'","Imitates sounds"]},
+    {label:"Reflexes", items:["Plantar grasp fading","Protective/parachute responses emerging (persist long-term, unlike primitive reflexes)"]}
+  ],
+  screening:["ASQ-3 (Ages & Stages Questionnaire — a parent-reported developmental screen)","Autism-related behaviors noted by parent (early signs)","Hemoglobin/lead screen per risk (universal at 12mo in many states)","Home safety: stairs, water, choking hazards"],
+  exam:[
+    {item:"Growth parameters", gist:"Continue plotting on the same curve — watch for crossing ≥2 major percentile lines in either direction."},
+    {item:"Gait/tone if pulling to stand", gist:"Should bear weight well on legs when supported — persistent toe-walking, scissoring, or refusal to bear weight warrants further evaluation."},
+    {item:"Vision (fix/follow, red reflex), hearing behavioral response", gist:"Should fix and follow well and turn to soft sounds/name — inconsistent responses warrant formal audiology/ophtho referral."}
+  ],
+  vaccines:["None routine at 9mo unless catch-up; Influenza continued in season"],
+  guidance:[
+    {item:"Finger foods/self-feeding", gist:"Offer soft, small (pea-sized), easily-gummed pieces — ripe banana, well-cooked pasta, small pieces of soft cheese — to build self-feeding and pincer grasp."},
+    {item:"Babyproofing update", gist:"Gate the top and bottom of stairs, secure low cabinets/drawers, and reassess anything within a now-standing child's reach."},
+    {item:"Water safety", gist:"Stay within arm's reach during every bath and near any standing water — drowning can happen silently in under a minute."},
+    {item:"Daily reading/talking", gist:"Narrate daily activities and read aloud for a few minutes each day — this builds receptive vocabulary well before expressive language appears."}
+  ]
+},
+{id:"12mo", label:"12 Months", sub:"", kcalPerKg:100,
+  keynums:[
+    {label:"Weight", value:"Typically <b>~3x birth weight</b> by 12 months"},
+    {label:"Milk intake", value:"Transitioning to whole milk, target <b>16–24 oz/day</b> (not >24oz — excess crowds out solids/iron)"},
+    {label:"Hemoglobin/lead", value:"Universal screens at this visit in most states — hgb ≥<b>11 g/dL</b>, lead <b>3.5 mcg/dL</b> (current CDC reference value)"},
+    {label:"Sleep", value:"~<b>11–14 hrs/24h</b>, typically transitioning to 1 nap"}
+  ],
+  milestones:[
+    {label:"Social", items:["Plays social games, points to request/show objects","Separation anxiety typical","Imitates gestures"]},
+    {label:"Gross Motor", items:["Walks with one hand held or a few steps independently","Cruises along furniture"]},
+    {label:"Fine Motor", items:["Mature pincer grasp","Voluntary release of objects","Drinks from a cup"]},
+    {label:"Language/Communication", items:["1–2 true words besides mama/dada","Follows a 1-step command with a gesture"]},
+    {label:"Reflexes", items:["Primitive reflexes should be resolved by now — persistence warrants further workup","Protective/parachute reflexes present"]}
+  ],
+  screening:["ASQ-3 (Ages & Stages Questionnaire — a parent-reported developmental screen)","Universal lead screen (per state requirement)","Universal hemoglobin/anemia screen","Autism screen if concerns (formal M-CHAT-R/F — Modified Checklist for Autism in Toddlers, Revised with Follow-Up — at 18/24mo)","TB risk screen","Transition off bottle discussion begins"],
+  exam:[
+    {item:"Growth parameters, BMI trend beginning", gist:"Weight should be roughly 3x birth weight by 12 months — start noting BMI trend even though formal percentile tracking starts at age 2."},
+    {item:"Gait observation", gist:"Many walk with a wide-based, high-guard gait initially — this is normal and should narrow over the next 6-12 months."},
+    {item:"Teeth count, oral health referral", gist:"Typically 6-8 teeth by 12 months. Refer to a dentist by age 1 (or within 6 months of first tooth) if not already done."}
+  ],
+  vaccines:["MMR (measles-mumps-rubella) #1","Varicella (chickenpox) #1","Hepatitis A #1","PCV (pneumococcal conjugate) #4 (booster)","Hib (Haemophilus influenzae type b) #4 (booster)","DTaP (diphtheria-tetanus-acellular pertussis) may be due at 15–18mo depending on schedule"],
+  guidance:[
+    {item:"Transition to whole milk", gist:"Switch from formula/breastmilk toward whole cow's milk, capped around 16–24 oz/day — more than that can crowd out iron-containing solid foods and cause iron-deficiency anemia."},
+    {item:"Wean off the bottle", gist:"Start actively moving to an open or straw cup now; aim to be bottle-free by 18 months — prolonged bottle use is linked to dental caries and overfeeding."},
+    {item:"Choking hazards persist", gist:"Same list as 6 months (grapes, nuts, hot dogs, hard raw vegetables) — still applies since molars and chewing skill aren't mature yet."},
+    {item:"Dental home", gist:"Schedule the first dental visit by 12 months (or within 6 months of the first tooth) and start twice-daily brushing with a smear of fluoride toothpaste."}
+  ]
+},
+{id:"15mo", label:"15 Months", sub:"", kcalPerKg:100,
+  keynums:[
+    {label:"Milk intake", value:"<b>16–24 oz/day</b> whole milk"},
+    {label:"Sleep", value:"~<b>11–14 hrs/24h</b> including 1 nap"}
+  ],
+  milestones:[
+    {label:"Social", items:["Independent play near caregiver","Imitates household tasks"]},
+    {label:"Gross Motor", items:["Walks independently, may run stiffly","Climbs stairs with assistance"]},
+    {label:"Fine Motor", items:["Stacks 2 blocks","Scribbles spontaneously","Uses a spoon imperfectly"]},
+    {label:"Language/Communication", items:["Uses 3–5 words","Follows a 1-step command without a gesture"]}
+  ],
+  screening:["ASQ-3 (Ages & Stages Questionnaire — a parent-reported developmental screen)","Behavior: tantrums, biting, sleep concerns","Nutrition: whole milk transition, picky eating"],
+  exam:[
+    {item:"Growth parameters/BMI", gist:"Continue plotting on the same curve as prior visits."},
+    {item:"Gait, tone", gist:"Should walk independently with a more mature, narrower-based gait than at 12mo — persistent wide-based gait, toe-walking, or asymmetry warrants further evaluation."}
+  ],
+  vaccines:["DTaP (diphtheria-tetanus-acellular pertussis) #4 (may be given 15–18mo)","Hib (Haemophilus influenzae type b) #4 / PCV (pneumococcal conjugate) #4 if not already given at 12mo","Hepatitis A #1 if not yet given"],
+  guidance:[
+    {item:"Positive discipline", gist:"Redirect to an acceptable activity and set the same calm limit every time ('feet stay on the floor') rather than punishing — tantrums here reflect frustration, not defiance."},
+    {item:"Toothbrushing", gist:"Brush twice daily (morning and before bed) with a rice-grain smear of fluoride toothpaste; parent should do the actual brushing at this age."},
+    {item:"Reading/talking/singing", gist:"Keep daily reading and narrating going — vocabulary growth right now predicts later language and reading skill."},
+    {item:"Home safety check", gist:"Confirm outlet covers, cabinet/drawer locks, and stair gates are actually in place — full mobility means every unlocked space is now accessible."}
+  ]
+},
+{id:"18mo", label:"18 Months", sub:"", kcalPerKg:100,
+  keynums:[
+    {label:"Milk intake", value:"<b>16–24 oz/day</b> whole milk"},
+    {label:"Vocabulary flag", value:"<b><10 words</b> by 18mo, or any loss of previously acquired words/skills at any age, warrants further evaluation"},
+    {label:"Sleep", value:"~<b>11–14 hrs/24h</b>"}
+  ],
+  milestones:[
+    {label:"Social", items:["Parallel play beginning","Points to show interest (joint attention)","Tantrums common"]},
+    {label:"Gross Motor", items:["Runs","Walks up steps with hand held","Kicks a ball"]},
+    {label:"Fine Motor", items:["Stacks 3–4 blocks","Scribbles spontaneously","Uses a spoon"]},
+    {label:"Language/Communication", items:["10–25 words","Points to body parts on request","Follows 2-step commands"]}
+  ],
+  screening:["M-CHAT-R/F (Modified Checklist for Autism in Toddlers, Revised with Follow-Up) autism screen — required at this visit; screens specifically for autism, separate from the general/social-emotional screens below","ASQ-3 (Ages & Stages Questionnaire — a parent-reported general developmental screen: motor, communication, problem-solving skills)","ASQ:SE-2 (Ages & Stages Questionnaire: Social-Emotional — a parent-reported behavioral/social screen, distinct from ASQ-3's general developmental focus)","Lead screen if not previously done","Tantrums/sleep/nutrition discussion"],
+  exam:[
+    {item:"Growth parameters/BMI", gist:"Continue plotting on the same curve."},
+    {item:"Gait", gist:"Should run and walk up steps with hand held — persistent limp or refusal to bear weight is never normal and needs workup."},
+    {item:"Vision/hearing behavioral", gist:"Should respond consistently to name and soft sounds, and fix/follow well — inconsistent response prompts formal audiology referral."}
+  ],
+  vaccines:["Hepatitis A #2 (6 months after #1)","DTaP (diphtheria-tetanus-acellular pertussis) #4 if not yet given"],
+  guidance:[
+    {item:"Toilet training readiness", gist:"Don't start yet — wait for signs like staying dry 2+ hours, telling you before or after going, and showing interest, which usually appear closer to age 2."},
+    {item:"Screen time limits", gist:"If using any screens, keep it to high-quality content, co-viewed with a caregiver who talks about what's on screen — avoid solo/background screen time."},
+    {item:"Discipline consistency", gist:"Use short (about 1 min/year of age), calm time-outs or firm redirection; all caregivers should use the same approach so the child gets a consistent message."},
+    {item:"Traffic/water/poison safety", gist:"Lock cleaning products and medications up high or in a locked cabinet, and hold hands or use a wrist strap near streets and parking lots."}
+  ]
+},
+{id:"24mo", label:"2 Years (24 Months)", sub:"", kcalPerKg:100,
+  keynums:[
+    {label:"Vocabulary flag", value:"<b><50 words</b> or no 2-word phrases by 24mo warrants speech-language referral"},
+    {label:"Milk/juice", value:"Whole milk <b>16–20 oz/day</b>; juice capped at <b>4–6 oz/day</b> if given at all"},
+    {label:"Sleep", value:"~<b>11–14 hrs/24h</b>, usually still 1 nap"}
+  ],
+  milestones:[
+    {label:"Social", items:["Parallel play","Imitates adults and peers","Growing independence"]},
+    {label:"Gross Motor", items:["Runs well","Kicks a ball","Walks up/down stairs (one step at a time)"]},
+    {label:"Fine Motor", items:["Stacks 6+ blocks","Imitates a vertical line","Turns pages of a book"]},
+    {label:"Language/Communication", items:["2-word phrases","~50+ words","~50% intelligible to strangers"]}
+  ],
+  screening:["M-CHAT-R/F (Modified Checklist for Autism in Toddlers, Revised with Follow-Up) autism screen if not done at 18mo","ASQ-3 (Ages & Stages Questionnaire) and ASQ:SE-2 (its social-emotional counterpart) screens","Lead screen (state-dependent)","Toilet training readiness","Screen time (AAP: avoid except video chat <18–24mo; limited, co-viewed after)"],
+  exam:[
+    {item:"Growth parameters, BMI calculation begins in earnest", gist:"Formal BMI percentile tracking starts at age 2 — plot weight-for-length transitions to BMI-for-age."},
+    {item:"Blood pressure not yet routine", gist:"Routine BP measurement starts at age 3 — only check now if clinically indicated (e.g. renal disease, cardiac history)."},
+    {item:"Vision/hearing behavioral screen", gist:"Should fix/follow well and respond consistently to sound — persistent strabismus (eyes not aligned) past 4 months is never normal and needs ophtho referral."}
+  ],
+  vaccines:["Influenza annually","Catch-up doses as needed"],
+  guidance:[
+    {item:"Toilet training", gist:"Follow the child's own readiness cues (dry periods, interest, ability to pull pants up/down) rather than a fixed age or timeline — pressure tends to cause regression."},
+    {item:"Nutrition/limit sugary drinks", gist:"Offer water as the default drink, limit juice to ≤4oz/day if given at all, and serve 3 meals plus 1–2 planned snacks rather than constant grazing."},
+    {item:"Sleep schedule", gist:"Aim for 11–14 hours total (including a nap) with a consistent bedtime routine; move from crib to bed only when the child is climbing out and at risk of falls."},
+    {item:"Injury prevention", gist:"Hold hands near streets/parking lots, never leave a child unattended near open water, and store any household firearm unloaded, locked, and separate from ammunition."}
+  ]
+},
+{id:"30mo", label:"30 Months", sub:"",
+  keynums:[
+    {label:"Sleep", value:"~<b>10–13 hrs/24h</b>, nap often still present"},
+    {label:"Activity", value:"Aim for <b>≥180 min/day</b> of any physical activity at this age (toddler guideline), not just structured exercise"}
+  ],
+  milestones:[
+    {label:"Social", items:["Parallel-to-cooperative play emerging","Names self"]},
+    {label:"Gross Motor", items:["Jumps with both feet","Throws overhand","Kicks a ball forward"]},
+    {label:"Fine Motor", items:["Draws vertical/horizontal lines","Stacks 8 blocks"]},
+    {label:"Language/Communication", items:["3-word sentences","Uses plurals","~50–75% intelligible to strangers"]}
+  ],
+  screening:["ASQ-3 (Ages & Stages Questionnaire) and ASQ:SE-2 (its social-emotional counterpart)","Toilet training progress","Behavioral concerns: tantrums, aggression, sleep"],
+  exam:[
+    {item:"Growth parameters/BMI", gist:"Continue plotting percentile trend."},
+    {item:"Vision/hearing screen", gist:"Formal acuity testing (picture/letter chart) may be attemptable now — a child who can't cooperate should be re-attempted at the 3-year visit, not skipped entirely."}
+  ],
+  vaccines:["Influenza annually; catch-up as needed"],
+  guidance:[
+    {item:"Preschool readiness", gist:"Look for the ability to separate from a parent for short periods, follow 2-step directions, and play alongside other kids — good markers for a preschool/daycare setting."},
+    {item:"Nutrition/screen limits", gist:"Keep quality screen time under about 1 hour/day and prioritize active outdoor play instead."},
+    {item:"Consistent routines", gist:"Keep meal, nap, and bedtime at roughly the same time daily — predictability reduces tantrum frequency at this age."},
+    {item:"Injury prevention", gist:"Reassess street/parking-lot supervision, pool/water barriers, and secure firearm storage as the child gets faster and more independent."}
+  ]
+},
+{id:"3yr", label:"3 Years", sub:"",
+  keynums:[
+    {label:"Blood pressure", value:"First routine BP — normal roughly <b><85th percentile</b> for age/sex/height (use a pediatric BP chart, not adult cutoffs)"},
+    {label:"Vision", value:"Acuity should be roughly <b>20/40 or better</b> at age 3 (improves toward 20/20 by ~age 5–6)"},
+    {label:"Sleep", value:"~<b>10–13 hrs/24h</b>"},
+    {label:"Activity/screens", value:"<b>≥60 min/day</b> active play; screens ~<b>≤1 hr/day</b> of quality content"}
+  ],
+  milestones:[
+    {label:"Social", items:["Cooperative play, takes turns","Knows own name/age/sex"]},
+    {label:"Gross Motor", items:["Pedals a tricycle","Climbs well","Alternates feet going upstairs"]},
+    {label:"Fine Motor", items:["Copies a circle","Unbuttons","Builds a tower of 9–10 blocks"]},
+    {label:"Language/Communication", items:["3–4 word sentences","~75% intelligible to strangers","Follows a 3-step command"]}
+  ],
+  screening:["ASQ-3 (Ages & Stages Questionnaire) / ASQ:SE-2, or PEDS (Parents' Evaluation of Developmental Status — a brief parent-report screen)","Formal vision acuity screen (age-appropriate chart)","Blood pressure measurement begins routinely","Autism follow-up if prior concerns","Nutrition/obesity risk (BMI percentile)"],
+  exam:[
+    {item:"Growth parameters, BMI percentile", gist:"BMI ≥85th percentile = overweight, ≥95th = obese for age/sex — start flagging trend, not just a single visit's number."},
+    {item:"Blood pressure (first routine BP)", gist:"Use an appropriately sized cuff (bladder covers ~80% of arm circumference) — too-small cuff falsely elevates readings. Compare to a pediatric BP percentile chart, not adult cutoffs."},
+    {item:"Vision acuity, strabismus check", gist:"Use an age-appropriate chart (Allen figures/HOTV/Tumbling E). Cover-uncover test: cover one eye, watch for the uncovered eye to drift/refixate — any drift suggests strabismus, needs ophtho referral."},
+    {item:"Hearing screen", gist:"Formal audiometry now feasible for most 3-year-olds — inconsistent responses to soft tones warrant formal audiology referral."}
+  ],
+  vaccines:["Influenza annually"],
+  guidance:[
+    {item:"Preschool/daycare transition", gist:"Walk through the daily routine in advance ('first we..., then...') and keep goodbyes brief and confident — lingering or sneaking away both tend to increase anxiety."},
+    {item:"Active play + limited screens", gist:"Target ≥60 minutes of active play daily and keep quality screen time to roughly 1 hour/day."},
+    {item:"Car seat progression", gist:"Keep the child in a forward-facing seat with a harness until they exceed the seat's height/weight limit — don't move to a booster early just because of age."},
+    {item:"Emotional regulation coaching", gist:"Name the feeling out loud ('you're frustrated') and model a calm-down step (deep breath, count to five) — big emotions at this age are developmentally normal, not misbehavior."}
+  ]
+},
+{id:"4yr", label:"4 Years", sub:"",
+  keynums:[
+    {label:"Vital signs", value:"HR 70–120 bpm, RR 20–30/min, BP <b><90th percentile</b> for age/sex/height"},
+    {label:"Vision", value:"Acuity roughly <b>20/30 or better</b>"},
+    {label:"Sleep", value:"~<b>10–13 hrs/24h</b>"},
+    {label:"Booster seat", value:"Not typically appropriate before <b>~40 lbs</b> and age 4 — confirm both height/weight and harness-seat limits before transitioning"}
+  ],
+  milestones:[
+    {label:"Social", items:["Cooperative/imaginative play","Understands sharing and rules","May have an imaginary friend"]},
+    {label:"Gross Motor", items:["Hops on one foot","Catches a bounced ball","Alternates feet going downstairs"]},
+    {label:"Fine Motor", items:["Copies a cross/square","Draws a person with 2–4 parts","Uses child-safe scissors"]},
+    {label:"Language/Communication", items:["Tells simple stories","4–5 word sentences","Mostly intelligible to strangers"]}
+  ],
+  screening:["ASQ-3 (Ages & Stages Questionnaire) / ASQ:SE-2, or PEDS (Parents' Evaluation of Developmental Status)","Vision and hearing acuity screen","Blood pressure","Preschool/kindergarten readiness","Autism/behavioral concerns follow-up"],
+  exam:[
+    {item:"Growth parameters/BMI", gist:"Continue trend tracking; note any acceleration that could suggest early puberty onset (rare at this age but growth spurt is a clue)."},
+    {item:"Blood pressure", gist:"Same technique as age 3 — appropriately sized cuff, compare to pediatric percentile chart."},
+    {item:"Vision/hearing formal screen", gist:"Should achieve 20/30 or better on acuity testing — persistent amblyopia risk factors (strabismus, big refractive difference between eyes) need ophtho referral before the visual system matures (~age 7-9)."}
+  ],
+  vaccines:["DTaP (diphtheria-tetanus-acellular pertussis) #5 (kindergarten booster)","IPV (inactivated poliovirus) #4","MMR (measles-mumps-rubella) #2","Varicella (chickenpox) #2","Influenza annually"],
+  guidance:[
+    {item:"Kindergarten readiness", gist:"Give the family the school physical/immunization paperwork now, since many districts require it before the first day and forms can take weeks to process."},
+    {item:"Booster seat transition", gist:"Stay in a harnessed forward-facing seat until the child exceeds its height/weight limit, then move to a belt-positioning booster (typically not before age 4 and 40 lbs)."},
+    {item:"Sleep needs", gist:"Most 4-year-olds need 10–13 hours total, including a nap if still needed; irregular sleep timing shows up as daytime behavior problems."},
+    {item:"Firearm/water/pedestrian safety", gist:"Ask directly: 'Is there an unlocked firearm in any home your child visits?' — frame it as a routine safety question, the same as asking about pool fences."}
+  ]
+},
+{id:"5to10", label:"5–10 Years (School Age, annual)", sub:"Use for each annual visit; adjust detail to specific age",
+  keynums:[
+    {label:"BMI", value:"Overweight = <b>85th–94th percentile</b>; obesity = <b>≥95th percentile</b> for age/sex"},
+    {label:"Blood pressure", value:"<b><90th percentile</b> for age/sex/height is normal; ≥95th percentile is elevated/hypertensive range"},
+    {label:"Lipids", value:"Universal screen once 9–11yo: total cholesterol <b><170 mg/dL</b>, LDL <b><110 mg/dL</b> acceptable"},
+    {label:"Sleep", value:"<b>9–12 hrs/24h</b> (AAP recommendation, ages 6–12)"},
+    {label:"Activity", value:"<b>≥60 min/day</b> moderate-vigorous activity"}
+  ],
+  milestones:[
+    {label:"Social/Emotional", items:["Rule-based play, developing peer friendships","Growing empathy and independence","Understands right vs. wrong"]},
+    {label:"Gross Motor", items:["Age-appropriate sport/coordination skills (skipping, bike riding by ~7–8yo)"]},
+    {label:"Fine Motor", items:["Handwriting/drawing skills advancing","Ties shoes by ~6–7yo"]},
+    {label:"Language/Cognitive", items:["Reading and math skills at grade level","By ~10yo: abstract thinking beginning to emerge"]}
+  ],
+  screening:["School performance, bullying, screen time/social media (as age appropriate)","Vision and hearing screen","Blood pressure every visit","Dyslipidemia screen once between 9–11 years","Depression/anxiety screen as age-appropriate (PHQ-9 — a 9-item depression questionnaire — typically starts ~11–12yo)","Physical activity ≥60 min/day, nutrition, sleep 9–12 hrs","Safety: bike helmet, water, firearm access, seatbelt/booster use"],
+  exam:[
+    {item:"Growth parameters/BMI percentile", gist:"Watch for early puberty (growth acceleration before age 8 in girls/9 in boys) or growth failure — both warrant closer follow-up."},
+    {item:"Blood pressure", gist:"Appropriately sized cuff, compare to pediatric percentile chart for age/sex/height — an elevated reading should be repeated before labeling as hypertension."},
+    {item:"Scoliosis screen (~10yo onward)", gist:"Adam's forward bend test: have the child bend forward at the waist, arms hanging, feet together — look from behind for asymmetric rib hump or shoulder/hip height difference. A visible hump or curve → refer for scoliometer measurement/imaging."},
+    {item:"Vision/hearing", gist:"Formal acuity + audiometry — should be near-adult levels by now; any decline from prior visits needs re-testing, not just 'probably fine.'"}
+  ],
+  vaccines:["Influenza annually","Catch-up doses per schedule; review before kindergarten/school entry requirements"],
+  guidance:[
+    {item:"Sports/school physical", gist:"Ask specifically about chest pain, syncope, or palpitations with exercise, and about family history of sudden cardiac death before signing a sports clearance form."},
+    {item:"Healthy habits", gist:"Recommend ≥60 minutes of activity daily, balanced meals with limited sugary drinks, and 9–12 hours of sleep on a consistent schedule."},
+    {item:"Internet/media safety", gist:"Set a family media plan together (where/when devices are used, no devices at meals or bedtime) rather than a one-sided rule handed down."},
+    {item:"Puberty anticipatory guidance", gist:"By age 9–10, explain that puberty can start any time from about 8–13, so early changes (breast buds, body odor, growth spurt) are normal, not a problem."},
+    {item:"Injury prevention", gist:"Helmet every time on a bike/scooter, swim lessons plus constant supervision near water, and any household firearm stored unloaded and locked separate from ammunition."}
+  ]
+},
+{id:"11to14", label:"11–14 Years (Early Adolescence, annual)", sub:"SSHADESS psychosocial interview typically begins with confidential time (see dedicated section below)",
+  keynums:[
+    {label:"Vital signs", value:"HR 60–100 bpm, RR 12–20/min, BP referenced to adult cutoffs by ~13yo (<b><120/80</b> normal)"},
+    {label:"BMI", value:"Overweight <b>85th–94th percentile</b>; obesity <b>≥95th percentile</b>"},
+    {label:"PHQ-9 scoring (9-item depression questionnaire)", value:"<b>0–4</b> minimal, <b>5–9</b> mild, <b>10–14</b> moderate, <b>≥15</b> moderately severe/severe — any positive on the self-harm item needs same-visit follow-up"},
+    {label:"Sleep", value:"<b>8–10 hrs/24h</b> recommended for teens"},
+    {label:"Puberty timing", value:"Normal onset roughly <b>8–13yo</b> (girls), <b>9–14yo</b> (boys); outside this range warrants further workup"},
+    {label:"Tanner staging (girls — breast)", value:"<b>I</b> prepubertal · <b>II</b> breast bud, areolar widening · <b>III</b> further enlargement, no contour separation · <b>IV</b> areola/papilla form secondary mound above breast · <b>V</b> mature, areola recessed to breast contour"},
+    {label:"Tanner staging (girls — pubic hair)", value:"<b>I</b> none · <b>II</b> sparse, downy, along labia · <b>III</b> darker, coarser, spreading over mons pubis · <b>IV</b> adult-type but smaller area · <b>V</b> adult pattern, spreads to thighs"},
+    {label:"Tanner staging (boys — genital)", value:"<b>I</b> prepubertal · <b>II</b> testicular enlargement (>2.5cm), scrotum reddens/thins · <b>III</b> penis lengthens, testes/scrotum further enlarge · <b>IV</b> penis widens, glans develops, scrotum darkens · <b>V</b> adult size/shape"},
+    {label:"Tanner staging (boys — pubic hair)", value:"<b>I</b> none · <b>II</b> sparse, downy, base of penis · <b>III</b> darker, coarser, spreads over pubis · <b>IV</b> adult-type but smaller area · <b>V</b> adult pattern, spreads to thighs"}
+  ],
+  milestones:[
+    {label:"Physical", items:["Pubertal changes (Tanner staging) begin/progress"]},
+    {label:"Cognitive", items:["Abstract reasoning developing"]},
+    {label:"Social/Emotional", items:["Identity formation, peer group importance increases","Increasing autonomy and privacy needs"]}
+  ],
+  screening:["PHQ-A (9-item depression questionnaire adapted for teens; use PHQ-9 if PHQ-A isn't available) depression screen annually","Substance use screen: CRAFFT (6-question screen — Car, Relax, Alone, Forget, Friends, Trouble — scored 0-6, ≥2 = positive)","Dyslipidemia screen once between 9–11 (if not done) and again 17–21","Blood pressure every visit","Sexual health/consent education as appropriate","Vision/hearing as indicated"],
+  exam:[
+    {item:"Growth parameters/BMI", gist:"Peak height velocity typically precedes menarche in girls and occurs mid-puberty in boys — plot growth against Tanner stage, not just age, when interpreting a growth spurt."},
+    {item:"Blood pressure", gist:"Adult BP cutoffs start applying by ~13yo — <120/80 is normal."},
+    {item:"Tanner staging as clinically indicated", gist:"Offer to have the patient self-assess with a picture chart if a hands-off exam is preferred — self-staging correlates reasonably well with clinician staging and may be less uncomfortable for the patient."},
+    {item:"Scoliosis screen", gist:"Adam's forward bend test (see school-age visit) — screen annually through peak growth; curves progress fastest during the growth spurt."}
+  ],
+  vaccines:["Tdap (tetanus-diphtheria-acellular pertussis, the adolescent/adult booster) (11–12 yo)","HPV (human papillomavirus) series (2-dose if started before 15yo)","MenACWY (meningococcal conjugate, covers serogroups A/C/W/Y) #1 (11–12yo)","Influenza annually"],
+  guidance:[
+    {item:"Confidential time", gist:"Tell the parent and teen up front: 'I'll spend a few minutes talking with [name] alone — this is standard for every teen visit,' then explain the limits of confidentiality (safety concerns will be shared)."},
+    {item:"Puberty education/hygiene", gist:"Reassure that normal pubertal onset spans roughly ages 8–13 (girls) and 9–14 (boys) — being early or late within that range is not itself a problem."},
+    {item:"Healthy relationships/consent", gist:"Teach that consent must be freely given, specific, and can be withdrawn at any time — introduce this before dating starts, not after."},
+    {item:"Substance use prevention", gist:"Ask plainly: 'Have you tried vaping, alcohol, or marijuana?' Nonjudgmental, direct questions get more honest answers than lecturing."},
+    {item:"Mental health/social media", gist:"Ask how much time is spent on social media and whether it's affecting sleep or mood; recommend no devices in the bedroom overnight."}
+  ],
+  sshadess: sshadessGroups
+},
+{id:"15to17", label:"15–17 Years (Middle Adolescence, annual)", sub:"",
+  keynums:[
+    {label:"Vital signs", value:"HR 60–100 bpm, BP <b><120/80</b> normal (adult cutoffs apply by this age)"},
+    {label:"PHQ-9 scoring (9-item depression questionnaire)", value:"<b>0–4</b> minimal, <b>5–9</b> mild, <b>10–14</b> moderate, <b>≥15</b> moderately severe/severe — <b>≥10</b> warrants a documented safety plan/follow-up"},
+    {label:"CRAFFT (substance-use screen)", value:"6 yes/no questions — Car, Relax, Alone, Forget, Friends, Trouble. Score <b>≥2</b> = positive screen, warrants brief intervention/further assessment"},
+    {label:"Sleep", value:"<b>8–10 hrs/24h</b> — most teens get far less; ask the actual bedtime/wake time, not just 'enough?'"},
+    {label:"Tanner staging (girls — breast)", value:"<b>I</b> prepubertal · <b>II</b> breast bud, areolar widening · <b>III</b> further enlargement, no contour separation · <b>IV</b> areola/papilla form secondary mound above breast · <b>V</b> mature, areola recessed to breast contour"},
+    {label:"Tanner staging (girls — pubic hair)", value:"<b>I</b> none · <b>II</b> sparse, downy, along labia · <b>III</b> darker, coarser, spreading over mons pubis · <b>IV</b> adult-type but smaller area · <b>V</b> adult pattern, spreads to thighs"},
+    {label:"Tanner staging (boys — genital)", value:"<b>I</b> prepubertal · <b>II</b> testicular enlargement (>2.5cm), scrotum reddens/thins · <b>III</b> penis lengthens, testes/scrotum further enlarge · <b>IV</b> penis widens, glans develops, scrotum darkens · <b>V</b> adult size/shape"},
+    {label:"Tanner staging (boys — pubic hair)", value:"<b>I</b> none · <b>II</b> sparse, downy, base of penis · <b>III</b> darker, coarser, spreads over pubis · <b>IV</b> adult-type but smaller area · <b>V</b> adult pattern, spreads to thighs"}
+  ],
+  milestones:[
+    {label:"Physical", items:["Further pubertal maturation","Most reach Tanner V (the final, adult stage of the 5-stage Tanner puberty scale — see the 11-14yo visit's Key Numbers for the full I-V grading) by ~17yo"]},
+    {label:"Cognitive", items:["Formal operational/abstract thought more established"]},
+    {label:"Social/Emotional", items:["Increasing independence, future/college/career planning","Risk-taking behaviors peak in this period"]}
+  ],
+  screening:["PHQ-A (9-item depression questionnaire adapted for teens; use PHQ-9 if PHQ-A isn't available) depression + suicide risk screen annually","CRAFFT (6-question substance-use screen, ≥2 positive) substance use screen","Sexual activity/contraception/STI risk assessment, confidential STI testing as indicated","Dyslipidemia screen once 17–21yo if not previously done","Blood pressure every visit"],
+  exam:[
+    {item:"Growth parameters/BMI", gist:"Growth velocity slows as puberty completes — reassure that final height is approaching for most by this stage."},
+    {item:"Blood pressure", gist:"Adult cutoffs apply: <120/80 normal, 120-129/<80 elevated, ≥130/80 stage 1 hypertension."},
+    {item:"Tanner staging as indicated", gist:"Most reach Tanner V (the final, adult stage of the 5-stage puberty scale — see Key Numbers above for the full I-V grading) by ~17yo — persistent Tanner stage III or below by 17-18yo warrants endocrine workup for delayed puberty."},
+    {item:"Scoliosis if not resolved", gist:"Curve progression risk drops sharply once growth is complete — if not already referred and a curve is still present, confirm growth plates are closed before deciding on further monitoring vs. discharge from scoliosis follow-up."}
+  ],
+  vaccines:["MenACWY (meningococcal conjugate, serogroups A/C/W/Y) booster (16yo)","MenB (meningococcal serogroup B vaccine, separate from MenACWY) series (shared clinical decision-making, 16–18yo)","HPV (human papillomavirus) catch-up if not completed","Tdap (tetanus-diphtheria-acellular pertussis booster) catch-up if needed","Influenza annually"],
+  guidance:[
+    {item:"Driving safety", gist:"No phone use while driving (even hands-free is distracting), no more than one peer passenger for the first 6–12 months, and zero alcohol/cannabis before driving — state graduated-license rules usually mirror this."},
+    {item:"Substance use counseling", gist:"State clearly there's no safe amount of alcohol/drugs before driving or during pregnancy risk, while keeping the conversation nonjudgmental so the teen keeps talking to you."},
+    {item:"Contraception/STI prevention", gist:"Offer condoms plus a discussion of hormonal/long-acting options regardless of whether the teen has disclosed being sexually active — routine, not conditional on admission."},
+    {item:"Mental health/sleep", gist:"Recommend 8–10 hours of sleep nightly; screen for depression directly with the PHQ-A and ask specifically about suicidal thoughts, not just 'mood.'"},
+    {item:"Future planning", gist:"Ask open questions about post-high-school plans and offer to connect with school counseling resources rather than pushing a specific path."}
+  ],
+  sshadess: sshadessGroups
+},
+{id:"18to21", label:"18–21 Years (Late Adolescence/Young Adult)", sub:"Transition to adult care",
+  keynums:[
+    {label:"Vital signs/BP", value:"Adult reference ranges apply: BP <b><120/80</b> normal, <b>120–129/<80</b> elevated, <b>≥130/80</b> stage 1 hypertension"},
+    {label:"BMI (adult scale)", value:"<b>18.5–24.9</b> normal, <b>25–29.9</b> overweight, <b>≥30</b> obese"},
+    {label:"AUDIT-C (3-question alcohol-use screen)", value:"Positive screen: <b>≥4</b> (men) or <b>≥3</b> (women) — warrants further assessment"},
+    {label:"Sleep", value:"<b>7–9 hrs/night</b> (adult recommendation now applies)"}
+  ],
+  milestones:[
+    {label:"Physical", items:["Physical maturity generally complete"]},
+    {label:"Cognitive/Social", items:["Consolidating identity, values, independence","Transitioning to self-management of health care","Planning post-secondary education/employment"]}
+  ],
+  screening:["PHQ-9 (9-item depression questionnaire; standard adult version — most 18-21yos have transitioned off PHQ-A by now) depression + suicide risk screen","CRAFFT (adolescent-oriented, 6-question) or adult substance use screen: AUDIT-C (3-question alcohol screen)","Dyslipidemia screen if not completed by 21","Sexual health, contraception, STI screening as indicated","Transition-of-care planning (especially for chronic disease/special needs)"],
+  exam:[
+    {item:"Growth parameters/BMI (final height)", gist:"Use adult BMI categories now: 18.5-24.9 normal, 25-29.9 overweight, ≥30 obese."},
+    {item:"Blood pressure", gist:"Full adult reference ranges apply."},
+    {item:"General exam; Tanner staging rarely needed", gist:"Focus shifts to a general adult-style exam; only pursue Tanner staging if there's a specific concern about incomplete pubertal development."}
+  ],
+  vaccines:["MenB (meningococcal serogroup B vaccine) booster if series ongoing (shared decision-making)","HPV (human papillomavirus) catch-up through age 26 if not completed","Influenza annually","Review full record before transition to adult provider"],
+  guidance:[
+    {item:"Transition to adult care", gist:"Identify a specific adult PCP by name before the last pediatric visit, and give the patient a copy or portal access to their own immunization and problem-list summary."},
+    {item:"Independent living/health literacy", gist:"Confirm the young adult can state their own medication list and allergies from memory, and knows how to call and schedule their own appointments."},
+    {item:"Substance use/mental health resources", gist:"Give a specific referral (name, number, or app) rather than just 'consider counseling' — a concrete next step is far more likely to be used."},
+    {item:"Sexual health", gist:"Continue offering confidential contraception counseling and STI testing at every visit, regardless of relationship status disclosed."},
+    {item:"Vocational/educational planning", gist:"Ask directly about stress related to school/work/finances — this age group's anxiety is often tied to concrete near-term decisions, not abstract worry."}
+  ],
+  sshadess: sshadessGroups
+},
+];
+
+// ---------- RENDER ----------
+const select = document.getElementById('visitSelect');
+visits.forEach(v=>{
+  const opt = document.createElement('option');
+  opt.value = v.id; opt.textContent = v.label;
+  select.appendChild(opt);
+});
+
+function storageKey(visitId, section, idx){ return `wcv_${visitId}_${section}_${idx}`; }
+
+// Flat list renderer (used for screening/exam/vaccines) — items are plain strings
+function renderList(containerId, items, visitId, section){
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  if(!items || items.length===0){
+    el.innerHTML = '<div class="empty-note">No specific items for this visit.</div>';
+    return;
+  }
+  items.forEach((text, idx)=>{
+    const key = storageKey(visitId, section, idx);
+    const checked = localStorage.getItem(key) === '1';
+    const div = document.createElement('div');
+    div.className = 'item' + (checked ? ' checked' : '');
+    div.innerHTML = `<input type="checkbox" id="${key}" ${checked?'checked':''}><label for="${key}">${text}</label>`;
+    const cb = div.querySelector('input');
+    cb.addEventListener('change', ()=>{
+      localStorage.setItem(key, cb.checked ? '1':'0');
+      div.classList.toggle('checked', cb.checked);
+      updateProgress(visitId);
+    });
+    el.appendChild(div);
+  });
+}
+
+// Grouped renderer for milestones — groups:[{label, items:[...]}], flattened index used for storage
+function renderGroupedList(containerId, groups, visitId, section){
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  if(!groups || groups.length===0){
+    el.innerHTML = '<div class="empty-note">No specific items for this visit.</div>';
+    return;
+  }
+  let flatIdx = 0;
+  groups.forEach(group=>{
+    const wrap = document.createElement('div');
+    wrap.className = 'subgroup';
+    const title = document.createElement('div');
+    title.className = 'subgroup-title';
+    title.textContent = group.label;
+    wrap.appendChild(title);
+    group.items.forEach(text=>{
+      const idx = flatIdx++;
+      const key = storageKey(visitId, section, idx);
+      const checked = localStorage.getItem(key) === '1';
+      const div = document.createElement('div');
+      div.className = 'item' + (checked ? ' checked' : '');
+      div.innerHTML = `<input type="checkbox" id="${key}" ${checked?'checked':''}><label for="${key}">${text}</label>`;
+      const cb = div.querySelector('input');
+      cb.addEventListener('change', ()=>{
+        localStorage.setItem(key, cb.checked ? '1':'0');
+        div.classList.toggle('checked', cb.checked);
+        updateProgress(visitId);
+      });
+      wrap.appendChild(div);
+    });
+    el.appendChild(wrap);
+  });
+}
+
+// Guidance renderer — items:[{item, gist}]
+function renderGuidance(containerId, items, visitId, section){
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  if(!items || items.length===0){
+    el.innerHTML = '<div class="empty-note">No specific items for this visit.</div>';
+    return;
+  }
+  items.forEach((entry, idx)=>{
+    const key = storageKey(visitId, section, idx);
+    const checked = localStorage.getItem(key) === '1';
+    const div = document.createElement('div');
+    div.className = 'item' + (checked ? ' checked' : '');
+    div.innerHTML = `<input type="checkbox" id="${key}" ${checked?'checked':''}><label for="${key}">${entry.item}<span class="gist">${entry.gist}</span></label>`;
+    const cb = div.querySelector('input');
+    cb.addEventListener('change', ()=>{
+      localStorage.setItem(key, cb.checked ? '1':'0');
+      div.classList.toggle('checked', cb.checked);
+      updateProgress(visitId);
+    });
+    el.appendChild(div);
+  });
+}
+
+// Key numbers renderer — items:[{label, value}] — reference only, no checkboxes
+function renderKeyNums(containerId, items, visit){
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  if(!items || items.length===0){
+    el.innerHTML = '<div class="empty-note">No specific benchmark values highlighted for this visit.</div>';
+  } else {
+    items.forEach(entry=>{
+      const div = document.createElement('div');
+      div.className = 'keynum-row';
+      div.innerHTML = `<div class="keynum-label">${entry.label}</div><div class="keynum-value">${entry.value}</div>`;
+      el.appendChild(div);
+    });
+  }
+  if(visit && visit.kcalPerKg){
+    el.appendChild(buildFeedCalc(visit));
+  }
+}
+
+// Feeding calorie calculator — standard breastmilk/formula = 20 kcal/oz (0.67 kcal/mL)
+// Uses a uniform rule-of-thumb of 100 kcal/kg/day across infancy/toddlerhood for a quick estimate.
+const KCAL_PER_OZ = 20;
+const KCAL_PER_KG_DEFAULT = 100;
+
+// Supplement reminders — timing pegged to visit id
+const vitDVisits = ["newborn","1mo","2mo","4mo","6mo","9mo","12mo","15mo","18mo","24mo"];
+const ironVisits = ["4mo","6mo"];
+
+function supplementReminderHtml(visitId){
+  let out = '';
+  if(vitDVisits.includes(visitId)){
+    out += `<div class="feedcalc-row" style="margin-top:8px;margin-bottom:0;"><span>💊 <b>Vitamin D:</b> 400 IU/day if breastfeeding at all (exclusively or partially) — continue until weaned to ≥32 oz/day of vitamin-D-fortified formula or otherwise getting adequate dietary vitamin D.</span></div>`;
+  }
+  if(ironVisits.includes(visitId)){
+    out += `<div class="feedcalc-row" style="margin-top:6px;margin-bottom:0;"><span>💊 <b>Iron:</b> 1 mg/kg/day for exclusively/mostly breastfed infants starting at 4 months, continued until iron-rich complementary foods (meat, iron-fortified cereal) are reliably established (~6 months). Not needed if primarily iron-fortified formula.</span></div>`;
+  }
+  return out;
+}
+
+function buildFeedCalc(visit){
+  const box = document.createElement('div');
+  box.className = 'feedcalc';
+  const kcalPerKg = visit.kcalPerKg || KCAL_PER_KG_DEFAULT;
+
+  const wKey = `wcv_feedcalc_weight_${visit.id}`;
+  const iKey = `wcv_feedcalc_intake_${visit.id}`;
+  const savedWeight = localStorage.getItem(wKey) || '';
+  const savedIntake = localStorage.getItem(iKey) || '';
+
+  box.innerHTML = `
+    <div class="feedcalc-title">Feeding Calorie Calculator (rule of thumb: ${kcalPerKg} kcal/kg/day, 1 oz breastmilk/formula ≈ ${KCAL_PER_OZ} kcal)</div>
+    <div class="feedcalc-row">
+      <label for="fc-weight-${visit.id}">Weight (kg)</label>
+      <input type="number" step="0.01" min="0" id="fc-weight-${visit.id}" value="${savedWeight}" placeholder="e.g. 4.2">
+      <label for="fc-intake-${visit.id}">Current intake (oz/day, optional)</label>
+      <input type="number" step="0.5" min="0" id="fc-intake-${visit.id}" value="${savedIntake}" placeholder="e.g. 24">
+    </div>
+    <div class="feedcalc-result" id="fc-result-${visit.id}"></div>
+    ${supplementReminderHtml(visit.id)}
+  `;
+
+  const weightInput = box.querySelector(`#fc-weight-${visit.id}`);
+  const intakeInput = box.querySelector(`#fc-intake-${visit.id}`);
+  const resultEl = box.querySelector(`#fc-result-${visit.id}`);
+
+  function recompute(){
+    const weightKg = parseFloat(weightInput.value);
+    const intakeOz = parseFloat(intakeInput.value);
+    localStorage.setItem(wKey, weightInput.value);
+    localStorage.setItem(iKey, intakeInput.value);
+
+    if(!weightKg || weightKg <= 0){
+      resultEl.innerHTML = `Enter weight to calculate. Rule of thumb for this age: <b>${kcalPerKg} kcal/kg/day</b>. Standard breastmilk/formula = <b>${KCAL_PER_OZ} kcal/oz</b> (0.67 kcal/mL).`;
+      return;
+    }
+    const kcalNeeded = weightKg * kcalPerKg;
+    const ozNeeded = kcalNeeded / KCAL_PER_OZ;
+    let out = `Required intake: <b>${kcalNeeded.toFixed(0)} kcal/day</b> `
+      + `(${weightKg} kg × ${kcalPerKg} kcal/kg/day) → `
+      + `<b>${ozNeeded.toFixed(1)} oz/day</b> of breastmilk/formula at ${KCAL_PER_OZ} kcal/oz.`;
+
+    if(intakeOz && intakeOz > 0){
+      const actualKcal = intakeOz * KCAL_PER_OZ;
+      const actualKcalKg = actualKcal / weightKg;
+      out += `<br>Current intake of ${intakeOz} oz/day = <b>${actualKcal.toFixed(0)} kcal/day</b> (<b>${actualKcalKg.toFixed(0)} kcal/kg/day</b>).`;
+      const pctDiff = ((actualKcalKg - kcalPerKg) / kcalPerKg) * 100;
+      if(pctDiff < -10){
+        out += ` <span class="feedcalc-flag">Notably below the ${kcalPerKg} kcal/kg/day rule of thumb — investigate intake/growth further.</span>`;
+      } else if(pctDiff > 10){
+        out += ` <span class="feedcalc-flag">Notably above the ${kcalPerKg} kcal/kg/day rule of thumb — check for overfeeding.</span>`;
+      } else {
+        out += ` Roughly in line with the ${kcalPerKg} kcal/kg/day rule of thumb.`;
+      }
+    }
+    resultEl.innerHTML = out;
+  }
+
+  weightInput.addEventListener('input', recompute);
+  intakeInput.addEventListener('input', recompute);
+  recompute();
+
+  return box;
+}
+
+function flatCount(groupsOrItems, isGrouped){
+  if(!groupsOrItems) return 0;
+  if(isGrouped) return groupsOrItems.reduce((sum,g)=> sum + g.items.length, 0);
+  return groupsOrItems.length;
+}
+
+function updateProgress(visitId){
+  const v = visits.find(x=>x.id===visitId);
+  let total=0, done=0;
+
+  const milestoneCount = flatCount(v.milestones, true);
+  for(let i=0;i<milestoneCount;i++){ total++; if(localStorage.getItem(storageKey(visitId,'milestones',i))==='1') done++; }
+
+  ['screening','exam','vaccines'].forEach(sec=>{
+    (v[sec]||[]).forEach((_, idx)=>{
+      total++;
+      if(localStorage.getItem(storageKey(visitId, sec, idx))==='1') done++;
+    });
+  });
+
+  const guidanceCount = flatCount(v.guidance, false);
+  for(let i=0;i<guidanceCount;i++){ total++; if(localStorage.getItem(storageKey(visitId,'guidance',i))==='1') done++; }
+
+  document.getElementById('progressText').textContent = total ? `${done}/${total} items checked` : '';
+}
+
+// Note: 'diet', 'social', 'ros', 'sshadess', 'pmhx' are self-wired by renderCollapsibleGroups and excluded here.
+const noteSections = ['interval','milestones','screening','exam','vaccines','guidance','labs','assessment','plan'];
+
+function notesKey(visitId, sec){ return `wcv_notes_${visitId}_${sec}`; }
+
+function loadNotesForVisit(visitId){
+  noteSections.forEach(sec=>{
+    const ta = document.getElementById('notes-'+sec);
+    if(!ta) return;
+    ta.value = localStorage.getItem(notesKey(visitId, sec)) || '';
+  });
+}
+
+function wireNoteSaving(visitId){
+  noteSections.forEach(sec=>{
+    const ta = document.getElementById('notes-'+sec);
+    if(!ta) return;
+    ta.oninput = ()=> localStorage.setItem(notesKey(visitId, sec), ta.value);
+  });
+}
+
+function renderVisit(visitId){
+  const v = visits.find(x=>x.id===visitId);
+  document.getElementById('visitTitle').textContent = v.label;
+  document.getElementById('visitSub').textContent = v.sub || '';
+  renderKeyNums('body-keynums', v.keynums, v);
+  renderGroupedList('body-milestones', v.milestones, visitId, 'milestones');
+  renderList('body-screening', v.screening, visitId, 'screening');
+  renderGuidance('body-exam', v.exam, visitId, 'exam');
+  renderList('body-vaccines', v.vaccines, visitId, 'vaccines');
+  renderGuidance('body-guidance', v.guidance, visitId, 'guidance');
+  renderDiet(visitId);
+  renderSocial(visitId);
+  renderSshadess(visitId);
+  updateProgress(visitId);
+  loadNotesForVisit(visitId);
+  wireNoteSaving(visitId);
+}
+
+select.addEventListener('change', ()=> renderVisit(select.value));
+
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  const visitId = select.value;
+  const v = visits.find(x=>x.id===visitId);
+  const milestoneCount = flatCount(v.milestones, true);
+  for(let i=0;i<milestoneCount;i++){ localStorage.removeItem(storageKey(visitId,'milestones',i)); }
+  ['screening','exam','vaccines'].forEach(sec=>{
+    (v[sec]||[]).forEach((_, idx)=> localStorage.removeItem(storageKey(visitId, sec, idx)));
+  });
+  const guidanceCount = flatCount(v.guidance, false);
+  for(let i=0;i<guidanceCount;i++){ localStorage.removeItem(storageKey(visitId,'guidance',i)); }
+  renderVisit(visitId);
+});
+
+function toggleCard(id){
+  // Collapsing hides only UNCHECKED checklist items (via .panel-collapsed CSS) —
+  // checked items and any non-checklist content (notes, inputs) always stay visible.
+  const body = document.getElementById(id).querySelector('.card-body');
+  const arrow = document.getElementById(id).querySelector('.card-head span:last-child');
+  const collapsed = body.classList.toggle('panel-collapsed');
+  if(arrow) arrow.textContent = collapsed ? '▸' : '▾';
+}
+
+// ---------- checked-item helpers for note generation ----------
+function checkedFlatItems(visitId, sec, items){
+  return (items||[]).filter((_, idx)=> localStorage.getItem(storageKey(visitId, sec, idx))==='1');
+}
+function checkedGroupedItems(visitId, sec, groups){
+  const out = [];
+  let flatIdx = 0;
+  (groups||[]).forEach(group=>{
+    group.items.forEach(text=>{
+      const idx = flatIdx++;
+      if(localStorage.getItem(storageKey(visitId, sec, idx))==='1'){
+        out.push(`${group.label}: ${text}`);
+      }
+    });
+  });
+  return out;
+}
+function checkedGuidanceItems(visitId, sec, items){
+  const out = [];
+  (items||[]).forEach((entry, idx)=>{
+    if(localStorage.getItem(storageKey(visitId, sec, idx))==='1'){
+      out.push(entry.item);
+    }
+  });
+  return out;
+}
+
+function section(title, bodyLines, notesId){
+  let out = `${title}:\n`;
+  if(!bodyLines || bodyLines.length===0){ out += `  (none checked)\n`; }
+  else { bodyLines.forEach(i=> out += `  - ${i}\n`); }
+  if(notesId){
+    const notes = document.getElementById(notesId).value.trim();
+    if(notes){ out += `  Notes: ${notes}\n`; }
+  }
+  out += `\n`;
+  return out;
+}
+
+function buildNoteText(){
+  const visitId = select.value;
+  const v = visits.find(x=>x.id===visitId);
+  const pName = document.getElementById('pName').value || '(not entered)';
+  const pSex = document.getElementById('pSex').value || '(not entered)';
+  const pDOB = document.getElementById('pDOB').value || '(not entered)';
+  const vDate = document.getElementById('vDate').value || '(not entered)';
+  const examiner = document.getElementById('examiner').value || '(not entered)';
+  const attending = document.getElementById('attending').value || '(not entered)';
+  const cc = document.getElementById('chiefConcern').value || '(not entered)';
+  const oneLiner = document.getElementById('oneLinerBox').value.trim();
+
+  let out = '';
+  out += `WELL-CHILD / PEDIATRIC VISIT NOTE\n`;
+  out += `Visit type: ${v.label}\n`;
+  out += `Visit date: ${vDate}\n`;
+  out += `Patient: ${pName}   Sex: ${pSex}   DOB: ${pDOB}\n`;
+  out += `Examiner: ${examiner}   Attending/preceptor: ${attending}\n`;
+  out += `\n`;
+
+  out += `1. ONE-LINER:\n  ${oneLiner || '(not generated)'}\n\n`;
+  out += `2. CHIEF CONCERN:\n  "${cc}"\n\n`;
+
+  out += section('3. INTERVAL HISTORY / HPI', [document.getElementById('notes-interval').value.trim() || '(not entered)']);
+
+  out += `4. MEDICAL HISTORY:\n`;
+  out += `  Allergies: ${document.getElementById('allergies').value || '(not entered)'}\n`;
+  out += `  Medications: ${document.getElementById('medications').value || '(not entered)'}\n`;
+  out += `  Vaccination status: ${document.getElementById('vaccStatus').value || '(not entered)'}\n`;
+  const pm = checkedPmhxItems();
+  out += `  Birth Hx/PMHx flagged:\n`;
+  if(pm.length===0){ out += `    (none checked)\n`; } else { pm.forEach(i=> out += `    - ${i}\n`); }
+  const pmNotes = document.getElementById('notes-pmhx').value.trim();
+  if(pmNotes){ out += `  Notes: ${pmNotes}\n`; }
+  out += `\n`;
+
+  out += section('5. REVIEW OF SYSTEMS (Y/N documented; unanswered items not addressed)', checkedRosItems(), 'notes-ros');
+
+  const sshadessLines = sshadessNotesSummary(visitId, v);
+  if(sshadessLines){
+    out += `SSHADESS INTERVIEW (Adolescent Psychosocial):\n${sshadessLines.join('\n')}\n\n`;
+  }
+
+  out += section('6. STANDARDIZED SCREENS ADMINISTERED', checkedFlatItems(visitId, 'screening', v.screening), 'notes-screening');
+
+  out += `7. GROWTH & DEVELOPMENT:\n`;
+  const ms = checkedGroupedItems(visitId, 'milestones', v.milestones);
+  out += `  Milestones assessed:\n`;
+  if(ms.length===0){ out += `    (none checked)\n`; } else { ms.forEach(i=> out += `    - ${i}\n`); }
+  const msNotes = document.getElementById('notes-milestones').value.trim();
+  if(msNotes){ out += `  Notes: ${msNotes}\n`; }
+  out += `\n`;
+
+  out += section('8. DIET, SLEEP, BEHAVIOR, HABITS', checkedDietItems(visitId), 'notes-diet');
+
+  out += section('9. FAMILY/SOCIAL HISTORY', checkedSocialItems(visitId), 'notes-social');
+
+  out += section('10. SAFETY & PREVENTIVE TOPICS (ANTICIPATORY GUIDANCE) DISCUSSED', checkedGuidanceItems(visitId, 'guidance', v.guidance), 'notes-guidance');
+
+  out += section('11. PHYSICAL EXAM SUMMARY', checkedGuidanceItems(visitId, 'exam', v.exam), 'notes-exam');
+
+  out += section('12. LABS/IMAGING', [document.getElementById('notes-labs').value.trim() || '(none today)']);
+
+  out += section('VACCINES DUE/GIVEN', checkedFlatItems(visitId, 'vaccines', v.vaccines), 'notes-vaccines');
+
+  const assessment = document.getElementById('notes-assessment').value.trim();
+  out += `13. ASSESSMENT:\n`;
+  out += assessment ? `  ${assessment}\n\n` : `  (not entered)\n\n`;
+
+  const plan = document.getElementById('notes-plan').value.trim();
+  out += `14. PLAN:\n`;
+  out += plan ? `  ${plan}\n` : `  (not entered)\n`;
+
+  return out;
+}
+
+document.getElementById('generateBtn').addEventListener('click', ()=>{
+  document.getElementById('noteOutput').value = buildNoteText();
+});
+
+document.getElementById('copyBtn').addEventListener('click', ()=>{
+  const ta = document.getElementById('noteOutput');
+  if(!ta.value) ta.value = buildNoteText();
+  ta.select();
+  document.execCommand('copy');
+});
+
+document.getElementById('downloadBtn').addEventListener('click', ()=>{
+  const text = document.getElementById('noteOutput').value || buildNoteText();
+  document.getElementById('noteOutput').value = text;
+  const visitId = select.value;
+  const vDate = document.getElementById('vDate').value || 'undated';
+  const blob = new Blob([text], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `well-child-visit_${visitId}_${vDate}.txt`;
+  a.click();
+});
+
+// ---------- VISIT LOG ----------
+const LOG_KEY = 'wcv_visit_log';
+
+function getLog(){
+  try{ return JSON.parse(localStorage.getItem(LOG_KEY) || '[]'); }catch(e){ return []; }
+}
+function setLog(arr){ localStorage.setItem(LOG_KEY, JSON.stringify(arr)); }
+
+function renderLogTable(){
+  const log = getLog();
+  document.getElementById('logCount').textContent = log.length;
+  const tbody = document.getElementById('logTableBody');
+  tbody.innerHTML = '';
+  if(log.length===0){
+    tbody.innerHTML = '<tr><td colspan="6" class="empty-note">No visits saved yet.</td></tr>';
+    return;
+  }
+  log.slice().reverse().forEach((entry)=>{
+    const realIdx = log.indexOf(entry);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${entry.visitDate||''}</td><td>${entry.visitType||''}</td><td>${entry.patient||''}</td><td>${entry.examiner||''}</td><td class="notecell">${(entry.note||'').slice(0,300)}${(entry.note||'').length>300?'…':''}</td><td><button class="small-btn" data-idx="${realIdx}">Delete</button></td>`;
+    tbody.appendChild(tr);
+  });
+  tbody.querySelectorAll('button.small-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const idx = parseInt(btn.getAttribute('data-idx'), 10);
+      const arr = getLog();
+      arr.splice(idx,1);
+      setLog(arr);
+      renderLogTable();
+    });
+  });
+}
+
+document.getElementById('saveLogBtn').addEventListener('click', ()=>{
+  const visitId = select.value;
+  const v = visits.find(x=>x.id===visitId);
+  const note = document.getElementById('noteOutput').value || buildNoteText();
+  document.getElementById('noteOutput').value = note;
+  const entry = {
+    visitType: v.label,
+    visitDate: document.getElementById('vDate').value || '',
+    patient: document.getElementById('pName').value || '',
+    examiner: document.getElementById('examiner').value || '',
+    attending: document.getElementById('attending').value || '',
+    note: note,
+    savedAt: new Date().toISOString()
+  };
+  const arr = getLog();
+  arr.push(entry);
+  setLog(arr);
+  renderLogTable();
+});
+
+document.getElementById('exportCsvBtn').addEventListener('click', ()=>{
+  const log = getLog();
+  const esc = s => `"${String(s||'').replace(/"/g,'""')}"`;
+  let csv = 'Visit Date,Visit Type,Patient,Examiner,Attending,Saved At,Note\n';
+  log.forEach(e=>{
+    csv += [e.visitDate, e.visitType, e.patient, e.examiner, e.attending, e.savedAt, e.note].map(esc).join(',') + '\n';
+  });
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'well_child_visit_log.csv';
+  a.click();
+});
+
+document.getElementById('clearLogBtn').addEventListener('click', ()=>{
+  if(confirm('Clear all saved visit log entries? This cannot be undone.')){
+    setLog([]);
+    renderLogTable();
+  }
+});
+
+// init
+renderPmhx();
+renderRos();
+['allergies','medications','vaccStatus','chiefConcern','pName','pSex','examiner','attending'].forEach(wireSimpleField);
+renderVisit(visits[0].id);
+renderLogTable();
+(function(){
+  const vDateEl = document.getElementById('vDate');
+  if(vDateEl && !vDateEl.value){
+    const today = new Date();
+    vDateEl.value = today.toISOString().slice(0,10);
+  }
+})();
+</script>
+</body>
+</html>

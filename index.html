@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Peds Sub-I Tools</title>
+<style>
+  :root{ --navy:#1c3d5a; --teal:#2a7f8c; --light:#f4f8fa; --border:#d7e2e8; --text:#22333b; }
+  *{box-sizing:border-box;}
+  body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;background:var(--light);margin:0;color:var(--text);}
+  header{background:var(--navy);color:white;padding:20px 24px;}
+  header h1{margin:0;font-size:1.3em;}
+  header p{margin:6px 0 0;font-size:0.88em;color:#cfe0ea;}
+  .wrap{max-width:640px;margin:0 auto;padding:20px 18px 60px;}
+  a.card{display:block;background:white;border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin-bottom:16px;text-decoration:none;color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,0.04);}
+  a.card:active{background:#eef3f5;}
+  a.card .emoji{font-size:1.6em;margin-bottom:6px;display:block;}
+  a.card .title{font-size:1.1em;font-weight:700;color:var(--navy);margin-bottom:4px;}
+  a.card .desc{font-size:0.9em;color:#607080;line-height:1.4;}
+  footer{text-align:center;font-size:0.75em;color:#8a9aa5;margin-top:20px;padding:0 18px;}
+</style>
+</head>
+<body>
+<header>
+  <h1>🩺 Peds Sub-I Documentation Tools</h1>
+  <p>Interactive checklists for well-child and sick visits — tap a tool below to open.</p>
+</header>
+<div class="wrap">
+  <a class="card" href="well_child_visit_checklist.html">
+    <span class="emoji">👶</span>
+    <div class="title">Well-Child Visit Checklist</div>
+    <div class="desc">Age-based milestones, screening, vaccines, growth/feeding calculator, SSHADESS interview, and full note generation — newborn through 18–21yo.</div>
+  </a>
+  <a class="card" href="sick_visit_ros_checklist.html">
+    <span class="emoji">🤒</span>
+    <div class="title">Sick Visit ROS Checklist</div>
+    <div class="desc">30 chief complaints with age-reordered differentials, Y/N review-of-systems documentation, teaching points, and note generation.</div>
+  </a>
+</div>
+<footer>For educational/documentation support use only — not a substitute for institutional protocols or clinical judgment.</footer>
+</body>
+</html>

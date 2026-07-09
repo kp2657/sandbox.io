@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>Sick Visit ROS Checklist — Pertinent Positives &amp; Negatives</title>
+<style>
+  :root{
+    --navy:#1c3d5a; --teal:#2a7f8c; --light:#f4f8fa; --border:#d7e2e8; --accent:#e8a33d; --text:#22333b; --red:#b5501f;
+  }
+  *{box-sizing:border-box;}
+  body{font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;background:var(--light);margin:0;color:var(--text);}
+  header{background:var(--navy);color:white;padding:18px 24px;}
+  header h1{margin:0;font-size:1.35em;}
+  header p{margin:4px 0 0;font-size:0.85em;color:#cfe0ea;}
+  .wrap{max-width:980px;margin:0 auto;padding:18px 20px 60px;}
+  .disclaimer{background:#fff4e0;border:1px solid var(--accent);border-radius:8px;padding:12px 16px;font-size:0.85em;margin-bottom:14px;line-height:1.5;}
+  .intro-card{background:white;border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:18px;font-size:0.88em;line-height:1.55;}
+  .intro-card h3{margin:0 0 8px;color:var(--navy);font-size:1em;}
+  .intro-example{background:#eef5f7;border-radius:6px;padding:8px 10px;margin-top:8px;font-size:0.92em;}
+  .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:16px;position:sticky;top:0;background:var(--light);padding:10px 0;z-index:10;}
+  select{font-size:1em;padding:8px 12px;border-radius:6px;border:1px solid var(--border);background:white;}
+  button.reset{padding:8px 14px;border-radius:6px;border:1px solid var(--border);background:white;cursor:pointer;font-size:0.85em;}
+  button.reset:hover{background:#eef3f5;}
+  .progress{font-size:0.85em;color:#555;}
+  .visit-title{font-size:1.5em;color:var(--navy);margin:10px 0 2px;}
+  .visit-sub{color:#607080;font-size:0.9em;margin-bottom:16px;}
+  section.card{background:white;border:1px solid var(--border);border-radius:10px;margin-bottom:16px;overflow:hidden;}
+  .card-head{background:#eaf2f5;padding:10px 16px;font-weight:600;color:var(--navy);border-bottom:1px solid var(--border);cursor:pointer;display:flex;justify-content:space-between;align-items:center;}
+  .card-body{padding:12px 16px;}
+  .subgroup{margin-bottom:12px;}
+  .subgroup:last-child{margin-bottom:0;}
+  .subgroup-title{font-size:0.78em;font-weight:700;text-transform:uppercase;letter-spacing:0.03em;color:var(--teal);margin-bottom:4px;}
+  .item{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px dashed #e5edf0;}
+  .item:last-child{border-bottom:none;}
+  .item input{margin-top:4px;width:16px;height:16px;flex-shrink:0;}
+  .item label{font-size:0.93em;line-height:1.4;cursor:pointer;}
+  .item.checked{background:#eaf5ee;border-radius:6px;padding-left:6px;margin-left:-6px;}
+  .item.checked label{color:var(--text);font-weight:600;}
+  .item .gist{display:block;font-size:0.83em;color:#607080;font-style:italic;margin-top:3px;}
+  .item.checked .gist{color:#5a7a68;font-weight:normal;}
+  .gist b.pos{color:#1a7a3c;font-style:normal;}
+  .gist b.neg{color:#606060;font-style:normal;}
+  .gist b.flag{color:var(--red);font-style:normal;}
+  .ros-item{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px dashed #e5edf0;}
+  .ros-item:last-child{border-bottom:none;}
+  .ros-item .ros-body{flex:1;}
+  .ros-item .ros-label{font-size:0.93em;line-height:1.4;display:block;}
+  .ros-item .ros-body .gist{display:block;font-size:0.83em;color:#8a97a3;font-style:italic;font-weight:normal;margin-top:3px;}
+  .ros-item.answered-y .ros-body .gist{color:#8a97a3;}
+  .ros-item.answered-n .ros-body .gist{color:#8a97a3;}
+  .ros-yn{display:flex;gap:4px;flex:0 0 auto;margin-top:1px;}
+  .ros-yn button{width:30px;padding:3px 0;font-size:0.78em;font-weight:700;border-radius:5px;border:1px solid var(--border);background:white;cursor:pointer;color:#8a9aa5;}
+  .ros-yn button.y-btn.active{background:#c0392b;border-color:#c0392b;color:white;}
+  .ros-yn button.n-btn.active{background:#e8eef0;border-color:var(--border);color:#4a6a5a;}
+  .ros-item.answered-y{background:#fdecea;border-radius:6px;padding-left:6px;margin-left:-6px;}
+  .ros-item.answered-y .ros-label{font-weight:600;color:#8b2f22;}
+  .ros-item.answered-n{background:#eaf5ee;border-radius:6px;padding-left:6px;margin-left:-6px;}
+  .empty-note{font-style:italic;color:#8a9aa5;font-size:0.9em;}
+  footer{text-align:center;font-size:0.75em;color:#8a9aa5;margin-top:20px;}
+  @media print{
+    .controls, .disclaimer, .log-actions, .log-table-wrap{display:none;}
+    section.card{break-inside:avoid;}
+  }
+  @media (max-width:640px){
+    header{padding:14px 14px;}
+    header h1{font-size:1.1em;}
+    header p{font-size:0.8em;}
+    .wrap{padding:12px 10px 60px;}
+    .controls{gap:8px;padding:8px 0;}
+    .controls select, .controls button{font-size:0.95em;padding:9px 10px;}
+    select{width:100%;}
+    .card-head{padding:10px 12px;font-size:0.95em;}
+    .card-body{padding:10px 12px;}
+    .patient-grid{grid-template-columns:1fr 1fr;gap:8px;}
+    .item input{width:20px;height:20px;}
+    .item label{font-size:0.97em;}
+    .ros-item{flex-wrap:wrap;}
+    .ros-item .ros-body{flex:1 1 100%;}
+    .ros-yn{margin-top:6px;}
+    .ros-yn button{width:44px;height:34px;font-size:0.85em;}
+    .log-actions{flex-direction:column;}
+    .log-actions button{width:100%;padding:11px 14px;font-size:0.9em;}
+    table.logtable{font-size:0.75em;}
+    .diff-row{flex-wrap:wrap;}
+    .diff-badge{margin-left:0;margin-top:4px;}
+  }
+  .patient-card{background:white;border:1px solid var(--border);border-radius:10px;padding:14px 16px;margin-bottom:16px;}
+  .patient-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;}
+  .patient-grid label{font-size:0.75em;color:#607080;display:block;margin-bottom:3px;}
+  .patient-grid input{width:100%;padding:7px 9px;border:1px solid var(--border);border-radius:6px;font-size:0.9em;}
+  textarea.notes{width:100%;min-height:60px;border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:0.88em;font-family:inherit;margin-top:8px;resize:vertical;}
+  .notes-label{font-size:0.75em;color:#607080;margin-top:4px;}
+  .log-actions{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0;}
+  .log-actions button{padding:9px 16px;border-radius:6px;border:1px solid var(--border);background:white;cursor:pointer;font-size:0.85em;}
+  .log-actions button.primary{background:var(--teal);color:white;border-color:var(--teal);}
+  .log-actions button:hover{opacity:0.9;}
+  #noteOutput{width:100%;min-height:220px;font-family:ui-monospace,Menlo,monospace;font-size:0.82em;padding:12px;border:1px solid var(--border);border-radius:8px;white-space:pre-wrap;}
+  .log-table-wrap{overflow-x:auto;margin-top:10px;}
+  table.logtable{width:100%;border-collapse:collapse;font-size:0.82em;background:white;}
+  table.logtable th, table.logtable td{border:1px solid var(--border);padding:6px 8px;text-align:left;vertical-align:top;}
+  table.logtable th{background:#eaf2f5;}
+  table.logtable td.notecell{max-width:260px;white-space:pre-wrap;}
+  .small-btn{padding:3px 8px;font-size:0.75em;border-radius:5px;border:1px solid var(--border);background:white;cursor:pointer;}
+  .diff-box{background:#fff8ec;border:1px solid var(--accent);border-radius:8px;padding:10px 14px;margin-bottom:12px;font-size:0.92em;line-height:1.5;}
+  .diff-box b{color:var(--navy);}
+  .teach-box{background:#eef5f7;border:1px solid var(--teal);border-radius:8px;padding:10px 14px;margin-bottom:0;font-size:0.9em;line-height:1.5;}
+  .teach-box b{color:var(--teal);}
+  .diff-row{display:flex;gap:10px;align-items:flex-start;padding:6px 0;border-bottom:1px dashed #f0e0c0;}
+  .diff-row:last-child{border-bottom:none;}
+  .diff-row.likely{background:#fff2d9;border-radius:6px;padding-left:6px;margin-left:-6px;}
+  .diff-rank{flex:0 0 24px;font-weight:700;color:var(--accent);font-size:0.9em;}
+  .diff-row.likely .diff-rank{color:var(--red);}
+  .diff-body{flex:1;}
+  .diff-name{font-weight:600;font-size:0.95em;}
+  .diff-row:not(.likely) .diff-name{color:#8a7256;}
+  .diff-typical{font-size:0.82em;color:#7a6a4a;margin-top:1px;}
+  .diff-badge{display:inline-block;font-size:0.68em;font-weight:700;padding:1px 6px;border-radius:8px;margin-left:6px;vertical-align:middle;}
+  .diff-badge.likely{background:var(--red);color:white;}
+  .diff-badge.atypical{background:#d7d0c0;color:#5a5040;}
+</style>
+</head>
+<body>
+<header>
+  <h1>Sick Visit ROS Checklist</h1>
+  <p>Pertinent positives &amp; negatives by chief complaint — differential-driven ROS, note boxes &amp; visit log</p>
+</header>
+<div class="wrap">
+  <div class="disclaimer">
+    <strong>For educational use — not a substitute for institutional protocol or clinical judgment.</strong> Content is adapted from a pediatric ROS-by-chief-complaint reference and is meant to prompt differential-driven questioning, not replace it. Always correlate with exam findings, vitals, and your attending's guidance before finalizing an assessment.
+  </div>
+
+  <div class="intro-card">
+    <h3>How to use this tool</h3>
+    Every ROS question you ask should help you build or narrow a differential diagnosis. A <b>pertinent positive</b> is a finding the patient endorses that supports a specific diagnosis. A <b>pertinent negative</b> is a finding the patient denies that helps exclude a diagnosis. When you document your ROS, include both — they show your clinical reasoning.
+    <div class="intro-example">
+      <b>Example — 4-year-old with fever and rash:</b><br>
+      Pertinent positive: "Sandpaper-textured rash on trunk" → supports scarlet fever<br>
+      Pertinent negative: "Denies oral lesions, conjunctivitis, extremity edema" → argues against Kawasaki disease
+    </div>
+    <div style="margin-top:8px;">Below: check a box when the finding is <b>present/positive</b>. Leave unchecked (and assume denied/negative) otherwise — jot specifics in the notes box under each system.</div>
+  </div>
+
+  <div class="controls">
+    <select id="complaintSelect"></select>
+    <button class="reset" id="resetBtn">Reset checkboxes for this complaint</button>
+    <span class="progress" id="progressText"></span>
+  </div>
+
+  <!-- PATIENT / VISIT INFO -->
+  <div class="patient-card">
+    <div class="patient-grid">
+      <div><label for="pName">Patient initials/ID</label><input id="pName" placeholder="e.g. A.B. or MRN"></div>
+      <div><label for="pAge">Exact age</label><input id="pAge" placeholder="e.g. 4yo"></div>
+      <div><label for="ageBand">Age band (reorders differentials)</label><select id="ageBand"></select></div>
+      <div><label for="pSex">Sex</label><input id="pSex" list="sexOptions" placeholder="male/female"><datalist id="sexOptions"><option value="male"><option value="female"></datalist></div>
+      <div><label for="vDate">Visit date</label><input id="vDate" type="date"></div>
+      <div><label for="examiner">Examiner (you)</label><input id="examiner" placeholder="Your name/role"></div>
+      <div><label for="attending">Attending/preceptor</label><input id="attending" placeholder="Supervising provider"></div>
+    </div>
+    <div style="margin-top:10px;"><label for="chiefConcern" style="font-size:0.75em;color:#607080;display:block;margin-bottom:3px;">Chief concern (patient's/parent's own words)</label><input id="chiefConcern" style="width:100%;padding:7px 9px;border:1px solid var(--border);border-radius:6px;font-size:0.9em;" placeholder="e.g. &quot;2 days of fever and cough&quot;"></div>
+  </div>
+
+  <div class="visit-title" id="visitTitle"></div>
+  <div class="visit-sub" id="visitSub"></div>
+
+  <div class="diff-box">
+    <div style="margin-bottom:6px;"><b>Top differentials to consider — reordered for the selected age band</b> (<span class="diff-badge likely" style="margin-left:0;">highlighted</span> = typical for this age; grayed = still possible but atypical):</div>
+    <div id="diffBox"></div>
+  </div>
+  <div class="teach-box" id="teachBox"></div>
+
+  <section class="card" id="sec-hpi" style="margin-top:16px;">
+    <div class="card-head" onclick="toggleCard('sec-hpi')">Interval History / HPI <span>▾</span></div>
+    <div class="card-body">
+      <div class="notes-label" style="margin-top:0;">Onset, duration, associated symptoms, sick contacts, what's been tried, immunization status.</div>
+      <textarea class="notes" id="notes-hpi" style="min-height:90px;"></textarea>
+    </div>
+  </section>
+
+  <section class="card" id="sec-ros">
+    <div class="card-head" onclick="toggleCard('sec-ros')">ROS — Pertinent Positives &amp; Negatives <span>▾</span></div>
+    <div class="card-body">
+      <div id="body-ros"></div>
+      <div class="notes-label">Notes (specifics on any positives — description, timing, severity)</div>
+      <textarea class="notes" id="notes-ros" style="min-height:70px;"></textarea>
+    </div>
+  </section>
+
+  <section class="card" id="sec-exam">
+    <div class="card-head" onclick="toggleCard('sec-exam')">Physical Exam Summary <span>▾</span></div>
+    <div class="card-body">
+      <div class="notes-label" style="margin-top:0;">Vitals, general appearance, and pertinent findings by system.</div>
+      <textarea class="notes" id="notes-exam" style="min-height:80px;"></textarea>
+    </div>
+  </section>
+
+  <section class="card" id="sec-labs">
+    <div class="card-head" onclick="toggleCard('sec-labs')">Labs/Imaging <span>▾</span></div>
+    <div class="card-body">
+      <div class="notes-label" style="margin-top:0;">e.g. "None today," or list tests + results/pending status.</div>
+      <textarea class="notes" id="notes-labs"></textarea>
+    </div>
+  </section>
+
+  <section class="card" id="sec-assessment">
+    <div class="card-head" onclick="toggleCard('sec-assessment')">Assessment <span>▾</span></div>
+    <div class="card-body">
+      <div class="notes-label" style="margin-top:0;">Leading diagnosis + differential with supports/against for each (use the checked pertinent positives/negatives above).</div>
+      <textarea class="notes" id="notes-assessment" style="min-height:90px;"></textarea>
+    </div>
+  </section>
+
+  <section class="card" id="sec-plan">
+    <div class="card-head" onclick="toggleCard('sec-plan')">Plan <span>▾</span></div>
+    <div class="card-body">
+      <div class="notes-label" style="margin-top:0;">Tests ordered, treatment, return precautions, follow-up timing.</div>
+      <textarea class="notes" id="notes-plan" style="min-height:80px;"></textarea>
+    </div>
+  </section>
+
+  <section class="card" id="sec-doc">
+    <div class="card-head" onclick="toggleCard('sec-doc')">Visit Log &amp; Documentation <span>▾</span></div>
+    <div class="card-body">
+      <div class="log-actions">
+        <button class="primary" id="generateBtn">Generate visit note</button>
+        <button id="copyBtn">Copy note</button>
+        <button id="downloadBtn">Download note (.txt)</button>
+        <button id="saveLogBtn">Save this visit to log</button>
+        <button id="exportCsvBtn">Export log as CSV</button>
+        <button id="clearLogBtn">Clear log</button>
+      </div>
+      <textarea id="noteOutput" placeholder="Click 'Generate visit note' to compile a documentation draft from the checked items and notes above."></textarea>
+
+      <div class="notes-label" style="margin-top:16px;">Saved visits this session/device (<span id="logCount">0</span>)</div>
+      <div class="log-table-wrap">
+        <table class="logtable" id="logTable">
+          <thead><tr><th>Visit date</th><th>Complaint</th><th>Patient</th><th>Examiner</th><th>Note</th><th></th></tr></thead>
+          <tbody id="logTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <div class="intro-card">
+    <h3>Summary: how to document pertinent positives &amp; negatives</h3>
+    Your ROS should NOT be a laundry list of "denies" for every system. Instead: (1) identify your top 2–3 differential diagnoses based on the chief complaint, (2) ask targeted ROS questions that would confirm or exclude those diagnoses, (3) document the pertinent positives (findings supporting your leading diagnosis), and (4) document the pertinent negatives (findings that help rule out dangerous or likely alternatives).
+    <div class="intro-example">
+      <b>Example note — 3-year-old with fever and cough:</b><br>
+      ROS: Per mother, fever to 39.5°C x2 days with wet cough and tachypnea (pertinent positives for pneumonia). Denies stridor, barking cough (argues against croup). Denies ear pain or tugging (argues against AOM). Denies dysuria or foul-smelling urine (argues against UTI as fever source). Denies rash, petechiae (argues against meningococcemia). Denies neck stiffness, photophobia, altered mental status (argues against meningitis). Feeding well with adequate urine output (reassuring against dehydration and serious bacterial infection).
+    </div>
+    This approach demonstrates clinical reasoning and helps your attending understand your thought process.
+  </div>
+
+  <footer>Built as a study aid, adapted from a pediatric ROS-by-chief-complaint reference. Verify red-flag thresholds and management against your site's protocols. Log data is stored only in this browser (localStorage) — export/copy anything you need to keep before clearing browser data.</footer>
+</div>
+
+<script>
+// ---------- Safe storage shim (falls back to in-memory if localStorage is blocked, e.g. sandboxed previews) ----------
+const _memStore = {};
+let _storageBlocked = false;
+const localStorage = {
+  getItem(k){ try{ return window.localStorage.getItem(k); }catch(e){ _storageBlocked = true; return (k in _memStore) ? _memStore[k] : null; } },
+  setItem(k,v){ try{ window.localStorage.setItem(k,v); }catch(e){ _storageBlocked = true; _memStore[k] = v; } },
+  removeItem(k){ try{ window.localStorage.removeItem(k); }catch(e){ _storageBlocked = true; delete _memStore[k]; } }
+};
+// ---------- AGE BANDS ----------
+// Used to reorder/highlight each complaint's differential list by patient age.
+const ageBands = [
+  {id:"N", label:"Neonate (0–1 mo)"},
+  {id:"YI", label:"Young infant (1–3 mo)"},
+  {id:"I", label:"Infant (3–12 mo)"},
+  {id:"T", label:"Toddler (1–3 yr)"},
+  {id:"P", label:"Preschool (3–5 yr)"},
+  {id:"S", label:"School-age (5–12 yr)"},
+  {id:"A", label:"Adolescent (12–18 yr)"}
+];
+
+// ---------- DATA ----------
+// Each complaint: {id, label, emoji, diffList:[{dx, bands:[ageBand ids], typical}], teaching, ros:[{system, q, yes, no, flag(optional bool)}]}
+const complaints = [
+{id:"fever", label:"Fever", emoji:"🔥",
+  diffList:[
+    {dx:"Viral URI", bands:["N","YI","I","T","P","S","A"], typical:"Any age — most common cause of pediatric fever overall"},
+    {dx:"Otitis media", bands:["YI","I","T","P"], typical:"Peak 6mo–2yr; common through age 5–6"},
+    {dx:"UTI", bands:["N","YI","I","T","S","A"], typical:"Peak <2yr (esp. uncircumcised boys <1yr, girls <2yr); also school-age girls"},
+    {dx:"Pneumonia", bands:["N","YI","I","T","P","S","A"], typical:"Any age"},
+    {dx:"Bacteremia/sepsis", bands:["N","YI","I"], typical:"Highest risk <2–3 months old (esp. neonates)"},
+    {dx:"Meningitis", bands:["N","YI","I","A"], typical:"Bimodal: infants and adolescents (meningococcal)"},
+    {dx:"Kawasaki disease", bands:["I","T","P"], typical:"6mo–5yr, peak ~18–24mo; rare <6mo or >8yr"},
+    {dx:"Osteomyelitis/septic arthritis", bands:["T","P","S"], typical:"Any age, more common toddlers/school-age"}
+  ],
+  teaching:"In febrile infants ≤60 days, the ROS may be nonspecific (irritability, poor feeding only). A \"well-appearing\" infant does NOT rule out serious bacterial infection. Follow age-based fever algorithms.",
+  ros:[
+    {system:"General", q:"Irritability, inconsolability?", yes:"Meningitis, sepsis, serious bacterial infection", no:"Argues against meningitis (but does not rule out)"},
+    {system:"General", q:"Poor feeding, decreased activity?", yes:"Any serious infection; dehydration", no:"If feeding well and active → less likely serious bacterial infection"},
+    {system:"ENT", q:"Ear pain, ear tugging?", yes:"Otitis media", no:"Argues against otitis media as fever source"},
+    {system:"ENT", q:"Sore throat, drooling?", yes:"Pharyngitis, peritonsillar abscess, epiglottitis", no:"Argues against pharyngeal source"},
+    {system:"ENT", q:"Nasal congestion, rhinorrhea?", yes:"Viral URI (most common cause of pediatric fever)", no:"If absent with high fever → look for other source"},
+    {system:"Resp", q:"Cough, tachypnea, retractions?", yes:"Pneumonia, bronchiolitis, croup", no:"Absence of dyspnea + no parental concern makes pneumonia very unlikely"},
+    {system:"GI", q:"Vomiting, diarrhea?", yes:"Viral gastroenteritis; but also meningitis (vomiting alone)", no:"Argues against GI source"},
+    {system:"GU", q:"Dysuria, frequency, foul-smelling urine?", yes:"UTI (especially in febrile infants with no source)", no:"Argues against UTI (but infants are often asymptomatic — still get a UA if <24mo with no source)"},
+    {system:"Skin", q:"Petechiae?", yes:"Meningococcemia, sepsis, ITP", no:"Argues against meningococcemia", flag:true},
+    {system:"Skin", q:"Rash (describe type)?", yes:"Viral exanthem, scarlet fever, Kawasaki, drug reaction", no:"—"},
+    {system:"Neuro", q:"Neck stiffness, photophobia, bulging fontanelle?", yes:"Meningitis", no:"Argues against meningitis", flag:true},
+    {system:"Neuro", q:"Altered mental status, lethargy?", yes:"Sepsis, meningitis, encephalitis", no:"Reassuring against serious CNS infection", flag:true},
+    {system:"MSK", q:"Refusal to bear weight, joint swelling?", yes:"Septic arthritis, osteomyelitis, transient synovitis", no:"Argues against bone/joint infection"}
+  ]
+},
+{id:"rash", label:"Rash", emoji:"🟥",
+  diffList:[
+    {dx:"Viral exanthem", bands:["I","T","P","S"], typical:"Any age; roseola 6–24mo, fifth disease school-age"},
+    {dx:"Contact dermatitis", bands:["N","YI","I","T","P","S","A"], typical:"Any age"},
+    {dx:"Urticaria", bands:["N","YI","I","T","P","S","A"], typical:"Any age"},
+    {dx:"Scarlet fever", bands:["S","A"], typical:"School-age (5–15yr); rare <3yr"},
+    {dx:"Kawasaki disease", bands:["I","T","P"], typical:"6mo–5yr"},
+    {dx:"HSP (IgA vasculitis)", bands:["P","S"], typical:"Peak 3–10yr; rare <2yr and in adults"},
+    {dx:"Meningococcemia", bands:["I","A"], typical:"Bimodal: infants and adolescents"},
+    {dx:"Stevens-Johnson syndrome (SJS)", bands:["S","A"], typical:"More common in older children/teens (often drug-related)"},
+    {dx:"Eczema herpeticum", bands:["I","T","P"], typical:"Infants/young children with underlying eczema"}
+  ],
+  teaching:"Always undress the child fully. Describe the rash morphology (macular, papular, vesicular, petechial, urticarial) and distribution — this is more diagnostically useful than most ROS questions.",
+  ros:[
+    {system:"General", q:"Fever?", yes:"Viral exanthem, scarlet fever, Kawasaki, meningococcemia, SJS", no:"Argues against infectious/inflammatory causes"},
+    {system:"Skin", q:"Itching?", yes:"Contact dermatitis, urticaria, eczema, scabies", no:"Argues against allergic/eczematous etiology"},
+    {system:"Skin", q:"Blistering, peeling, mucosal involvement?", yes:"SJS/TEN, staphylococcal scalded skin", no:"Argues against SJS/TEN", flag:true},
+    {system:"Skin", q:"Petechiae/purpura, non-blanching?", yes:"Meningococcemia, HSP, ITP, leukemia", no:"Argues against vasculitis/coagulopathy", flag:true},
+    {system:"ENT", q:"Sore throat?", yes:"Scarlet fever (strep), EBV, hand-foot-mouth", no:"Argues against pharyngitis-associated rashes"},
+    {system:"ENT", q:"Conjunctivitis, cracked lips, strawberry tongue?", yes:"Kawasaki disease (need ≥5 days fever + criteria)", no:"Argues against Kawasaki"},
+    {system:"ENT", q:"Oral ulcers/vesicles?", yes:"Hand-foot-mouth, HSV, Behçet's", no:"Argues against enteroviral/herpetic causes"},
+    {system:"GI", q:"Abdominal pain?", yes:"HSP (IgA vasculitis), intussusception with HSP", no:"Argues against HSP with GI involvement"},
+    {system:"GU", q:"Hematuria?", yes:"HSP nephritis — needs urinalysis", no:"Argues against renal involvement of HSP"},
+    {system:"MSK", q:"Joint pain/swelling?", yes:"HSP, reactive arthritis, serum sickness, JIA (juvenile idiopathic arthritis)", no:"Argues against systemic inflammatory causes"},
+    {system:"Neuro", q:"Altered mental status?", yes:"Meningococcemia, SJS, toxic shock", no:"Reassuring", flag:true},
+    {system:"Exposure", q:"New medications?", yes:"Drug eruption, SJS, serum sickness-like reaction", no:"Argues against drug-related rash"},
+    {system:"Exposure", q:"Sick contacts, daycare?", yes:"Viral exanthem (fifth disease, roseola, hand-foot-mouth)", no:"Less likely contagious viral exanthem"},
+    {system:"Immunizations", q:"Varicella, MMR up to date?", yes:"If unvaccinated → varicella, measles on differential", no:"If vaccinated → these are much less likely"}
+  ]
+},
+{id:"cough", label:"Cough / Congestion / URI Symptoms", emoji:"🤧",
+  diffList:[
+    {dx:"Viral URI", bands:["N","YI","I","T","P","S","A"], typical:"Any age"},
+    {dx:"Croup", bands:["I","T"], typical:"Peak 6mo–3yr (narrow subglottic airway)"},
+    {dx:"Bronchiolitis", bands:["YI","I"], typical:"<2yr, peak 2–6 months"},
+    {dx:"Pneumonia", bands:["N","YI","I","T","P","S","A"], typical:"Any age"},
+    {dx:"Asthma/reactive airway disease", bands:["T","P","S","A"], typical:"Typically diagnosed >2yr"},
+    {dx:"Pertussis (whooping cough)", bands:["N","YI","I","T","P","S","A"], typical:"Any age; most dangerous in unvaccinated infants <6mo"},
+    {dx:"Foreign body aspiration", bands:["T"], typical:"Peak 1–3yr (toddlers)"},
+    {dx:"Sinusitis", bands:["P","S","A"], typical:"Diagnosed >2yr (sinuses not yet developed before)"}
+  ],
+  teaching:"Absence of shortness of breath combined with absence of parental concern has a very high negative predictive value for pneumonia in children.",
+  ros:[
+    {system:"General", q:"Fever?", yes:"Pneumonia, bronchiolitis, viral URI, sinusitis", no:"Argues against acute infection (but not asthma or foreign body)"},
+    {system:"Resp", q:"Barking cough, worse at night?", yes:"Croup", no:"Argues against croup"},
+    {system:"Resp", q:"Wheezing?", yes:"Asthma/reactive airway disease, bronchiolitis, foreign body", no:"Argues against lower airway obstruction"},
+    {system:"Resp", q:"Stridor?", yes:"Croup, epiglottitis, foreign body, anaphylaxis — assess severity", no:"Argues against upper airway obstruction", flag:true},
+    {system:"Resp", q:"Paroxysmal cough with post-tussive emesis or whoop?", yes:"Pertussis (whooping cough)", no:"Argues against pertussis"},
+    {system:"Resp", q:"Sudden onset cough/choking in a toddler?", yes:"Foreign body aspiration", no:"Argues against foreign body", flag:true},
+    {system:"Resp", q:"Tachypnea, retractions, grunting?", yes:"Pneumonia, severe bronchiolitis, asthma exacerbation", no:"Argues against lower respiratory disease"},
+    {system:"ENT", q:"Congestion >10 days or biphasic illness?", yes:"Bacterial sinusitis", no:"If <10 days → viral URI more likely"},
+    {system:"ENT", q:"Ear pain?", yes:"Concurrent otitis media", no:"—"},
+    {system:"GI", q:"Post-tussive emesis?", yes:"Pertussis, reactive airway disease, severe cough of any cause", no:"—"},
+    {system:"Sleep", q:"Nighttime cough, awakenings?", yes:"Asthma (nocturnal cough is classic), post-nasal drip", no:"Argues against asthma"}
+  ]
+},
+{id:"sorethroat", label:"Sore Throat / Strep Rule-Out", emoji:"😷",
+  diffList:[
+    {dx:"Viral pharyngitis", bands:["N","YI","I","T","P","S","A"], typical:"Any age; most common cause <3yr"},
+    {dx:"Group A Strep (GAS) pharyngitis", bands:["S","A"], typical:"Peak 5–15yr; rare <3yr"},
+    {dx:"Peritonsillar abscess", bands:["S","A"], typical:"Adolescents/older children; rare <5yr"},
+    {dx:"EBV (mononucleosis)", bands:["S","A"], typical:"Adolescents/young adults"},
+    {dx:"Hand-foot-mouth disease", bands:["I","T","P"], typical:"Typically <5yr"},
+    {dx:"Epiglottitis", bands:["T","P","S"], typical:"Historically 2–7yr (pre-Hib vaccine era); now rare at any age"}
+  ],
+  teaching:"Use the Modified Centor (McIsaac) Score: fever, tonsillar exudates, tender anterior cervical adenopathy, absence of cough, and age. This guides whether to test for strep. Cough is a pertinent negative for strep — its presence argues strongly for a viral cause.",
+  ros:[
+    {system:"General", q:"Fever, acute onset?", yes:"GAS pharyngitis, peritonsillar abscess", no:"Argues against bacterial pharyngitis"},
+    {system:"ENT", q:"Difficulty swallowing, drooling, trismus?", yes:"Peritonsillar abscess, epiglottitis", no:"Argues against deep space infection", flag:true},
+    {system:"ENT", q:"Nasal congestion, cough?", yes:"Viral pharyngitis (cough suggests viral, NOT strep)", no:"Absence of viral symptoms → raises suspicion for GAS"},
+    {system:"ENT", q:"Oral vesicles/ulcers?", yes:"Hand-foot-mouth (Coxsackievirus), herpangina, HSV", no:"Argues against enteroviral/herpetic cause"},
+    {system:"GI", q:"Abdominal pain, nausea, vomiting?", yes:"GAS pharyngitis (GI symptoms common in kids with strep)", no:"—"},
+    {system:"Skin", q:"Sandpaper-like rash?", yes:"Scarlet fever (GAS + rash)", no:"Argues against scarlet fever"},
+    {system:"Lymphatic", q:"Tender anterior cervical lymphadenopathy?", yes:"GAS pharyngitis", no:"Argues against GAS"},
+    {system:"General", q:"Fatigue, prolonged symptoms >1 week?", yes:"EBV mononucleosis", no:"Argues against mono"},
+    {system:"Resp", q:"Cough present?", yes:"Viral etiology (cough is part of the Centor/McIsaac criteria — its presence argues AGAINST strep)", no:"Absence of cough supports GAS"}
+  ]
+},
+{id:"earpain", label:"Ear Pain / Otitis Media", emoji:"👂",
+  diffList:[
+    {dx:"Acute otitis media (AOM)", bands:["YI","I","T","P"], typical:"Peak 6mo–2yr; common through age 5–6"},
+    {dx:"Otitis media with effusion (OME)", bands:["I","T","P"], typical:"Any age following AOM; common preschool"},
+    {dx:"Otitis externa", bands:["S","A"], typical:"Older children/teens (swimmer's ear)"},
+    {dx:"Referred pain (dental, TMJ, pharyngitis)", bands:["S","A"], typical:"Older children/teens"},
+    {dx:"Foreign body", bands:["T","P"], typical:"Toddlers/preschoolers"}
+  ],
+  teaching:"Diagnosis of AOM requires: (1) acute onset, (2) middle ear effusion (bulging TM, decreased mobility), AND (3) signs of inflammation (erythema, otalgia). A red TM from crying alone is NOT AOM.",
+  ros:[
+    {system:"General", q:"Fever?", yes:"AOM (especially with acute onset ear pain)", no:"OME more likely than AOM; otitis externa"},
+    {system:"ENT", q:"Ear drainage/otorrhea?", yes:"AOM with TM perforation, otitis externa", no:"Argues against perforation"},
+    {system:"ENT", q:"Hearing loss/muffled hearing?", yes:"OME (effusion), AOM, cerumen impaction", no:"Argues against middle ear effusion"},
+    {system:"ENT", q:"Preceding URI symptoms?", yes:"AOM (URI is the most common precipitant)", no:"Less likely AOM"},
+    {system:"ENT", q:"Pain with tragal pressure or ear manipulation?", yes:"Otitis externa (swimmer's ear)", no:"Argues against otitis externa"},
+    {system:"ENT", q:"Sore throat, dental pain?", yes:"Referred pain — ear exam may be normal", no:"—"},
+    {system:"GI", q:"Vomiting, diarrhea?", yes:"AOM in young children (nonspecific GI symptoms common)", no:"—"},
+    {system:"Neuro", q:"Vertigo, balance issues?", yes:"Labyrinthitis, mastoiditis (complication)", no:"Argues against inner ear involvement", flag:true}
+  ]
+},
+{id:"wheezing", label:"Wheezing / Asthma / Breathing Difficulty", emoji:"😮‍💨",
+  diffList:[
+    {dx:"Asthma exacerbation", bands:["T","P","S","A"], typical:"Typically diagnosed >2yr"},
+    {dx:"Bronchiolitis", bands:["YI","I"], typical:"<2yr, peak <6 months"},
+    {dx:"Croup", bands:["I","T"], typical:"6mo–3yr"},
+    {dx:"Pneumonia", bands:["N","YI","I","T","P","S","A"], typical:"Any age"},
+    {dx:"Foreign body aspiration", bands:["T"], typical:"Toddler 1–3yr peak"},
+    {dx:"Anaphylaxis", bands:["N","YI","I","T","P","S","A"], typical:"Any age"},
+    {dx:"Cardiac cause", bands:["N","YI","I","T","P","S","A"], typical:"Consider CHF in infants; exertional symptoms at any age"}
+  ],
+  teaching:"In a first-time wheezer <2 years old with a URI prodrome, think bronchiolitis. In a first-time wheezer >2 years old, think asthma but keep foreign body on the differential. Always ask about sudden onset with choking.",
+  ros:[
+    {system:"Resp", q:"Wheezing, chest tightness?", yes:"Asthma, bronchiolitis, anaphylaxis", no:"Argues against bronchospasm"},
+    {system:"Resp", q:"Nocturnal cough?", yes:"Asthma (classic feature — indicates poor control)", no:"Argues against uncontrolled asthma"},
+    {system:"Resp", q:"Retractions, tachypnea, accessory muscle use?", yes:"Moderate-severe respiratory distress of any cause", no:"Mild disease or non-respiratory cause"},
+    {system:"Resp", q:"Sudden onset in toddler without URI prodrome?", yes:"Foreign body aspiration", no:"Argues against foreign body", flag:true},
+    {system:"ENT", q:"Congestion, known triggers (cold air, exercise, allergens)?", yes:"Asthma with identifiable triggers", no:"—"},
+    {system:"Skin", q:"Eczema, atopic dermatitis?", yes:"Atopic triad (asthma + eczema + allergic rhinitis) → supports asthma diagnosis", no:"Does not rule out asthma"},
+    {system:"Skin", q:"Urticaria, lip/tongue swelling?", yes:"Anaphylaxis", no:"Argues against anaphylaxis", flag:true},
+    {system:"History", q:"Prior episodes, ER visits, albuterol use?", yes:"Established asthma — assess control and severity", no:"First episode → broader differential (bronchiolitis, foreign body)"},
+    {system:"History", q:"Recent URI prodrome in infant?", yes:"Bronchiolitis (RSV, rhinovirus)", no:"Less likely bronchiolitis"}
+  ]
+},
+{id:"vomiting", label:"Vomiting / Diarrhea", emoji:"🤢",
+  diffList:[
+    {dx:"Viral gastroenteritis", bands:["N","YI","I","T","P","S","A"], typical:"Any age"},
+    {dx:"Bacterial enteritis", bands:["N","YI","I","T","P","S","A"], typical:"Any age"},
+    {dx:"Dehydration", bands:["N","YI","I","T","P","S","A"], typical:"Any age; higher risk in infants"},
+    {dx:"Intussusception", bands:["I","T"], typical:"Peak 6mo–3yr"},
+    {dx:"Appendicitis", bands:["S","A"], typical:"More classic presentation school-age+; harder to diagnose in young children"},
+    {dx:"Pyloric stenosis", bands:["YI"], typical:"Classically 2–8 weeks old, firstborn males"},
+    {dx:"DKA", bands:["S","A"], typical:"New-onset T1DM peaks school-age/early adolescence"},
+    {dx:"Increased ICP", bands:["N","YI","I","T","P","S","A"], typical:"Any age"}
+  ],
+  teaching:"Bilious vomiting in a neonate/infant is malrotation with volvulus until proven otherwise — this is a surgical emergency. Always ask about the color of the vomit.",
+  ros:[
+    {system:"GI", q:"Bilious (green) vomiting?", yes:"Malrotation with volvulus, bowel obstruction", no:"Argues against surgical obstruction", flag:true},
+    {system:"GI", q:"Projectile, non-bilious vomiting in infant 2-8 weeks old?", yes:"Pyloric stenosis", no:"Argues against pyloric stenosis"},
+    {system:"GI", q:"Bloody stool (currant jelly)?", yes:"Intussusception, bacterial enteritis, IBD", no:"Argues against intussusception", flag:true},
+    {system:"GI", q:"Abdominal pain, episodic/colicky?", yes:"Intussusception (pain-free intervals classic), obstruction", no:"—"},
+    {system:"GI", q:"Sick contacts, daycare?", yes:"Viral gastroenteritis (rotavirus, norovirus)", no:"Less likely infectious gastroenteritis"},
+    {system:"GU", q:"Decreased urine output, dry diapers?", yes:"Dehydration — assess severity", no:"Reassuring for hydration status"},
+    {system:"General", q:"Fever?", yes:"Infectious gastroenteritis, UTI, appendicitis", no:"Argues against infectious cause"},
+    {system:"Neuro", q:"Headache, lethargy, early morning vomiting?", yes:"Increased intracranial pressure (tumor, hydrocephalus)", no:"Argues against CNS cause", flag:true},
+    {system:"Endocrine", q:"Polyuria, polydipsia, weight loss?", yes:"Diabetic ketoacidosis (DKA) — check glucose and UA", no:"Argues against DKA", flag:true},
+    {system:"History", q:"Recent antibiotics?", yes:"C. difficile colitis, antibiotic-associated diarrhea", no:"—"}
+  ]
+},
+{id:"abdpain", label:"Abdominal Pain", emoji:"🤕",
+  diffList:[
+    {dx:"Constipation", bands:["T","P","S"], typical:"Very common toddler through school-age — the #1 cause overall"},
+    {dx:"Viral gastroenteritis", bands:["N","YI","I","T","P","S","A"], typical:"Any age"},
+    {dx:"Appendicitis", bands:["S","A"], typical:"Peak 10–19yr; can occur any age but presentation is atypical in young children"},
+    {dx:"UTI", bands:["N","YI","I","T","P","S","A"], typical:"Any age"},
+    {dx:"Strep pharyngitis (mesenteric adenitis)", bands:["S"], typical:"School-age"},
+    {dx:"Intussusception", bands:["I","T"], typical:"6mo–3yr"},
+    {dx:"Ovarian torsion", bands:["A"], typical:"Adolescent/reproductive age"},
+    {dx:"DKA", bands:["S","A"], typical:"School-age/adolescent"},
+    {dx:"Functional abdominal pain", bands:["S","A"], typical:"School-age/adolescent"}
+  ],
+  teaching:"Constipation is the #1 cause of pediatric abdominal pain. Always ask about stool history. But never anchor on constipation — always evaluate for appendicitis red flags (fever, RLQ tenderness, migration of pain, anorexia).",
+  ros:[
+    {system:"GI", q:"RLQ pain, migration from periumbilical?", yes:"Appendicitis (classic migration pattern)", no:"Argues against typical appendicitis presentation"},
+    {system:"GI", q:"Constipation, hard stools, straining?", yes:"Constipation (most common cause of pediatric abdominal pain)", no:"Argues against constipation"},
+    {system:"GI", q:"Vomiting (especially bilious)?", yes:"Obstruction, appendicitis, malrotation", no:"—"},
+    {system:"GI", q:"Bloody stool?", yes:"Intussusception, IBD, Meckel's diverticulum, bacterial enteritis", no:"Argues against these"},
+    {system:"General", q:"Fever?", yes:"Appendicitis, mesenteric adenitis, UTI, strep", no:"Argues against acute infectious/inflammatory cause"},
+    {system:"GU", q:"Dysuria, frequency?", yes:"UTI", no:"Argues against UTI"},
+    {system:"Reproductive (adolescent)", q:"LMP, vaginal discharge, sexual activity?", yes:"Ectopic pregnancy, ovarian torsion, PID", no:"Argues against gynecologic cause", flag:true},
+    {system:"ENT", q:"Sore throat?", yes:"Strep pharyngitis (mesenteric adenitis causes abdominal pain in kids with strep)", no:"Argues against strep-associated abdominal pain"},
+    {system:"Endocrine", q:"Polyuria, polydipsia?", yes:"DKA", no:"Argues against DKA"},
+    {system:"Psych", q:"School avoidance, anxiety, stressors?", yes:"Functional abdominal pain (diagnosis of exclusion)", no:"—"}
+  ]
+},
+{id:"headache", label:"Headache", emoji:"🤯",
+  diffList:[
+    {dx:"Tension headache", bands:["S","A"], typical:"School-age/adolescent"},
+    {dx:"Migraine", bands:["S","A"], typical:"Can start younger; more often diagnosed school-age+ (family history common)"},
+    {dx:"Viral illness", bands:["N","YI","I","T","P","S","A"], typical:"Any age"},
+    {dx:"Sinusitis", bands:["P","S","A"], typical:">2yr (sinuses not yet developed before)"},
+    {dx:"Increased ICP (tumor, hydrocephalus, pseudotumor cerebri)", bands:["N","YI","I","T","P","S","A"], typical:"Any age; posterior fossa tumors peak in young school-age children"},
+    {dx:"Meningitis", bands:["N","YI","I","T","P","S","A"], typical:"Any age"},
+    {dx:"Post-concussive", bands:["S","A"], typical:"School-age/adolescent (often sports-related)"},
+    {dx:"Medication overuse headache", bands:["A"], typical:"Adolescent"}
+  ],
+  teaching:"Red flags for headache in children = \"SNOOP\": Systemic symptoms, Neurologic signs, Onset sudden, Onset with Valsalva, Positional/Progressive/Papilledema. Any of these warrant urgent imaging.",
+  ros:[
+    {system:"Neuro", q:"Worst headache of life, thunderclap onset?", yes:"Subarachnoid hemorrhage, vascular malformation", no:"Argues against SAH", flag:true},
+    {system:"Neuro", q:"Wakes child from sleep or present on awakening?", yes:"Increased ICP (tumor, hydrocephalus)", no:"Argues against mass lesion", flag:true},
+    {system:"Neuro", q:"Worse with Valsalva, positional?", yes:"Increased ICP, Chiari malformation", no:"Argues against ICP-related cause"},
+    {system:"Neuro", q:"Aura (visual, sensory)?", yes:"Migraine with aura", no:"Argues against migraine with aura (but migraine without aura is more common)"},
+    {system:"Neuro", q:"Photophobia, phonophobia, nausea?", yes:"Migraine", no:"Argues against migraine"},
+    {system:"Neuro", q:"Neck stiffness, fever?", yes:"Meningitis", no:"Argues against meningitis", flag:true},
+    {system:"Neuro", q:"Focal weakness, speech changes, seizures?", yes:"Mass lesion, stroke, encephalitis", no:"Argues against structural/focal CNS lesion", flag:true},
+    {system:"Vision", q:"Blurry vision, papilledema symptoms?", yes:"Increased ICP, pseudotumor cerebri", no:"Argues against ICP-related cause"},
+    {system:"GI", q:"Projectile vomiting?", yes:"Increased ICP", no:"Argues against ICP", flag:true},
+    {system:"ENT", q:"Sinus pressure, congestion?", yes:"Sinusitis", no:"Argues against sinus headache"},
+    {system:"Psych", q:"School stress, screen time, sleep deprivation?", yes:"Tension headache, functional headache", no:"—"},
+    {system:"History", q:"Frequent analgesic use?", yes:"Medication overuse headache", no:"Argues against medication overuse headache"}
+  ]
+},
+{id:"behavior", label:"Behavior Changes / School Performance", emoji:"😤",
+  diffList:[
+    {dx:"ADHD", bands:["P","S"], typical:"Diagnosis typically ≥4yr; most commonly recognized school-age"},
+    {dx:"Anxiety", bands:["S","A"], typical:"Increasing recognition school-age/adolescent"},
+    {dx:"Depression", bands:["S","A"], typical:"Most common onset in adolescence"},
+    {dx:"Sleep disorder", bands:["N","YI","I","T","P","S","A"], typical:"Any age"},
+    {dx:"Learning disability", bands:["S"], typical:"Identified once academics start (school-age)"},
+    {dx:"Autism spectrum disorder", bands:["T","P"], typical:"Signs typically 18mo–3yr; diagnosis often by age 3–4"},
+    {dx:"Substance use", bands:["A"], typical:"Adolescent"},
+    {dx:"Abuse/trauma", bands:["N","YI","I","T","P","S","A"], typical:"Any age"},
+    {dx:"Thyroid disease", bands:["N","YI","I","T","P","S","A"], typical:"Any age"},
+    {dx:"Seizure disorder (absence)", bands:["P","S"], typical:"Absence seizures peak 4–10yr"}
+  ],
+  teaching:"Always screen for sleep disorders before diagnosing ADHD — chronic sleep deprivation in children presents with hyperactivity and inattention, not sleepiness. Also, always ask about staring spells to rule out absence seizures.",
+  ros:[
+    {system:"Psych", q:"Inattention, hyperactivity, impulsivity (in ≥2 settings)?", yes:"ADHD", no:"Argues against ADHD"},
+    {system:"Psych", q:"Persistent sadness, anhedonia, self-harm ideation?", yes:"Depression — screen with PHQ-A", no:"Argues against depression", flag:true},
+    {system:"Psych", q:"Excessive worry, somatic complaints, avoidance?", yes:"Anxiety disorder", no:"Argues against anxiety"},
+    {system:"Sleep", q:"Difficulty falling/staying asleep, snoring, apnea?", yes:"Sleep disorder (OSA, insomnia) — sleep deprivation mimics ADHD", no:"Argues against sleep-related cause"},
+    {system:"General", q:"Weight loss, fatigue, heat/cold intolerance?", yes:"Thyroid disease, other medical cause", no:"Argues against systemic medical cause"},
+    {system:"Neuro", q:"Staring spells, automatisms?", yes:"Absence seizures (often mistaken for inattention)", no:"Argues against seizure disorder"},
+    {system:"Neuro", q:"Developmental regression?", yes:"Neurodegenerative disorder, metabolic disease", no:"Argues against regression", flag:true},
+    {system:"Social", q:"Bullying, family disruption, trauma?", yes:"Adjustment disorder, PTSD, situational behavioral change", no:"—"},
+    {system:"Social (teens)", q:"Substance use, vaping, social media overuse?", yes:"Substance-related behavioral change", no:"—"}
+  ]
+},
+{id:"urinary", label:"Urinary Symptoms / Possible UTI", emoji:"🚽",
+  diffList:[
+    {dx:"UTI (cystitis vs. pyelonephritis)", bands:["N","YI","I","T","S","A"], typical:"Peak infancy (esp. uncircumcised boys <1yr, girls <2yr); also school-age girls"},
+    {dx:"Vulvovaginitis", bands:["T","P","S"], typical:"Prepubertal girls, roughly 2–8yr"},
+    {dx:"Urethritis/STI", bands:["A"], typical:"Adolescent"},
+    {dx:"Constipation-related voiding dysfunction", bands:["T","P","S"], typical:"Potty-training age and up"},
+    {dx:"Nephrolithiasis", bands:["S","A"], typical:"Increasingly seen in adolescents"},
+    {dx:"New-onset diabetes", bands:["S","A"], typical:"T1DM peaks school-age/adolescence"}
+  ],
+  teaching:"In febrile infants <24 months with no clear fever source, always obtain a urinalysis — UTI is the most common serious bacterial infection in this age group. Bag specimens are only useful if negative; positive bags need catheterized confirmation.",
+  ros:[
+    {system:"GU", q:"Dysuria, frequency, urgency?", yes:"UTI (cystitis), vulvovaginitis, urethritis", no:"Argues against lower urinary tract cause"},
+    {system:"GU", q:"Flank pain, fever, vomiting?", yes:"Pyelonephritis (upper tract UTI) — needs aggressive treatment", no:"Argues against pyelonephritis", flag:true},
+    {system:"GU", q:"Hematuria?", yes:"UTI, nephrolithiasis, glomerulonephritis, trauma", no:"Argues against these"},
+    {system:"GU", q:"New-onset incontinence/enuresis?", yes:"UTI, constipation-related dysfunction, diabetes, stress", no:"—"},
+    {system:"GU", q:"Vaginal discharge, irritation?", yes:"Vulvovaginitis (common cause of dysuria in girls), STI in teens", no:"Argues against vulvovaginitis"},
+    {system:"GI", q:"Constipation?", yes:"Voiding dysfunction secondary to constipation (very common)", no:"Argues against constipation-related cause"},
+    {system:"Skin", q:"Diaper rash (infants)?", yes:"May indicate chronic urine exposure; also consider candida", no:"—"},
+    {system:"Endocrine", q:"Polyuria, polydipsia, weight loss?", yes:"New-onset diabetes (type 1) — check glucose", no:"Argues against diabetes", flag:true},
+    {system:"History", q:"Prior UTIs?", yes:"Recurrent UTI — may need renal ultrasound, VCUG (voiding cystourethrogram)", no:"—"},
+    {system:"History (teens)", q:"Sexual activity?", yes:"STI (chlamydia, gonorrhea), pregnancy", no:"—"}
+  ]
+},
+{id:"syncope", label:"Dizziness / Syncope", emoji:"😵‍💫",
+  diffList:[
+    {dx:"Vasovagal syncope", bands:["A"], typical:"Most common in adolescents; rare before puberty"},
+    {dx:"Orthostatic hypotension", bands:["A"], typical:"Adolescent"},
+    {dx:"Dehydration", bands:["N","YI","I","T","P","S","A"], typical:"Any age"},
+    {dx:"Cardiac arrhythmia (long QT, WPW, HCM)", bands:["N","YI","I","T","P","S","A"], typical:"Any age — red flag regardless of age if exertional or with family history of sudden death"},
+    {dx:"Seizure", bands:["N","YI","I","T","P","S","A"], typical:"Any age"},
+    {dx:"Anemia", bands:["N","YI","I","T","P","S","A"], typical:"Any age; heavy menses relevant only post-menarche"},
+    {dx:"Anxiety/panic", bands:["A"], typical:"Adolescent"},
+    {dx:"BPPV (benign paroxysmal positional vertigo)", bands:["A"], typical:"Rare in children; more typical in adults"}
+  ],
+  teaching:"Exertional syncope and syncope with a family history of sudden death are the two most critical red flags — these require an ECG and cardiology referral before return to activity. Vasovagal syncope has a clear prodrome (lightheadedness, warmth, nausea, tunnel vision) and identifiable trigger.",
+  ros:[
+    {system:"Cardiac", q:"Exertional syncope?", yes:"Hypertrophic cardiomyopathy (HCM), long QT, arrhythmia — needs ECG and cardiology", no:"Argues against cardiac cause", flag:true},
+    {system:"Cardiac", q:"Palpitations, racing heart?", yes:"Arrhythmia (SVT, WPW, long QT)", no:"Argues against arrhythmia"},
+    {system:"Cardiac", q:"Family history of sudden cardiac death <50yo?", yes:"Inherited channelopathy, HCM", no:"Argues against inherited cardiac cause", flag:true},
+    {system:"General", q:"Preceded by prolonged standing, heat, pain?", yes:"Vasovagal syncope (most common in adolescents)", no:"Less likely vasovagal"},
+    {system:"General", q:"Dehydration, poor intake, skipping meals?", yes:"Orthostatic hypotension, hypoglycemia", no:"Argues against volume/glucose-related cause"},
+    {system:"Neuro", q:"Post-ictal confusion, tongue biting, incontinence?", yes:"Seizure (not syncope)", no:"Argues against seizure"},
+    {system:"Neuro", q:"Focal deficits, headache?", yes:"CNS lesion, stroke (rare in peds)", no:"Argues against structural CNS cause"},
+    {system:"Psych", q:"Anxiety, hyperventilation, panic symptoms?", yes:"Panic attack, hyperventilation syndrome", no:"Argues against psychogenic cause"},
+    {system:"Heme", q:"Pallor, fatigue, heavy menses (adolescent girls)?", yes:"Anemia", no:"Argues against anemia"}
+  ]
+},
+{id:"ftt", label:"Poor Weight Gain / Failure to Thrive", emoji:"⚖️",
+  diffList:[
+    {dx:"Inadequate caloric intake (feeding technique/volume error)", bands:["N","YI","I"], typical:"Most common cause overall, especially <1yr"},
+    {dx:"Formula preparation error (over/under-diluted)", bands:["N","YI","I"], typical:"Any age on formula"},
+    {dx:"GERD/pyloric stenosis (if vomiting predominates)", bands:["N","YI"], typical:"Pyloric stenosis 2–8wk"},
+    {dx:"Cow's milk protein allergy/malabsorption", bands:["N","YI","I"], typical:"First few months of life"},
+    {dx:"Celiac disease", bands:["T","P","S"], typical:"After gluten introduction, often 1–3yr"},
+    {dx:"Cystic fibrosis", bands:["N","YI","I"], typical:"Presents in infancy, often with newborn screen"},
+    {dx:"Congenital heart disease", bands:["N","YI","I"], typical:"Infancy, especially if diaphoretic with feeds"},
+    {dx:"Psychosocial/neglect (non-organic FTT)", bands:["N","YI","I","T"], typical:"Any age; consider if inconsistent caregiving"},
+    {dx:"Hypothyroidism", bands:["N","YI","I","T","P","S","A"], typical:"Any age; congenital form caught on newborn screen"}
+  ],
+  teaching:"A detailed, quantitative feeding history (exact ounces/breastfeeds per day, formula mixing ratio, time per feed, diaper counts) is the single highest-yield part of this workup — most FTT is caloric-intake-driven, not an occult diagnosis. Plot weight, length, and head circumference on the SAME growth curve: weight-for-length dropping while length/HC preserved suggests inadequate intake; all three falling suggests a more systemic or endocrine process.",
+  ros:[
+    {system:"General", q:"Exact feeding volumes/frequency (oz per feed, feeds per day, or breastfeeds per day)?", yes:"Quantify — inadequate volume is the most common cause of poor weight gain", no:"If volumes are adequate for weight, look beyond intake"},
+    {system:"General", q:"Formula mixed per label instructions (not over/under-diluted)?", yes:"If diluted incorrectly → correctable cause found", no:"Correct preparation makes a mixing error less likely"},
+    {system:"GI", q:"Frequent/forceful vomiting?", yes:"GERD, pyloric stenosis (if projectile, 2–8wk old), milk protein allergy", no:"Argues against reflux/obstructive causes"},
+    {system:"GI", q:"Diarrhea, bulky/greasy stools?", yes:"Malabsorption — celiac disease, cystic fibrosis", no:"Argues against malabsorptive process"},
+    {system:"GI", q:"Blood/mucus in stool?", yes:"Cow's milk protein allergy/proctocolitis", no:"Argues against milk protein allergy"},
+    {system:"Resp", q:"Diaphoresis, tiring, or breathlessness with feeds?", yes:"Congenital heart disease, heart failure", no:"Argues against cardiac cause", flag:true},
+    {system:"Resp", q:"Chronic cough, recurrent pneumonia?", yes:"Cystic fibrosis, aspiration", no:"Argues against CF/aspiration"},
+    {system:"Constitutional", q:"Lethargy, cold intolerance, constipation?", yes:"Hypothyroidism", no:"Argues against hypothyroidism"},
+    {system:"Development", q:"Developmental delay or regression?", yes:"Consider metabolic/genetic syndrome as an additional driver", no:"Isolated growth concern more likely intake-related"},
+    {system:"Social", q:"Caregiver stress, food insecurity, feeding environment concerns?", yes:"Psychosocial/non-organic FTT — screen for neglect", no:"Less likely psychosocial etiology", flag:true},
+    {system:"Newborn screen", q:"Newborn screen abnormal (CF, congenital hypothyroidism, metabolic disease)?", yes:"Confirms/raises suspicion for the flagged condition", no:"Reassuring against screened conditions"}
+  ]
+},
+{id:"jaundice", label:"Neonatal Jaundice", emoji:"🟡",
+  diffList:[
+    {dx:"Physiologic jaundice", bands:["N"], typical:"Onset day 2–3, peaks day 3–5, resolves by ~1–2wk"},
+    {dx:"Breastfeeding jaundice (inadequate intake)", bands:["N"], typical:"First week of life, associated with weight loss/dehydration"},
+    {dx:"Breast milk jaundice", bands:["N","YI"], typical:"Onset after day 3–5, can persist 2–12 weeks"},
+    {dx:"ABO/Rh hemolytic disease", bands:["N"], typical:"Onset <24h of life — always pathologic"},
+    {dx:"G6PD deficiency", bands:["N"], typical:"Any time in neonatal period, often with a trigger (infection, certain drugs)"},
+    {dx:"Sepsis", bands:["N"], typical:"Any time in neonatal period, especially <24h onset"},
+    {dx:"Biliary atresia", bands:["N","YI"], typical:"Presents 2–8 weeks with conjugated (direct) hyperbilirubinemia and acholic stools"},
+    {dx:"Hypothyroidism", bands:["N","YI"], typical:"Can cause prolonged jaundice beyond 2 weeks"}
+  ],
+  teaching:"Jaundice in the first 24 hours of life is ALWAYS pathologic and needs urgent workup. Use the Bhutani nomogram (hour-specific total bilirubin plotted against risk zones) to decide on phototherapy. Any jaundice persisting beyond 2–3 weeks needs a direct/conjugated bilirubin checked to rule out biliary atresia — missing this is time-critical since surgical outcomes worsen after ~8 weeks of age.",
+  ros:[
+    {system:"Timing", q:"Onset in first 24 hours of life?", yes:"Always pathologic — hemolysis (ABO/Rh incompatibility), sepsis, G6PD deficiency", no:"More consistent with physiologic or breastfeeding/breast milk jaundice", flag:true},
+    {system:"Feeding", q:"Poor feeding, weight loss >7–10% from birth weight?", yes:"Breastfeeding jaundice (inadequate intake) — needs lactation support ± supplementation", no:"Argues against inadequate-intake jaundice"},
+    {system:"Feeding", q:"Number of wet diapers and stools per day adequate for age?", yes:"Reassuring for hydration/intake", no:"Suggests inadequate intake contributing to jaundice"},
+    {system:"GI", q:"Pale/acholic (clay-colored) stools, dark urine?", yes:"Biliary atresia — urgent conjugated bilirubin + ultrasound", no:"Argues against biliary obstruction", flag:true},
+    {system:"General", q:"Lethargy, poor tone, fever, temperature instability?", yes:"Sepsis — urgent workup", no:"Reassuring against sepsis", flag:true},
+    {system:"Family/Genetic", q:"Family history of G6PD deficiency, jaundice, or splenectomy?", yes:"G6PD deficiency, hereditary spherocytosis", no:"Less likely inherited hemolytic condition"},
+    {system:"Blood type", q:"Maternal blood type O or Rh-negative?", yes:"Risk for ABO or Rh hemolytic disease", no:"Lower risk for isoimmune hemolysis"},
+    {system:"Duration", q:"Jaundice persisting beyond 2–3 weeks of age?", yes:"Prolonged jaundice — check conjugated bilirubin, TSH/free T4, rule out biliary atresia and hypothyroidism", no:"Consistent with typical physiologic/breast milk jaundice course"},
+    {system:"Neuro", q:"Extreme lethargy, high-pitched cry, arching (opisthotonus)?", yes:"Acute bilirubin encephalopathy (kernicterus risk) — emergency", no:"Reassuring against bilirubin neurotoxicity", flag:true}
+  ]
+},
+{id:"constipation", label:"Constipation", emoji:"🚻",
+  diffList:[
+    {dx:"Functional constipation", bands:["I","T","P","S","A"], typical:"By far the most common cause at any age past infancy, often peaks around toilet training (2–4yr)"},
+    {dx:"Dietary (low fiber/fluid intake, transition to cow's milk)", bands:["I","T","P"], typical:"Around cow's milk/solid food transitions (~1yr)"},
+    {dx:"Hirschsprung disease", bands:["N","YI"], typical:"Presents in the newborn period — delayed meconium passage (>48h)"},
+    {dx:"Anal stenosis/anteriorly displaced anus", bands:["N","YI"], typical:"Newborn period"},
+    {dx:"Hypothyroidism", bands:["N","YI","I","T","P","S","A"], typical:"Any age"},
+    {dx:"Spinal cord abnormality (tethered cord, spina bifida occulta)", bands:["N","YI","I","T"], typical:"Infancy/toddler, especially with other neuro signs"},
+    {dx:"Medication side effect (opioids, iron)", bands:["N","YI","I","T","P","S","A"], typical:"Any age on the relevant medication"}
+  ],
+  teaching:"Ask specifically about meconium passage timing (delayed >48h after birth is the classic red flag for Hirschsprung disease) — this single question is the highest-yield way to separate functional constipation from a surgical cause. Withholding behavior (stool-holding, hiding to have BMs, straining) is the hallmark of functional constipation and is very common around toilet-training age.",
+  ros:[
+    {system:"Newborn history", q:"Delayed passage of first meconium (>48 hours after birth)?", yes:"Hirschsprung disease — needs rectal biopsy for confirmation", no:"Argues strongly against Hirschsprung disease", flag:true},
+    {system:"Pattern", q:"Stool withholding behavior (straining, hiding, refusing to sit on toilet)?", yes:"Functional constipation (very common, especially toddlers)", no:"Consider organic cause if withholding not present"},
+    {system:"GI", q:"Abdominal distension, palpable stool mass?", yes:"Significant stool burden — functional constipation or obstruction", no:"Less stool burden present"},
+    {system:"GI", q:"Fecal incontinence/soiling (encopresis)?", yes:"Overflow incontinence from chronic stool retention — very common with functional constipation", no:"Less concerning for chronic retention"},
+    {system:"GI", q:"Blood streaking on stool surface?", yes:"Anal fissure from hard stool (common, benign) — inspect for fissure", no:"Argues against fissure"},
+    {system:"Neuro", q:"Leg weakness, abnormal gait, urinary incontinence, sacral dimple/hair tuft?", yes:"Spinal cord abnormality (tethered cord) — needs spine imaging", no:"Argues against spinal cause", flag:true},
+    {system:"Constitutional", q:"Fatigue, cold intolerance, poor growth?", yes:"Hypothyroidism", no:"Argues against hypothyroidism"},
+    {system:"Diet", q:"Low fiber/fluid intake, recent transition to cow's milk?", yes:"Dietary contributor to functional constipation", no:"Diet less likely primary driver"},
+    {system:"Medications", q:"Currently on opioids, iron supplements, or other constipating medications?", yes:"Medication-induced constipation", no:"Argues against medication cause"}
+  ]
+},
+{id:"limp", label:"Limp / Refusal to Bear Weight", emoji:"🦵",
+  diffList:[
+    {dx:"Toddler's fracture (nondisplaced tibial spiral fracture)", bands:["T","P"], typical:"Classic age 1–3yr, often no witnessed trauma"},
+    {dx:"Transient synovitis", bands:["T","P","S"], typical:"Most common cause of limp age 3–8yr, often post-viral"},
+    {dx:"Septic arthritis", bands:["N","YI","I","T","P","S","A"], typical:"Any age — must be actively excluded regardless of age"},
+    {dx:"Osteomyelitis", bands:["N","YI","I","T","P","S"], typical:"Any age, more common <5yr"},
+    {dx:"Legg-Calvé-Perthes disease", bands:["P","S"], typical:"Classic age 4–8yr, more common in boys"},
+    {dx:"Slipped capital femoral epiphysis (SCFE)", bands:["S","A"], typical:"Classic age 10–15yr, especially obese adolescents"},
+    {dx:"Juvenile idiopathic arthritis (JIA)", bands:["T","P","S"], typical:"Any age in childhood, especially <16yr"},
+    {dx:"Leukemia (bone pain presentation)", bands:["T","P","S"], typical:"Peak incidence 2–5yr"}
+  ],
+  teaching:"Use Kocher criteria (fever, non-weight-bearing, ESR ≥40, WBC ≥12,000) to help risk-stratify septic arthritis vs. transient synovitis — but clinical judgment and joint aspiration remain gold standard when suspicion is high. Always ask the child's age FIRST when generating a differential: SCFE is exceedingly unlikely at age 3 and Perthes is exceedingly unlikely at age 14 — age reorders the entire differential more than almost any other single ROS question here.",
+  ros:[
+    {system:"General", q:"Fever?", yes:"Septic arthritis, osteomyelitis — much higher concern", no:"Favors transient synovitis, toddler's fracture, Perthes", flag:true},
+    {system:"MSK", q:"Complete refusal to bear any weight?", yes:"Septic arthritis, fracture — higher acuity", no:"Some weight-bearing capacity is more reassuring"},
+    {system:"MSK", q:"Recent viral illness (URI, GI illness) in the past 1–2 weeks?", yes:"Transient synovitis (classic antecedent history)", no:"Less typical for transient synovitis"},
+    {system:"MSK", q:"Witnessed trauma or fall?", yes:"Toddler's fracture, other traumatic fracture", no:"Toddler's fracture can still occur with NO witnessed trauma — imaging still warranted if suspected"},
+    {system:"MSK", q:"Hip, groin, or referred knee pain in an obese adolescent?", yes:"Slipped capital femoral epiphysis (SCFE) — urgent orthopedic referral, non-weight-bearing until seen", no:"Argues against SCFE", flag:true},
+    {system:"MSK", q:"Painless limp with insidious onset, age 4–8yr?", yes:"Legg-Calvé-Perthes disease", no:"Less typical presentation for Perthes"},
+    {system:"MSK", q:"Morning stiffness, joint swelling lasting weeks?", yes:"Juvenile idiopathic arthritis (JIA)", no:"Argues against JIA"},
+    {system:"Constitutional", q:"Night pain, weight loss, pallor, easy bruising?", yes:"Malignancy (leukemia, bone tumor) — needs CBC and further workup", no:"Reassuring against malignancy", flag:true},
+    {system:"Skin", q:"Overlying erythema, warmth, swelling of a joint?", yes:"Septic arthritis, cellulitis, osteomyelitis", no:"Argues against local infection"}
+  ]
+},
+{id:"seizure", label:"Seizure (First-Time or Breakthrough)", emoji:"⚡",
+  diffList:[
+    {dx:"Febrile seizure (simple)", bands:["I","T"], typical:"Classic age 6mo–5yr, with fever, generalized, <15min"},
+    {dx:"Febrile seizure (complex)", bands:["I","T"], typical:"Same age range as simple but focal, prolonged, or recurrent within 24h"},
+    {dx:"Breakthrough seizure (known epilepsy, subtherapeutic medication)", bands:["N","YI","I","T","P","S","A"], typical:"Any age with known seizure disorder"},
+    {dx:"New-onset unprovoked epilepsy", bands:["N","YI","I","T","P","S","A"], typical:"Any age; bimodal peaks in early childhood and adolescence"},
+    {dx:"Hypoglycemia", bands:["N","YI","I","T","P","S","A"], typical:"Any age, especially neonates and known diabetics"},
+    {dx:"Meningitis/encephalitis", bands:["N","YI","I","T","P","S","A"], typical:"Any age — must be excluded if fever + seizure + altered mental status"},
+    {dx:"Electrolyte abnormality (hyponatremia, hypocalcemia)", bands:["N","YI","I"], typical:"More common in infancy (formula mixing errors, breastfeeding water intoxication)"},
+    {dx:"Non-epileptic (breath-holding spell, syncope, psychogenic)", bands:["I","T","P","S","A"], typical:"Breath-holding spells 6mo–5yr; psychogenic nonepileptic events more common adolescence"}
+  ],
+  teaching:"For simple febrile seizures (generalized, <15min, one per illness, normal neuro baseline before/after) in a well-appearing child 6mo–5yr, extensive workup (LP, EEG, neuroimaging) is generally NOT indicated. Complex features (focal, >15min, recurrent in 24h, abnormal post-ictal exam) or age <6 months lower the threshold substantially for further workup.",
+  ros:[
+    {system:"Seizure characterization", q:"Fever present at time of seizure?", yes:"Consider febrile seizure (if age 6mo–5yr and features are simple)", no:"Afebrile seizure — broader workup indicated (epilepsy, metabolic, structural)"},
+    {system:"Seizure characterization", q:"Focal features (one-sided movement, eye deviation)?", yes:"Complex febrile seizure or focal epilepsy — warrants further workup", no:"More consistent with simple/generalized seizure"},
+    {system:"Seizure characterization", q:"Duration >15 minutes or multiple seizures in 24 hours?", yes:"Complex febrile seizure — warrants further workup", no:"Simple febrile seizure more likely if other criteria met"},
+    {system:"General", q:"Known seizure disorder with recent missed medication doses or illness?", yes:"Breakthrough seizure from subtherapeutic anti-epileptic drug level", no:"Consider new-onset process"},
+    {system:"General", q:"Known diabetic, or poor feeding/skipped meals prior to event?", yes:"Hypoglycemia — check glucose", no:"Argues against hypoglycemic seizure", flag:true},
+    {system:"Neuro", q:"Neck stiffness, bulging fontanelle, persistent lethargy/altered mental status after seizure resolves?", yes:"Meningitis/encephalitis — needs urgent evaluation, consider LP", no:"Reassuring against CNS infection", flag:true},
+    {system:"Neuro", q:"Return to baseline mental status within 30–60 minutes (typical post-ictal period)?", yes:"Reassuring, consistent with typical seizure", no:"Prolonged altered mental status raises concern for ongoing seizure activity or CNS process", flag:true},
+    {system:"GI/Feeding", q:"Formula prepared with excess water, or breastfed infant given supplemental water?", yes:"Water intoxication/hyponatremia", no:"Argues against dilutional hyponatremia"},
+    {system:"Cardiac", q:"Preceded by pallor, standing, or a clear vasovagal trigger with rapid full recovery?", yes:"Consider convulsive syncope rather than true seizure", no:"Less suggestive of syncope"},
+    {system:"Development", q:"Normal development and neuro exam prior to this event?", yes:"Reassuring — lower risk profile", no:"Underlying neuro abnormality raises concern for epilepsy/structural cause"}
+  ]
+},
+{id:"devdelay", label:"Developmental Delay / Regression", emoji:"🧩",
+  diffList:[
+    {dx:"Global developmental delay (nonspecific)", bands:["I","T","P"], typical:"Identified any time infancy–preschool, often via screening (ASQ-3, M-CHAT-R/F)"},
+    {dx:"Autism spectrum disorder", bands:["I","T","P"], typical:"Signs often emerge 12–24mo; regression sometimes seen 18–24mo"},
+    {dx:"Cerebral palsy", bands:["N","YI","I"], typical:"Usually identified in infancy via motor delay/abnormal tone"},
+    {dx:"Hearing loss", bands:["N","YI","I","T"], typical:"Any age; a common and correctable cause of apparent language delay"},
+    {dx:"Fragile X / genetic syndrome", bands:["I","T","P"], typical:"Infancy–toddler, especially with family history or dysmorphic features"},
+    {dx:"Inborn error of metabolism", bands:["N","YI","I"], typical:"Infancy, especially with regression, lethargy, poor feeding"},
+    {dx:"Rett syndrome (regression, girls)", bands:["I","T"], typical:"Regression classically 6–18mo in girls"},
+    {dx:"Lead toxicity", bands:["I","T","P"], typical:"1–3yr peak (mouthing behavior, old housing exposure)"},
+    {dx:"Psychosocial deprivation/neglect", bands:["N","YI","I","T","P"], typical:"Any age"}
+  ],
+  teaching:"Distinguish DELAY (never acquired a skill) from REGRESSION (lost a previously acquired skill) — regression at any age is a red flag and warrants urgent, more extensive workup (metabolic, genetic, neurologic) rather than routine developmental surveillance. Always ask about hearing and vision specifically, since sensory impairment is a common and treatable cause of apparent global/language delay.",
+  ros:[
+    {system:"Pattern", q:"Loss of previously acquired skills (regression) rather than simply not yet acquiring them?", yes:"Regression — broader urgent workup needed (metabolic, genetic, neurodegenerative, Rett, autism-associated regression)", no:"True delay — routine developmental workup/referral pathway", flag:true},
+    {system:"Screening", q:"Failed ASQ-3 (Ages & Stages Questionnaire, a validated developmental screening tool) or M-CHAT-R/F (Modified Checklist for Autism in Toddlers, Revised with Follow-up) at a prior visit?", yes:"Confirms/reinforces developmental concern warranting referral to early intervention", no:"No prior screening concern documented"},
+    {system:"Hearing/Vision", q:"Passed newborn hearing screen and behaves as if hearing normally (responds to name, sounds)?", yes:"Reassuring against hearing loss as cause of language delay", no:"Needs formal audiology evaluation — hearing loss is a common, correctable cause"},
+    {system:"Social/Language", q:"Lack of eye contact, joint attention (pointing to share interest), or response to name by 12 months?", yes:"Consider autism spectrum disorder — refer for formal evaluation", no:"Reassuring social-communication milestones"},
+    {system:"Motor", q:"Abnormal muscle tone (too stiff or too floppy), asymmetric movement?", yes:"Cerebral palsy or other motor/neurologic disorder", no:"Argues against cerebral palsy"},
+    {system:"Constitutional", q:"Lethargy, vomiting, poor feeding, especially after starting new foods/illness (metabolic decompensation pattern)?", yes:"Inborn error of metabolism — needs urgent metabolic workup", no:"Argues against acute metabolic decompensation", flag:true},
+    {system:"Exposure", q:"Lives in/visits older housing (pre-1978), pica/mouthing behavior?", yes:"Lead toxicity — check lead level", no:"Lower risk for lead exposure"},
+    {system:"Family history", q:"Family history of intellectual disability, autism, or genetic syndrome?", yes:"Consider genetic evaluation (e.g., Fragile X testing)", no:"Less specific family history risk"},
+    {system:"Social", q:"Concerns about caregiving environment, stimulation, or neglect?", yes:"Psychosocial deprivation contributing to delay — consider social work involvement", no:"Less likely primary environmental driver"}
+  ]
+},
+{id:"spitup", label:"Newborn Feeding Difficulty / Spitting Up", emoji:"🍼",
+  diffList:[
+    {dx:"Physiologic reflux (\"happy spitter\")", bands:["N","YI","I"], typical:"Very common, peaks ~4 months, resolves by 12–18 months in most infants"},
+    {dx:"GERD (with poor weight gain or irritability)", bands:["N","YI","I"], typical:"Same age range as physiologic reflux but with additional red flags"},
+    {dx:"Pyloric stenosis", bands:["N","YI"], typical:"Classic onset 2–8 weeks of age, projectile vomiting"},
+    {dx:"Cow's milk protein allergy/intolerance", bands:["N","YI","I"], typical:"First few months of life"},
+    {dx:"Formula intolerance/overfeeding", bands:["N","YI","I"], typical:"Any point on formula, especially if volumes exceed norms"},
+    {dx:"Malrotation with volvulus", bands:["N","YI"], typical:"Classically first month of life — bilious vomiting is the red flag"},
+    {dx:"Tracheoesophageal fistula/esophageal atresia (if very early)", bands:["N"], typical:"Presents at first feeds in the newborn period"}
+  ],
+  teaching:"The single most important discriminator is BILIOUS (green/yellow-green) vomiting — this is malrotation with volvulus until proven otherwise and is a surgical emergency. PROJECTILE, non-bilious vomiting in a hungry infant 2–8 weeks old is the classic pyloric stenosis presentation. Most spitting up in infancy is physiologic reflux and needs reassurance, not medication, as long as growth is normal and the infant is otherwise well.",
+  ros:[
+    {system:"Vomiting character", q:"Bilious (green/yellow-green) vomiting?", yes:"Malrotation with volvulus — surgical emergency, needs immediate imaging/surgery consult", no:"Argues against malrotation/volvulus", flag:true},
+    {system:"Vomiting character", q:"Projectile vomiting, non-bilious, in a hungry infant 2–8 weeks old?", yes:"Pyloric stenosis — needs abdominal ultrasound", no:"Argues against pyloric stenosis"},
+    {system:"Growth", q:"Adequate weight gain along growth curve?", yes:"Reassuring — favors physiologic reflux", no:"GERD, pyloric stenosis, or other pathologic cause more likely", flag:true},
+    {system:"General", q:"Fussiness, arching, refusal to feed, irritability with spit-up?", yes:"GERD (symptomatic reflux) rather than simple physiologic spit-up", no:"More consistent with benign physiologic reflux"},
+    {system:"GI", q:"Blood or mucus in stool?", yes:"Cow's milk protein allergy/proctocolitis", no:"Argues against milk protein allergy"},
+    {system:"GI", q:"Diarrhea, rash (eczema), family history of atopy?", yes:"Cow's milk protein allergy", no:"Less suggestive of allergy"},
+    {system:"Feeding technique", q:"Feeding volume appropriate for weight/age, adequate burping technique?", yes:"Reassuring against overfeeding", no:"Overfeeding/technique issue may be contributing"},
+    {system:"Respiratory", q:"Coughing, choking, or cyanosis with EVERY feed since birth?", yes:"Tracheoesophageal fistula/esophageal atresia — needs urgent evaluation", no:"Argues against TEF/esophageal atresia", flag:true},
+    {system:"Constitutional", q:"Lethargy, dehydration, or worsening despite feeding changes?", yes:"Needs escalation regardless of specific diagnosis", no:"Reassuring"}
+  ]
+},
+{id:"bruising", label:"Bruising / Bleeding", emoji:"🟣",
+  diffList:[
+    {dx:"Normal childhood bruising (shins, bony prominences, mobile child)", bands:["T","P","S"], typical:"Very common, especially once ambulatory (toddler onward)"},
+    {dx:"Immune thrombocytopenia (ITP)", bands:["T","P","S"], typical:"Peak age 2–5yr, often post-viral, isolated thrombocytopenia"},
+    {dx:"Henoch-Schönlein purpura (HSP)/IgA vasculitis", bands:["P","S"], typical:"Peak 3–10yr"},
+    {dx:"Coagulopathy (hemophilia, von Willebrand disease)", bands:["N","YI","I","T"], typical:"Hemophilia often identified in infancy/early childhood (male, X-linked)"},
+    {dx:"Leukemia", bands:["T","P","S"], typical:"Peak incidence 2–5yr"},
+    {dx:"Non-accidental trauma (NAT)", bands:["N","YI","I","T","P","S","A"], typical:"Highest concern in pre-mobile infants (any bruising) and any pattern-suspicious bruising at any age"},
+    {dx:"Vitamin K deficiency bleeding", bands:["N","YI"], typical:"Classic if Vitamin K injection not given at birth"}
+  ],
+  teaching:"Bruising in a NON-mobile infant (not yet cruising/walking) is a major red flag for non-accidental trauma (NAT) and should prompt a skeletal survey and social work involvement — \"those who don't cruise rarely bruise.\" Also ask specifically about bruising location/pattern: shins and forehead are typical accidental sites in mobile toddlers, while bruises on the torso, ears, buttocks, or in patterned shapes (belt marks, hand prints) are suspicious regardless of age.",
+  ros:[
+    {system:"Mobility", q:"Is the infant/child pre-mobile (not yet cruising or walking)?", yes:"Any bruising in a pre-mobile infant is a red flag for non-accidental trauma — needs skeletal survey", no:"Bruising over shins/bony prominences in an ambulatory child is often normal"},
+    {system:"Pattern", q:"Bruises on torso, ears, neck, or in a patterned shape (hand print, belt mark, loop marks)?", yes:"Highly suspicious for non-accidental trauma at any age", no:"Reassuring against inflicted injury", flag:true},
+    {system:"Timeline", q:"Explanation consistent with the child's developmental stage and bruise pattern?", yes:"Reassuring for accidental injury", no:"Inconsistent history is a red flag for NAT", flag:true},
+    {system:"Constitutional", q:"Fever, fatigue, pallor, bone pain, or recent viral illness before bruising onset?", yes:"ITP (if isolated, post-viral) or leukemia (if with fatigue/pallor/bone pain) — needs CBC", no:"Less suggestive of hematologic cause"},
+    {system:"Skin", q:"Palpable purpura on buttocks/lower extremities?", yes:"HSP (IgA vasculitis)", no:"Argues against HSP"},
+    {system:"GI/GU", q:"Abdominal pain, joint pain, or hematuria accompanying the rash?", yes:"HSP with systemic involvement — check urinalysis", no:"Argues against HSP systemic involvement"},
+    {system:"Bleeding history", q:"Prolonged bleeding after circumcision/dental procedures, or heavy menses?", yes:"Coagulopathy (hemophilia, von Willebrand disease)", no:"Argues against inherited bleeding disorder"},
+    {system:"Family history", q:"Family history of bleeding disorders (especially maternal male relatives for hemophilia)?", yes:"Raises suspicion for hemophilia (X-linked)", no:"Less specific family risk"},
+    {system:"Birth history", q:"Vitamin K injection given at birth?", yes:"Reassuring against Vitamin K deficiency bleeding", no:"Vitamin K deficiency bleeding possible if not given", flag:true},
+    {system:"Heme", q:"Petechiae, mucosal bleeding (gum bleeding, epistaxis)?", yes:"Thrombocytopenia (ITP, leukemia) — needs CBC with platelet count", no:"Less suggestive of severe thrombocytopenia"}
+  ]
+},
+{id:"chestpain", label:"Chest Pain", emoji:"❤️",
+  diffList:[
+    {dx:"Musculoskeletal chest pain (costochondritis, muscle strain)", bands:["S","A"], typical:"Most common cause overall, especially school-age/adolescent"},
+    {dx:"Anxiety/panic attack", bands:["S","A"], typical:"School-age through adolescence"},
+    {dx:"Asthma/exercise-induced bronchospasm", bands:["T","P","S","A"], typical:"Any age with known or unrecognized reactive airway disease"},
+    {dx:"GERD", bands:["I","T","P","S","A"], typical:"Any age"},
+    {dx:"Pneumonia/pleurisy", bands:["N","YI","I","T","P","S","A"], typical:"Any age"},
+    {dx:"Cardiac arrhythmia (SVT)", bands:["N","YI","I","T","P","S","A"], typical:"Any age — infants may present with poor feeding/irritability instead of pain"},
+    {dx:"Structural cardiac disease/cardiomyopathy", bands:["T","P","S","A"], typical:"Any age, especially with exertional symptoms or family history"},
+    {dx:"Pericarditis/myocarditis", bands:["S","A"], typical:"School-age/adolescent, often post-viral"}
+  ],
+  teaching:"Pediatric chest pain is overwhelmingly benign (musculoskeletal or idiopathic in the majority of cases) — cardiac causes are rare but must not be missed. The key discriminators for cardiac cause are: chest pain that occurs WITH exertion (not after), syncope, palpitations, or a family history of sudden cardiac death, HCM, or long QT syndrome. Reproducible pain with palpation of the chest wall strongly favors a musculoskeletal cause.",
+  ros:[
+    {system:"Cardiac", q:"Pain occurs during exertion (not after)?", yes:"Concerning for cardiac cause (HCM, coronary anomaly, arrhythmia) — needs ECG/cardiology", no:"Reassuring against exertional cardiac cause", flag:true},
+    {system:"Cardiac", q:"Associated syncope or near-syncope?", yes:"Concerning for arrhythmia or structural heart disease", no:"Reassuring", flag:true},
+    {system:"Cardiac", q:"Palpitations or racing heart?", yes:"Arrhythmia (e.g., SVT)", no:"Argues against arrhythmia"},
+    {system:"Family history", q:"Family history of sudden cardiac death <50yo, HCM, or long QT syndrome?", yes:"Raises concern for inherited cardiac condition", no:"Reassuring family history", flag:true},
+    {system:"MSK", q:"Pain reproducible with palpation of chest wall/costochondral junctions?", yes:"Costochondritis/musculoskeletal chest pain (most common cause)", no:"Less likely purely musculoskeletal"},
+    {system:"Resp", q:"Cough, wheeze, or pain with deep breathing/exercise, known asthma?", yes:"Asthma/exercise-induced bronchospasm, pleurisy, pneumonia", no:"Argues against respiratory cause"},
+    {system:"GI", q:"Burning quality, worse lying down or after meals?", yes:"GERD", no:"Argues against reflux-related pain"},
+    {system:"Psych", q:"Associated with stress, hyperventilation, tingling in hands/around mouth?", yes:"Anxiety/panic attack, hyperventilation syndrome", no:"Argues against psychogenic cause"},
+    {system:"Constitutional", q:"Recent viral illness with fever, and pain worse lying flat/better sitting forward?", yes:"Pericarditis/myocarditis — needs ECG, troponin, echo", no:"Reassuring against pericarditis/myocarditis"}
+  ]
+},
+{id:"lymphnode", label:"Lymphadenopathy / Neck Mass", emoji:"🔴",
+  diffList:[
+    {dx:"Reactive lymphadenopathy (viral URI)", bands:["I","T","P","S"], typical:"Very common, any age with recent illness"},
+    {dx:"Bacterial lymphadenitis (usually staph/strep)", bands:["I","T","P","S"], typical:"Any age; unilateral, tender, erythematous node"},
+    {dx:"Cat-scratch disease (Bartonella)", bands:["T","P","S"], typical:"Any age with cat exposure, especially kittens"},
+    {dx:"EBV (mononucleosis)", bands:["S","A"], typical:"Adolescent/young adult peak, generalized adenopathy"},
+    {dx:"Congenital neck mass (thyroglossal duct cyst, branchial cleft cyst)", bands:["N","YI","I","T"], typical:"Present from birth/early childhood, may become apparent/infected later"},
+    {dx:"Kawasaki disease", bands:["I","T","P"], typical:"6mo–5yr, cervical node usually unilateral and part of broader syndrome"},
+    {dx:"Lymphoma/malignancy", bands:["T","P","S","A"], typical:"Any age — Hodgkin lymphoma more common adolescence"},
+    {dx:"Tuberculosis/atypical mycobacterial lymphadenitis", bands:["I","T","P"], typical:"Any age with relevant exposure history"}
+  ],
+  teaching:"A node's size, consistency, mobility, and duration matter more than its mere presence: a node that is >2cm, hard, fixed/matted, non-tender, and persisting/growing beyond 4–6 weeks is the profile that warrants biopsy to rule out malignancy. Reactive nodes from a recent viral illness are soft, mobile, mildly tender, and typically shrink over 2–4 weeks.",
+  ros:[
+    {system:"Node characteristics", q:"Node is hard, fixed/matted to surrounding tissue, non-tender?", yes:"Concerning for malignancy (lymphoma) — needs further workup/biopsy", no:"Reassuring — more consistent with reactive/infectious node", flag:true},
+    {system:"Node characteristics", q:"Node >2cm and persisting or enlarging beyond 4–6 weeks?", yes:"Warrants further workup (imaging, possible biopsy)", no:"More consistent with self-limited reactive process"},
+    {system:"General", q:"Recent viral URI or sore throat?", yes:"Reactive lymphadenopathy (most common cause)", no:"Consider other causes"},
+    {system:"Local", q:"Overlying erythema, warmth, fluctuance, tenderness?", yes:"Bacterial lymphadenitis (may need antibiotics ± drainage)", no:"Argues against acute bacterial infection"},
+    {system:"Exposure", q:"Cat exposure/scratch, especially from a kitten?", yes:"Cat-scratch disease (Bartonella henselae)", no:"Argues against cat-scratch disease"},
+    {system:"Constitutional", q:"Fatigue, sore throat, splenomegaly, generalized lymphadenopathy?", yes:"EBV (infectious mononucleosis)", no:"Argues against mono"},
+    {system:"Constitutional", q:"Fevers, night sweats, unintentional weight loss (\"B symptoms\")?", yes:"Concerning for lymphoma — needs urgent workup", no:"Reassuring against lymphoma", flag:true},
+    {system:"Location", q:"Midline neck mass that moves with tongue protrusion/swallowing?", yes:"Thyroglossal duct cyst", no:"Argues against thyroglossal duct cyst"},
+    {system:"Systemic", q:"Fever ≥5 days, conjunctivitis, rash, cracked lips/strawberry tongue, extremity changes?", yes:"Kawasaki disease (unilateral cervical node is one of the classic criteria)", no:"Argues against Kawasaki disease"},
+    {system:"Exposure", q:"TB exposure or travel to endemic area?", yes:"Tuberculous/atypical mycobacterial lymphadenitis", no:"Lower risk for mycobacterial cause"}
+  ]
+},
+{id:"bbd", label:"Bowel-Bladder Dysfunction (Constipation + Encopresis + Voiding Dysfunction)", emoji:"🚼",
+  diffList:[
+    {dx:"Functional bowel-bladder dysfunction (BBD)", bands:["T","P","S"], typical:"Most common cause, typically toilet-training age through school-age"},
+    {dx:"Functional constipation with overflow encopresis", bands:["T","P","S"], typical:"Toddler through school-age"},
+    {dx:"Recurrent UTI secondary to voiding dysfunction/constipation", bands:["T","P","S"], typical:"Any age once toilet-trained; more common in girls"},
+    {dx:"Vesicoureteral reflux (underlying, contributing to recurrent UTIs)", bands:["I","T","P"], typical:"Often identified after first UTI in young children"},
+    {dx:"Neurogenic bladder/occult spinal dysraphism", bands:["N","YI","I","T"], typical:"Congenital, may present with BBD symptoms once toilet training is expected"},
+    {dx:"Behavioral/psychosocial regression (new sibling, stress, abuse)", bands:["T","P","S"], typical:"Any age, especially around stressful life events"}
+  ],
+  teaching:"Bowel and bladder dysfunction (BBD) should be thought of as ONE overlapping syndrome, not two separate complaints — chronic stool retention distends the rectum and mechanically compresses the bladder, driving daytime urinary urgency/incontinence and recurrent UTIs. Treating the constipation aggressively (disimpaction + maintenance laxatives) is often the key step that resolves the urinary symptoms as well.",
+  ros:[
+    {system:"Bowel", q:"Infrequent bowel movements (<3/week), stool withholding, large-diameter stools?", yes:"Functional constipation as the underlying driver of BBD", no:"Bowel component less prominent — consider primarily urologic/neurologic cause"},
+    {system:"Bowel", q:"Fecal soiling/encopresis in underwear, especially without the child noticing?", yes:"Overflow incontinence from chronic stool retention", no:"Less likely overflow encopresis"},
+    {system:"Bladder", q:"Daytime urinary urgency, frequency, or incontinence?", yes:"Voiding dysfunction — often secondary to rectal distension from constipation", no:"Bladder symptoms less prominent"},
+    {system:"Bladder", q:"Recurrent UTIs?", yes:"Suggests underlying voiding dysfunction ± vesicoureteral reflux — consider renal/bladder ultrasound and VCUG (voiding cystourethrogram) if recurrent", no:"Lower suspicion for reflux/anatomic contributor"},
+    {system:"Bladder", q:"Holding maneuvers (Vincent's curtsy — squatting on heel to prevent leakage), infrequent voiding?", yes:"Classic dysfunctional voiding pattern", no:"Argues against classic dysfunctional voiding"},
+    {system:"Neuro", q:"Sacral dimple, hair tuft, gait abnormality, leg weakness?", yes:"Occult spinal dysraphism/neurogenic bladder — needs spine imaging", no:"Argues against neurogenic cause", flag:true},
+    {system:"Diet", q:"Adequate fluid and fiber intake?", yes:"Reassuring", no:"Dietary contributor to constipation component"},
+    {system:"Psychosocial", q:"New stressor (new sibling, school change, abuse concern) coinciding with symptom onset?", yes:"Consider behavioral/regressive contributor — screen further, consider social work if abuse suspected", no:"Less likely primary psychosocial driver"}
+  ]
+},
+{id:"puberty", label:"Precocious or Delayed Puberty", emoji:"📈",
+  diffList:[
+    {dx:"Central precocious puberty (idiopathic, girls)", bands:["P","S"], typical:"Girls <8yr with breast development/pubic hair; idiopathic is most common cause in girls"},
+    {dx:"Central precocious puberty (CNS lesion more likely, boys)", bands:["P","S"], typical:"Boys <9yr — more likely to have an identifiable CNS cause than girls"},
+    {dx:"Premature adrenarche/thelarche (benign variant)", bands:["I","T","P"], typical:"Isolated early breast budding (thelarche, often <2yr, self-resolving) or early pubic hair (adrenarche) without other pubertal signs"},
+    {dx:"Constitutional delay of growth and puberty", bands:["S","A"], typical:"Most common cause of delayed puberty, often with family history of \"late bloomers\""},
+    {dx:"Hypogonadotropic hypogonadism (Kallmann syndrome, etc.)", bands:["S","A"], typical:"Adolescence, absent puberty by expected age with anosmia (Kallmann)"},
+    {dx:"Turner syndrome (girls, delayed puberty)", bands:["P","S","A"], typical:"May present with short stature and absent puberty by adolescence"},
+    {dx:"Klinefelter syndrome (boys, delayed/incomplete puberty)", bands:["S","A"], typical:"Often identified in adolescence with small testes"},
+    {dx:"McCune-Albright syndrome/ovarian or testicular tumor (peripheral precocious puberty)", bands:["I","T","P"], typical:"Any age; look for café-au-lait spots, asymmetric presentation"}
+  ],
+  teaching:"The single most useful discriminator for precocious puberty is the AGE cutoff and whether the pattern is consistent with normal progression: girls <8yr or boys <9yr with true (central, gonadotropin-driven) pubertal signs need endocrine referral and often a bone age X-ray/brain MRI. For delayed puberty, the most common cause by far is constitutional delay (often with a family history), but red flags like anosmia, short stature, or dysmorphic features should prompt genetic/endocrine workup.",
+  ros:[
+    {system:"Timing", q:"Breast development/pubic hair in a girl younger than 8yr, or testicular enlargement in a boy younger than 9yr?", yes:"Precocious puberty — needs bone age, LH/FSH, and possible brain MRI (especially in boys)", no:"Pubertal timing within expected range"},
+    {system:"Progression", q:"Rapid progression through Tanner stages (Tanner staging: I=prepubertal, V=adult) over a few months?", yes:"More concerning for a pathologic driver (CNS lesion, tumor) rather than benign variant", no:"Slow/typical progression more reassuring"},
+    {system:"Growth", q:"Growth spurt or rapidly advancing bone age accompanying the pubertal signs?", yes:"Supports true central precocious puberty (risk of compromised adult height if untreated)", no:"Less concerning for aggressive precocious puberty"},
+    {system:"Neuro", q:"Headaches, visual changes, or other neurologic symptoms (boys especially)?", yes:"Raises concern for CNS lesion causing precocious puberty — needs brain MRI", no:"Reassuring against CNS lesion", flag:true},
+    {system:"Skin", q:"Café-au-lait spots with irregular (\"coast of Maine\") borders?", yes:"McCune-Albright syndrome", no:"Argues against McCune-Albright"},
+    {system:"Delayed puberty", q:"No pubertal signs by age 13 (girls) or 14 (boys)?", yes:"Delayed puberty — assess for constitutional delay vs. hypogonadism", no:"Within expected timing"},
+    {system:"Family history", q:"Family history of \"late bloomers\"/delayed puberty in a parent?", yes:"Supports constitutional delay of growth and puberty (most common cause)", no:"Less supportive of constitutional delay — consider other causes"},
+    {system:"Associated features", q:"Anosmia (no sense of smell), short stature, or dysmorphic features?", yes:"Consider Kallmann syndrome, Turner syndrome, Klinefelter syndrome, or other genetic cause", no:"Argues against these specific syndromes"}
+  ]
+},
+{id:"growthconcern", label:"Well-Child Growth Concerns (Short Stature / Obesity)", emoji:"📏",
+  diffList:[
+    {dx:"Familial short stature (normal variant)", bands:["I","T","P","S","A"], typical:"Any age, growth curve tracks parallel to but below average, parents are short"},
+    {dx:"Constitutional growth delay", bands:["T","P","S"], typical:"Delayed bone age, eventual normal adult height, often family history of late growth spurt"},
+    {dx:"Growth hormone deficiency", bands:["I","T","P","S"], typical:"Any age, height velocity crosses percentiles downward over time"},
+    {dx:"Hypothyroidism", bands:["N","YI","I","T","P","S","A"], typical:"Any age — causes both poor linear growth and weight gain"},
+    {dx:"Turner syndrome (girls)", bands:["N","YI","I","T","P","S"], typical:"Often identified due to short stature, may be diagnosed at any age"},
+    {dx:"Exogenous/lifestyle obesity", bands:["T","P","S","A"], typical:"Most common cause of obesity — diet/activity pattern-driven"},
+    {dx:"Endocrine causes of obesity (Cushing syndrome, hypothyroidism)", bands:["T","P","S","A"], typical:"Rare relative to lifestyle causes; suspect if growth velocity is ALSO abnormal"},
+    {dx:"Genetic obesity syndromes (Prader-Willi)", bands:["N","YI","I","T"], typical:"Infancy onward, with hypotonia and developmental delay"}
+  ],
+  teaching:"This chief concern is driven far more by the GROWTH CURVE trend over time than by any single ROS question — plot height, weight, and BMI on age-appropriate curves and look at the trajectory, not just a single point. A child crossing DOWNWARD across percentile lines for height (especially with normal or increasing weight) is much more concerning for an endocrine/pathologic cause than a child who has always tracked along a low but stable percentile.",
+  ros:[
+    {system:"Growth trend", q:"Height tracking consistently along the same percentile over time (not crossing lines)?", yes:"Reassuring — favors familial short stature or a stable normal variant", no:"Crossing percentiles downward raises concern for pathologic cause (endocrine, chronic disease)", flag:true},
+    {system:"Growth trend", q:"Height percentile significantly lower than weight percentile (disproportionate)?", yes:"Concerning for growth hormone deficiency, hypothyroidism, or other endocrine cause", no:"Proportionate height/weight less concerning for endocrine growth failure"},
+    {system:"Family history", q:"Parents' heights consistent with the child's growth percentile (mid-parental height calculation)?", yes:"Supports familial short stature", no:"Child's stature not explained by parental heights — consider further workup"},
+    {system:"Constitutional", q:"Cold intolerance, constipation, fatigue, dry skin?", yes:"Hypothyroidism (causes both growth failure and weight gain)", no:"Argues against hypothyroidism"},
+    {system:"Development", q:"Developmental delay, hypotonia in infancy?", yes:"Consider genetic syndrome (e.g., Prader-Willi) as cause of growth/weight concern", no:"Argues against a syndromic cause"},
+    {system:"Diet/Activity", q:"High intake of sugar-sweetened beverages/processed food, screen time >2h/day, low physical activity?", yes:"Lifestyle/exogenous obesity (most common cause) — counsel on diet and activity", no:"Lifestyle factors less prominent — consider other causes if obesity present"},
+    {system:"Endocrine (obesity)", q:"Rapid weight gain WITH growth deceleration, striae, moon facies, buffalo hump?", yes:"Concerning for Cushing syndrome — needs endocrine workup", no:"Argues against Cushing syndrome", flag:true},
+    {system:"Puberty", q:"Pubertal timing appropriate for age (see Precocious/Delayed Puberty section)?", yes:"Reassuring", no:"Abnormal pubertal timing may accompany the growth concern — cross-reference puberty workup"}
+  ]
+},
+{id:"foreignbody", label:"Foreign Body Ingestion / Aspiration", emoji:"🔘",
+  diffList:[
+    {dx:"Esophageal foreign body (coin, toy)", bands:["I","T","P"], typical:"Most common age 6mo–3yr (mouthing behavior)"},
+    {dx:"Button/disc battery ingestion", bands:["I","T","P"], typical:"Same age range — TIME-CRITICAL emergency requiring immediate removal if esophageal"},
+    {dx:"Airway foreign body aspiration", bands:["I","T","P"], typical:"Peak age 1–3yr, classically choking on food (nuts, hot dogs, grapes) or small toy parts"},
+    {dx:"Magnet ingestion (multiple magnets)", bands:["T","P","S"], typical:"Any age with access to high-powered magnets — risk of bowel perforation if multiple magnets ingested"},
+    {dx:"Gastric/intestinal foreign body (passed beyond esophagus)", bands:["I","T","P","S"], typical:"Any age — usually passes spontaneously if smooth and small"},
+    {dx:"Sharp/long object ingestion", bands:["I","T","P","S"], typical:"Any age — higher perforation risk, needs closer monitoring/removal"}
+  ],
+  teaching:"Button/disc battery in the esophagus is a true emergency requiring removal within 2 hours — it can cause liquefactive necrosis and perforation into the aorta or trachea within hours, unlike a coin which can often be observed. Choking episodes with acute-onset cough, wheeze, or stridor after eating/playing with small objects should raise concern for airway foreign body even if the child appears to recover, since a partial obstruction can present later with unilateral wheeze or recurrent pneumonia in the same lung segment.",
+  ros:[
+    {system:"History", q:"Witnessed or suspected battery ingestion?", yes:"TIME-CRITICAL — needs immediate imaging and emergent removal if esophageal, even if asymptomatic", no:"Lower urgency, though still needs evaluation if any object suspected", flag:true},
+    {system:"History", q:"Witnessed choking episode while eating (nuts, grapes, hot dogs) or playing with small toy parts?", yes:"Airway foreign body aspiration — needs evaluation, possible bronchoscopy", no:"Less specific history for aspiration"},
+    {system:"Respiratory", q:"Persistent unilateral wheeze, stridor, or recurrent pneumonia in the same lung segment?", yes:"Suggests retained airway foreign body", no:"Argues against retained airway foreign body"},
+    {system:"Respiratory", q:"Sudden-onset coughing/gagging followed by a symptom-free interval?", yes:"Classic pattern for foreign body aspiration — do not be falsely reassured by the symptom-free interval", no:"Less typical pattern"},
+    {system:"GI", q:"Drooling, refusal to eat/drink, chest/throat pain, sensation of something stuck?", yes:"Esophageal foreign body — needs imaging (may be radiopaque or need further evaluation if radiolucent)", no:"Argues against esophageal foreign body"},
+    {system:"GI", q:"Vomiting, abdominal pain, or signs of obstruction after ingestion?", yes:"Consider object lodged or, if multiple magnets, bowel entrapment/perforation risk", no:"Reassuring for spontaneous passage"},
+    {system:"History", q:"Multiple small round magnets ingested (or suspected, e.g., from a magnetic toy set)?", yes:"High risk for bowel wall entrapment/perforation between magnets — needs urgent imaging/surgical consult regardless of symptoms", no:"Lower risk if single magnet or non-magnetic object", flag:true},
+    {system:"Timing", q:"Object confirmed to have passed into the stomach on imaging, smooth and small (<2.5cm) in an asymptomatic child?", yes:"Reassuring — most such objects pass spontaneously with outpatient monitoring", no:"May need endoscopic/surgical removal depending on object and location"}
+  ]
+},
+{id:"scrotal", label:"Scrotal Pain/Swelling / Umbilical & Inguinal Hernia", emoji:"🔵",
+  diffList:[
+    {dx:"Testicular torsion", bands:["N","YI","I","T","P","S","A"], typical:"Bimodal: neonatal period and peripubertal (~12–16yr) — TIME-CRITICAL at any age"},
+    {dx:"Torsion of the appendix testis", bands:["T","P","S"], typical:"Most common cause of acute scrotal pain age 7–12yr"},
+    {dx:"Epididymitis/orchitis", bands:["S","A"], typical:"More common in sexually active adolescents (STI-related) or with viral illness (mumps)"},
+    {dx:"Inguinal hernia (incarcerated or reducible)", bands:["N","YI","I","T"], typical:"Most common in infancy, especially premature infants"},
+    {dx:"Hydrocele", bands:["N","YI","I"], typical:"Common in newborns, often resolves by 12 months"},
+    {dx:"Umbilical hernia", bands:["N","YI","I","T"], typical:"Common in infancy, especially in Black infants; most close spontaneously by age 4–5yr"},
+    {dx:"Varicocele", bands:["S","A"], typical:"Adolescence, usually left-sided"}
+  ],
+  teaching:"Acute scrotal pain is testicular torsion until proven otherwise — this is a surgical emergency with a window of ~4–6 hours for optimal testicular salvage, so do not delay urology consultation/surgical exploration for imaging if clinical suspicion is high. For hernias: a REDUCIBLE inguinal hernia can be scheduled electively, but an INCARCERATED (non-reducible, tender, discolored) hernia is a surgical emergency requiring urgent reduction/repair.",
+  ros:[
+    {system:"Onset/quality", q:"Sudden, severe testicular pain, often with nausea/vomiting, high-riding or horizontal testicle?", yes:"Testicular torsion — surgical emergency, urgent urology consult, do not delay for imaging if high suspicion", no:"Argues against torsion but does not fully exclude it", flag:true},
+    {system:"Onset/quality", q:"Point tenderness at the upper pole of the testis (\"blue dot sign\")?", yes:"Torsion of the appendix testis (most common cause age 7–12yr, generally managed conservatively)", no:"Less specific for appendix testis torsion"},
+    {system:"Onset/quality", q:"Gradual onset pain with fever, dysuria, or known sexual activity?", yes:"Epididymitis/orchitis — consider STI workup if sexually active", no:"Less consistent with epididymitis"},
+    {system:"Swelling", q:"Painless scrotal swelling that transilluminates?", yes:"Hydrocele", no:"Argues against simple hydrocele"},
+    {system:"Swelling", q:"Bulge in groin/scrotum that increases with crying/straining and reduces with rest or gentle pressure?", yes:"Reducible inguinal hernia — refer for elective repair", no:"Consider other causes of swelling"},
+    {system:"Swelling", q:"Groin/scrotal bulge that is firm, tender, discolored, and NOT reducible?", yes:"Incarcerated inguinal hernia — surgical emergency", no:"Reassuring against incarceration", flag:true},
+    {system:"Umbilical", q:"Soft bulge at the umbilicus, reducible, present since infancy?", yes:"Umbilical hernia — most resolve spontaneously by age 4–5yr", no:"Consider other umbilical findings"},
+    {system:"Adolescent", q:"\"Bag of worms\" texture on standing, more prominent on the left, disappears when lying down?", yes:"Varicocele", no:"Argues against varicocele"},
+    {system:"Systemic", q:"Parotid swelling or known mumps exposure/unvaccinated status accompanying testicular pain?", yes:"Mumps orchitis", no:"Argues against mumps orchitis"}
+  ]
+},
+{id:"recurrentinfx", label:"Recurrent Infections (Immunodeficiency Workup)", emoji:"🦠",
+  diffList:[
+    {dx:"Normal childhood infection frequency (daycare/school exposure)", bands:["I","T","P","S"], typical:"Very common — up to 8–10 URIs/year is normal in daycare-age children"},
+    {dx:"Allergic rhinitis/anatomic factors (adenoid hypertrophy) mimicking recurrent infection", bands:["T","P","S"], typical:"Toddler through school-age"},
+    {dx:"Humoral immunodeficiency (e.g., common variable immunodeficiency, IgA deficiency)", bands:["T","P","S","A"], typical:"Recurrent sinopulmonary/encapsulated bacterial infections, often presenting later in childhood"},
+    {dx:"Severe combined immunodeficiency (SCID)", bands:["N","YI"], typical:"Presents in early infancy with severe/opportunistic infections — newborn screening now catches many cases"},
+    {dx:"Phagocytic disorders (chronic granulomatous disease)", bands:["I","T","P"], typical:"Recurrent deep-seated bacterial/fungal abscesses, infancy through childhood"},
+    {dx:"Complement deficiency", bands:["I","T","P","S","A"], typical:"Recurrent Neisserial infections (meningitis) at any age"},
+    {dx:"Secondary immunodeficiency (HIV, malnutrition, medications)", bands:["N","YI","I","T","P","S","A"], typical:"Any age depending on cause"}
+  ],
+  teaching:"Use the \"SPUR\" framework (Serious, Persistent, Unusual, Recurrent infections) to decide who needs an immunodeficiency workup — most children referred for \"recurrent infections\" have normal childhood exposure-related illness, not immunodeficiency. Key red flags: 2+ pneumonias in a year, infections with unusual organisms, failure to thrive, need for IV antibiotics, or a family history of early childhood deaths from infection.",
+  ros:[
+    {system:"Pattern", q:"Infections limited to URIs/otitis media, resolving normally with typical antibiotic courses, in a daycare/school-age child?", yes:"Reassuring — consistent with normal exposure-related infection frequency", no:"Warrants further workup for immunodeficiency"},
+    {system:"Pattern", q:"Two or more pneumonias in the past year, or infections requiring IV antibiotics/hospitalization?", yes:"Red flag for immunodeficiency — needs further workup", no:"Less concerning pattern", flag:true},
+    {system:"Pattern", q:"Infections with unusual organisms (opportunistic, atypical mycobacteria, recurrent fungal) or in unusual locations (liver/brain abscess)?", yes:"Red flag for immunodeficiency (e.g., phagocytic disorder)", no:"Less concerning pattern", flag:true},
+    {system:"Growth", q:"Failure to thrive/poor growth accompanying the infections?", yes:"Red flag for underlying immunodeficiency or chronic disease", no:"Reassuring against a systemic immune process"},
+    {system:"Family history", q:"Family history of early (infant/childhood) deaths from infection, or known immunodeficiency?", yes:"Raises concern for an inherited immunodeficiency syndrome", no:"Less specific family history"},
+    {system:"Infancy red flags", q:"Failure to thrive, chronic diarrhea, thrush beyond infancy, or opportunistic infection in early infancy?", yes:"Concerning for severe combined immunodeficiency (SCID) — needs urgent referral", no:"Reassuring against SCID", flag:true},
+    {system:"Neisserial", q:"Recurrent meningitis or disseminated Neisserial infections?", yes:"Consider complement deficiency", no:"Argues against complement deficiency"},
+    {system:"Allergic mimics", q:"Chronic nasal congestion, snoring, mouth breathing rather than true recurrent infection?", yes:"Consider allergic rhinitis or adenoid hypertrophy as the actual driver, not immunodeficiency", no:"Less likely an allergic/anatomic mimic"},
+    {system:"Exposures", q:"Known HIV exposure, malnutrition, or immunosuppressive medication use?", yes:"Consider secondary immunodeficiency", no:"Argues against secondary cause"}
+  ]
+},
+{id:"allergy", label:"Food/Drug Allergy Reaction, Hives, Anaphylaxis", emoji:"🤧",
+  diffList:[
+    {dx:"Acute urticaria (viral or idiopathic)", bands:["I","T","P","S","A"], typical:"Any age; viral triggers most common in young children"},
+    {dx:"IgE-mediated food allergy reaction", bands:["I","T","P","S","A"], typical:"Any age; common triggers include milk/egg/peanut/tree nut in young children, shellfish/peanut/tree nut in older children"},
+    {dx:"Drug allergy/reaction (e.g., amoxicillin rash)", bands:["I","T","P","S","A"], typical:"Any age on the relevant medication"},
+    {dx:"Anaphylaxis", bands:["N","YI","I","T","P","S","A"], typical:"Any age — recognize regardless of age when multi-system involvement present"},
+    {dx:"Chronic urticaria (>6 weeks)", bands:["T","P","S","A"], typical:"More common school-age/adolescent, often idiopathic"},
+    {dx:"Serum sickness-like reaction", bands:["I","T","P"], typical:"Delayed reaction (days after starting a drug, classically cefaclor), fever + rash + joint pain"}
+  ],
+  teaching:"Anaphylaxis is defined by involvement of TWO OR MORE organ systems (skin, respiratory, cardiovascular, GI) after allergen exposure, OR isolated hypotension/respiratory compromise after a known allergen — hives alone, without other system involvement, is NOT anaphylaxis and does not require epinephrine, but any respiratory or cardiovascular symptoms should prompt immediate IM epinephrine, not antihistamines first. Every child with a diagnosed food allergy should have an epinephrine auto-injector and written action plan.",
+  ros:[
+    {system:"Skin", q:"Hives, angioedema (lip/face/tongue swelling)?", yes:"Allergic reaction — assess for other system involvement to determine if anaphylaxis", no:"Argues against acute allergic/urticarial reaction"},
+    {system:"Respiratory", q:"Wheezing, throat tightness, stridor, difficulty breathing?", yes:"Anaphylaxis if in the setting of allergen exposure — give IM epinephrine immediately, do not delay", no:"Reassuring against respiratory involvement", flag:true},
+    {system:"Cardiovascular", q:"Dizziness, pallor, hypotension, or loss of consciousness?", yes:"Anaphylaxis — give IM epinephrine immediately", no:"Reassuring against cardiovascular involvement", flag:true},
+    {system:"GI", q:"Vomiting, abdominal pain, diarrhea accompanying the reaction?", yes:"Suggests a more systemic reaction (part of anaphylaxis criteria if combined with skin/other systems)", no:"Isolated skin finding less likely to represent anaphylaxis"},
+    {system:"Trigger", q:"Reaction occurred within minutes to 2 hours of a specific new food or medication?", yes:"Supports IgE-mediated food/drug allergy to that specific exposure", no:"Consider viral or idiopathic urticaria"},
+    {system:"Timing", q:"Reaction (fever, rash, joint pain) occurring days after starting a medication (not immediate)?", yes:"Consider serum sickness-like reaction rather than immediate IgE-mediated allergy", no:"More consistent with immediate hypersensitivity if temporally linked"},
+    {system:"Duration", q:"Hives persisting daily for more than 6 weeks?", yes:"Chronic urticaria — usually idiopathic, different workup than acute allergic reaction", no:"Acute urticaria more likely"},
+    {system:"History", q:"Known food allergy with an epinephrine auto-injector and action plan in place?", yes:"Ensure plan was followed; reinforce/update as needed", no:"Consider allergy referral for formal testing and to establish an action plan if allergy suspected/confirmed"},
+    {system:"Recurrence", q:"Prior similar reactions to the same or related allergens?", yes:"Supports a true allergic diagnosis to that trigger", no:"First reaction — still warrants allergy follow-up if concerning features present"}
+  ]
+},
+{id:"chroniccough", label:"Chronic Cough (Reactive Airway vs. Allergic Rhinitis Overlap)", emoji:"🌬️",
+  diffList:[
+    {dx:"Asthma/reactive airway disease", bands:["T","P","S","A"], typical:"Any age; cough often worse at night, with exercise, or with triggers"},
+    {dx:"Allergic rhinitis with post-nasal drip", bands:["T","P","S","A"], typical:"Any age, often seasonal or with known allergen triggers"},
+    {dx:"Post-viral/protracted bacterial bronchitis", bands:["I","T","P","S"], typical:"Any age following a viral URI, can persist 4–8+ weeks"},
+    {dx:"GERD-associated cough", bands:["I","T","P","S","A"], typical:"Any age, especially with reflux symptoms or worse when lying down"},
+    {dx:"Habit/psychogenic cough", bands:["P","S","A"], typical:"School-age/adolescent, classically absent during sleep"},
+    {dx:"Cystic fibrosis/other structural lung disease", bands:["N","YI","I","T"], typical:"Should be considered if cough is truly chronic and productive from infancy"},
+    {dx:"Foreign body (retained, causing chronic cough)", bands:["I","T","P"], typical:"Toddler age, especially if cough is unilateral/localized and persistent"}
+  ],
+  teaching:"Because asthma and allergic rhinitis frequently coexist (\"one airway, one disease\" concept — allergic rhinitis is a major risk factor for asthma and both can cause chronic cough), ask about BOTH upper airway (nasal congestion, post-nasal drip, itchy/watery eyes) and lower airway (wheeze, exercise intolerance, nocturnal cough) symptoms in every chronic cough workup, since treating only one may leave the cough unresolved. A cough that is truly absent during sleep is a classic clue for a habit/psychogenic cough rather than an organic respiratory cause.",
+  ros:[
+    {system:"Lower airway", q:"Wheezing, chest tightness, cough worse with exercise or at night?", yes:"Asthma/reactive airway disease", no:"Argues against asthma as primary driver"},
+    {system:"Upper airway", q:"Nasal congestion, clear rhinorrhea, itchy/watery eyes, post-nasal drip sensation?", yes:"Allergic rhinitis — can contribute to or mimic lower-airway cough symptoms", no:"Argues against allergic rhinitis as primary driver"},
+    {system:"Triggers", q:"Cough worse with specific allergen exposure (pollen, pets, dust) or seasonally?", yes:"Supports an allergic component (rhinitis and/or asthma)", no:"Less supportive of allergic trigger"},
+    {system:"Timing", q:"Cough persisting/worsening beyond 4 weeks after a viral illness, productive?", yes:"Consider protracted bacterial bronchitis", no:"Less typical for post-viral bronchitis"},
+    {system:"GI", q:"Cough worse lying down, after meals, or with reflux symptoms (spit-up, heartburn)?", yes:"GERD-associated cough", no:"Argues against reflux-associated cough"},
+    {system:"Sleep", q:"Cough completely absent during sleep?", yes:"Suggests habit/psychogenic cough", no:"Cough during sleep argues against a purely habitual cough"},
+    {system:"Growth/History", q:"Cough present since infancy, productive, with poor growth or greasy stools?", yes:"Consider cystic fibrosis or other structural lung disease — needs further workup", no:"Argues against CF/structural lung disease", flag:true},
+    {system:"Localization", q:"Cough is unilateral, or history of a choking episode preceding onset?", yes:"Consider retained foreign body — may need chest imaging/bronchoscopy", no:"Argues against retained foreign body"},
+    {system:"Response to treatment", q:"Cough improves with a trial of bronchodilator/inhaled corticosteroid?", yes:"Supports asthma/reactive airway component", no:"Consider allergic rhinitis, GERD, or other non-asthma cause if no improvement"}
+  ]
+}
+];
+
+// ---------- RENDER ----------
+const select = document.getElementById('complaintSelect');
+complaints.forEach(c=>{
+  const opt = document.createElement('option');
+  opt.value = c.id; opt.textContent = `${c.emoji} ${c.label}`;
+  select.appendChild(opt);
+});
+
+const ageBandSelect = document.getElementById('ageBand');
+(function(){
+  const optAny = document.createElement('option');
+  optAny.value = ''; optAny.textContent = 'Not specified (show default order)';
+  ageBandSelect.appendChild(optAny);
+  ageBands.forEach(b=>{
+    const opt = document.createElement('option');
+    opt.value = b.id; opt.textContent = b.label;
+    ageBandSelect.appendChild(opt);
+  });
+  const saved = localStorage.getItem('srv_field_ageBand') || '';
+  ageBandSelect.value = saved;
+  ageBandSelect.addEventListener('change', ()=>{
+    localStorage.setItem('srv_field_ageBand', ageBandSelect.value);
+    renderDifferentials(select.value);
+  });
+})();
+
+function renderDifferentials(complaintId){
+  const c = complaints.find(x=>x.id===complaintId);
+  const bandId = ageBandSelect.value;
+  const el = document.getElementById('diffBox');
+  el.innerHTML = '';
+
+  let list = c.diffList.map(d=>d);
+  if(bandId){
+    list = list.slice().sort((a,b)=>{
+      const aLikely = a.bands.includes(bandId) ? 0 : 1;
+      const bLikely = b.bands.includes(bandId) ? 0 : 1;
+      return aLikely - bLikely;
+    });
+  }
+
+  list.forEach((d, i)=>{
+    const likely = bandId ? d.bands.includes(bandId) : false;
+    const row = document.createElement('div');
+    row.className = 'diff-row' + (likely ? ' likely' : '');
+    const badge = bandId ? (likely ? '<span class="diff-badge likely">TYPICAL NOW</span>' : '<span class="diff-badge atypical">atypical for this age</span>') : '';
+    row.innerHTML = `<div class="diff-rank">${i+1}.</div><div class="diff-body"><span class="diff-name">${d.dx}</span>${badge}<div class="diff-typical">${d.typical}</div></div>`;
+    el.appendChild(row);
+  });
+}
+
+function rosKeyFor(complaintId, idx){ return `srv_ros_${complaintId}_${idx}`; }
+
+function renderRos(complaintId){
+  const c = complaints.find(x=>x.id===complaintId);
+  const el = document.getElementById('body-ros');
+  el.innerHTML = '';
+  const groups = {};
+  const order = [];
+  c.ros.forEach((row, idx)=>{
+    if(!groups[row.system]){ groups[row.system] = []; order.push(row.system); }
+    groups[row.system].push({...row, idx});
+  });
+  order.forEach(sys=>{
+    const wrap = document.createElement('div');
+    wrap.className = 'subgroup';
+    const title = document.createElement('div');
+    title.className = 'subgroup-title';
+    title.textContent = sys;
+    wrap.appendChild(title);
+    groups[sys].forEach(row=>{
+      const key = rosKeyFor(complaintId, row.idx);
+      const val = localStorage.getItem(key) || '';
+      const div = document.createElement('div');
+      div.className = 'ros-item' + (val==='Y' ? ' answered-y' : val==='N' ? ' answered-n' : '');
+      const flagTag = row.flag ? ' <b class="flag">[RED FLAG if positive]</b>' : '';
+      div.innerHTML = `<div class="ros-body"><span class="ros-label">${row.q}${flagTag}</span><span class="gist">If <b class="pos">positive</b>: ${row.yes} &nbsp;|&nbsp; If <b class="neg">negative/denies</b>: ${row.no}</span></div><div class="ros-yn"><button type="button" class="y-btn${val==='Y'?' active':''}">Y</button><button type="button" class="n-btn${val==='N'?' active':''}">N</button></div>`;
+      const yBtn = div.querySelector('.y-btn');
+      const nBtn = div.querySelector('.n-btn');
+      function setVal(newVal){
+        const current = localStorage.getItem(key) || '';
+        const next = current === newVal ? '' : newVal;
+        localStorage.setItem(key, next);
+        div.classList.remove('answered-y','answered-n');
+        yBtn.classList.remove('active');
+        nBtn.classList.remove('active');
+        if(next==='Y'){ div.classList.add('answered-y'); yBtn.classList.add('active'); }
+        else if(next==='N'){ div.classList.add('answered-n'); nBtn.classList.add('active'); }
+        updateProgress(complaintId);
+      }
+      yBtn.addEventListener('click', ()=>setVal('Y'));
+      nBtn.addEventListener('click', ()=>setVal('N'));
+      wrap.appendChild(div);
+    });
+    el.appendChild(wrap);
+  });
+}
+
+function checkedRosFindings(complaintId){
+  const c = complaints.find(x=>x.id===complaintId);
+  const out = [];
+  const positives = c.ros.filter((_, idx)=> localStorage.getItem(rosKeyFor(complaintId, idx))==='Y').map(r=>`${r.system}: ${r.q} → POSITIVE (${r.yes})`);
+  const negatives = c.ros.filter((_, idx)=> localStorage.getItem(rosKeyFor(complaintId, idx))==='N').map(r=>`${r.system}: ${r.q} → negative/denies (${r.no})`);
+  if(positives.length) out.push(...positives);
+  if(negatives.length) out.push(...negatives);
+  return out;
+}
+
+function updateProgress(complaintId){
+  const c = complaints.find(x=>x.id===complaintId);
+  let total = c.ros.length, done = 0, pos = 0;
+  c.ros.forEach((_, idx)=>{
+    const v = localStorage.getItem(rosKeyFor(complaintId, idx));
+    if(v==='Y' || v==='N') done++;
+    if(v==='Y') pos++;
+  });
+  document.getElementById('progressText').textContent = `${done}/${total} answered · ${pos} positive`;
+}
+
+const noteSections = ['hpi','ros','exam','labs','assessment','plan'];
+function notesKey(complaintId, sec){ return `srv_notes_${complaintId}_${sec}`; }
+
+function loadNotesForComplaint(complaintId){
+  noteSections.forEach(sec=>{
+    const ta = document.getElementById('notes-'+sec);
+    if(!ta) return;
+    ta.value = localStorage.getItem(notesKey(complaintId, sec)) || '';
+  });
+}
+function wireNoteSaving(complaintId){
+  noteSections.forEach(sec=>{
+    const ta = document.getElementById('notes-'+sec);
+    if(!ta) return;
+    ta.oninput = ()=> localStorage.setItem(notesKey(complaintId, sec), ta.value);
+  });
+}
+
+function renderComplaint(complaintId){
+  const c = complaints.find(x=>x.id===complaintId);
+  document.getElementById('visitTitle').textContent = `${c.emoji} ${c.label}`;
+  renderDifferentials(complaintId);
+  document.getElementById('teachBox').innerHTML = `<b>Key teaching point:</b> ${c.teaching}`;
+  renderRos(complaintId);
+  updateProgress(complaintId);
+  loadNotesForComplaint(complaintId);
+  wireNoteSaving(complaintId);
+}
+
+select.addEventListener('change', ()=> renderComplaint(select.value));
+
+document.getElementById('resetBtn').addEventListener('click', ()=>{
+  const complaintId = select.value;
+  const c = complaints.find(x=>x.id===complaintId);
+  c.ros.forEach((_, idx)=> localStorage.removeItem(rosKeyFor(complaintId, idx)));
+  renderComplaint(complaintId);
+});
+
+function toggleCard(id){
+  const body = document.getElementById(id).querySelector('.card-body');
+  body.style.display = (body.style.display === 'none') ? 'block' : 'none';
+}
+
+// ---------- Simple persistent patient fields ----------
+function wireSimpleField(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  const key = 'srv_field_' + id;
+  el.value = localStorage.getItem(key) || '';
+  el.oninput = ()=> localStorage.setItem(key, el.value);
+}
+
+// ---------- Documentation / note builder ----------
+function buildNoteText(){
+  const complaintId = select.value;
+  const c = complaints.find(x=>x.id===complaintId);
+  const pName = document.getElementById('pName').value || '(not entered)';
+  const pAge = document.getElementById('pAge').value || '(not entered)';
+  const pSex = document.getElementById('pSex').value || '(not entered)';
+  const vDate = document.getElementById('vDate').value || '(not entered)';
+  const examiner = document.getElementById('examiner').value || '(not entered)';
+  const attending = document.getElementById('attending').value || '(not entered)';
+  const cc = document.getElementById('chiefConcern').value || '(not entered)';
+
+  let out = '';
+  out += `SICK VISIT NOTE\n`;
+  out += `Chief complaint category: ${c.emoji} ${c.label}\n`;
+  out += `Visit date: ${vDate}\n`;
+  out += `Patient: ${pName}   Age: ${pAge}   Sex: ${pSex}\n`;
+  out += `Examiner: ${examiner}   Attending/preceptor: ${attending}\n`;
+  out += `\n`;
+  out += `CHIEF CONCERN:\n  "${cc}"\n\n`;
+
+  out += `INTERVAL HISTORY / HPI:\n  ${document.getElementById('notes-hpi').value.trim() || '(not entered)'}\n\n`;
+
+  const bandId = document.getElementById('ageBand').value;
+  const bandLabel = bandId ? (ageBands.find(b=>b.id===bandId)||{}).label : null;
+  let sortedDiff = c.diffList.map(d=>d);
+  if(bandId){
+    sortedDiff = sortedDiff.slice().sort((a,b)=>{
+      const aL = a.bands.includes(bandId) ? 0 : 1;
+      const bL = b.bands.includes(bandId) ? 0 : 1;
+      return aL - bL;
+    });
+  }
+  out += `TOP DIFFERENTIALS CONSIDERED${bandLabel ? ` (reordered for age band: ${bandLabel})` : ''}:\n`;
+  sortedDiff.forEach((d,i)=>{
+    const tag = bandId ? (d.bands.includes(bandId) ? ' [TYPICAL FOR THIS AGE]' : ' [atypical for this age]') : '';
+    out += `  ${i+1}. ${d.dx}${tag} — typical: ${d.typical}\n`;
+  });
+  out += `\n`;
+  out += `KEY TEACHING POINT:\n  ${c.teaching}\n\n`;
+
+  out += `ROS — PERTINENT POSITIVES:\n`;
+  const positives = checkedRosFindings(complaintId);
+  if(positives.length===0){ out += `  (none checked — ROS otherwise negative)\n`; } else { positives.forEach(p=> out += `  - ${p}\n`); }
+  const rosNotes = document.getElementById('notes-ros').value.trim();
+  if(rosNotes){ out += `  Notes: ${rosNotes}\n`; }
+  out += `\n`;
+
+  out += `PHYSICAL EXAM SUMMARY:\n  ${document.getElementById('notes-exam').value.trim() || '(not entered)'}\n\n`;
+  out += `LABS/IMAGING:\n  ${document.getElementById('notes-labs').value.trim() || '(none today)'}\n\n`;
+  out += `ASSESSMENT:\n  ${document.getElementById('notes-assessment').value.trim() || '(not entered)'}\n\n`;
+  out += `PLAN:\n  ${document.getElementById('notes-plan').value.trim() || '(not entered)'}\n`;
+
+  return out;
+}
+
+document.getElementById('generateBtn').addEventListener('click', ()=>{
+  document.getElementById('noteOutput').value = buildNoteText();
+});
+document.getElementById('copyBtn').addEventListener('click', ()=>{
+  const ta = document.getElementById('noteOutput');
+  if(!ta.value) ta.value = buildNoteText();
+  ta.select();
+  document.execCommand('copy');
+});
+document.getElementById('downloadBtn').addEventListener('click', ()=>{
+  const text = document.getElementById('noteOutput').value || buildNoteText();
+  document.getElementById('noteOutput').value = text;
+  const complaintId = select.value;
+  const vDate = document.getElementById('vDate').value || 'undated';
+  const blob = new Blob([text], {type:'text/plain'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `sick-visit_${complaintId}_${vDate}.txt`;
+  a.click();
+});
+
+// ---------- Visit log ----------
+const LOG_KEY = 'srv_visit_log';
+function getLog(){ try{ return JSON.parse(localStorage.getItem(LOG_KEY) || '[]'); }catch(e){ return []; } }
+function setLog(arr){ localStorage.setItem(LOG_KEY, JSON.stringify(arr)); }
+
+function renderLogTable(){
+  const log = getLog();
+  document.getElementById('logCount').textContent = log.length;
+  const tbody = document.getElementById('logTableBody');
+  tbody.innerHTML = '';
+  if(log.length===0){
+    tbody.innerHTML = '<tr><td colspan="6" class="empty-note">No visits saved yet.</td></tr>';
+    return;
+  }
+  log.slice().reverse().forEach(entry=>{
+    const realIdx = log.indexOf(entry);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${entry.visitDate||''}</td><td>${entry.complaint||''}</td><td>${entry.patient||''}</td><td>${entry.examiner||''}</td><td class="notecell">${(entry.note||'').slice(0,300)}${(entry.note||'').length>300?'…':''}</td><td><button class="small-btn" data-idx="${realIdx}">Delete</button></td>`;
+    tbody.appendChild(tr);
+  });
+  tbody.querySelectorAll('button.small-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const idx = parseInt(btn.getAttribute('data-idx'), 10);
+      const arr = getLog();
+      arr.splice(idx,1);
+      setLog(arr);
+      renderLogTable();
+    });
+  });
+}
+
+document.getElementById('saveLogBtn').addEventListener('click', ()=>{
+  const complaintId = select.value;
+  const c = complaints.find(x=>x.id===complaintId);
+  const note = document.getElementById('noteOutput').value || buildNoteText();
+  document.getElementById('noteOutput').value = note;
+  const entry = {
+    complaint: `${c.emoji} ${c.label}`,
+    visitDate: document.getElementById('vDate').value || '',
+    patient: document.getElementById('pName').value || '',
+    examiner: document.getElementById('examiner').value || '',
+    attending: document.getElementById('attending').value || '',
+    note: note,
+    savedAt: new Date().toISOString()
+  };
+  const arr = getLog();
+  arr.push(entry);
+  setLog(arr);
+  renderLogTable();
+});
+
+document.getElementById('exportCsvBtn').addEventListener('click', ()=>{
+  const log = getLog();
+  const esc = s => `"${String(s||'').replace(/"/g,'""')}"`;
+  let csv = 'Visit Date,Complaint,Patient,Examiner,Attending,Saved At,Note\n';
+  log.forEach(e=>{
+    csv += [e.visitDate, e.complaint, e.patient, e.examiner, e.attending, e.savedAt, e.note].map(esc).join(',') + '\n';
+  });
+  const blob = new Blob([csv], {type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'sick_visit_log.csv';
+  a.click();
+});
+
+document.getElementById('clearLogBtn').addEventListener('click', ()=>{
+  if(confirm('Clear all saved visit log entries? This cannot be undone.')){
+    setLog([]);
+    renderLogTable();
+  }
+});
+
+// init
+['pName','pAge','pSex','examiner','attending','chiefConcern'].forEach(wireSimpleField);
+renderComplaint(complaints[0].id);
+renderLogTable();
+(function(){
+  const vDateEl = document.getElementById('vDate');
+  if(vDateEl && !vDateEl.value){
+    const today = new Date();
+    vDateEl.value = today.toISOString().slice(0,10);
+  }
+})();
+</script>
+</body>
+</html>
