@@ -31,6 +31,26 @@
     color: #666;
     margin-bottom: 12px;
   }
+  .catbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+  }
+  .catbtn {
+    background: #7a1f2b;
+    color: #fff;
+    border: 1px solid #7a1f2b;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 7px 13px;
+    border-radius: 14px;
+    cursor: pointer;
+    opacity: 0.55;
+  }
+  .catbtn.active { opacity: 1; }
+  .tabbtn.cat-hidden { display: none; }
   .tabbar {
     display: flex;
     flex-wrap: wrap;
@@ -49,6 +69,52 @@
   }
   .tabbtn:hover { background: #ecd9d9; }
   .tabbtn.active { background: #7a1f2b; color: #fff; border-color: #7a1f2b; }
+  .treebtn {
+    background: #f3ede1;
+    border: 1px solid #ddd6c8;
+    color: #5a4e3a;
+    font-size: 11px;
+    padding: 7px 11px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .treebtn:hover { background: #ecd9d9; }
+  .treebtn.active { background: #2b5f7a; color: #fff; border-color: #2b5f7a; }
+  .wfbtn {
+    background: #f3ede1;
+    border: 1px solid #ddd6c8;
+    color: #5a4e3a;
+    font-size: 11px;
+    padding: 7px 11px;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .wfbtn:hover { background: #ecd9d9; }
+  .wfbtn.active { background: #7a1f2b; color: #fff; border-color: #7a1f2b; }
+  .tree-opt {
+    display: block;
+    width: 100%;
+    text-align: left;
+    background: #fff;
+    border: 1px solid #ddd6c8;
+    border-radius: 4px;
+    padding: 9px 12px;
+    margin-bottom: 6px;
+    font-family: 'Georgia', serif;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  .tree-opt:hover { background: #f3ede1; border-color: #7a1f2b; }
+  .tree-q { font-weight: bold; font-family: 'Helvetica Neue', Arial, sans-serif; font-size: 13.5px; margin-bottom: 8px; }
+  .tree-result-box {
+    background: #eaf3ea;
+    border-left: 4px solid #2f7a3f;
+    padding: 10px 13px;
+    border-radius: 4px;
+    font-size: 13px;
+  }
+  .tree-result-box.wrong { background: #fdecec; border-left-color: #b3261e; }
+  .tree-path { font-size: 11px; color: #888; font-family: 'Helvetica Neue', Arial, sans-serif; margin-bottom: 6px; }
   .panel { display: none; }
   .panel.active { display: block; }
   .panel h2.pageh {
@@ -107,6 +173,7 @@
     body { background: #fff; }
     .block { border: 1px solid #ccc; }
     .tabbar { display: none; }
+    .catbar { display: none; }
     .panel { display: block !important; }
     .panel h2.pageh { break-before: page; }
   }
@@ -115,6 +182,8 @@
     h1 { font-size: 19px; }
     .cols2 { display: block; }
     .cols2 .block { margin-bottom: 12px; }
+    .catbar { flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; padding-bottom: 4px; }
+    .catbtn { flex: 0 0 auto; }
     .tabbar {
       flex-wrap: nowrap;
       overflow-x: auto;
@@ -138,24 +207,37 @@
 <h1>HUP L&D — Pocket Guide</h1>
 <div class="subtitle">Organized by clinical scenario — everything you need for a given situation is on one tab · 7 Ravdin, Epic 4106</div>
 
+<div class="catbar">
+<button class="catbtn active" data-cat="logistics" onclick="showCategory('logistics')">Logistics</button>
+<button class="catbtn" data-cat="antepartum" onclick="showCategory('antepartum')">Antepartum</button>
+<button class="catbtn" data-cat="delivery" onclick="showCategory('delivery')">Delivery</button>
+<button class="catbtn" data-cat="postpartum" onclick="showCategory('postpartum')">Postpartum</button>
+<button class="catbtn" data-cat="reference" onclick="showCategory('reference')">Reference</button>
+<button class="catbtn" data-cat="practice" onclick="showCategory('practice')">Practice</button>
+</div>
+
 <div class="tabbar">
-<button class="tabbtn active" data-tab="logistics" onclick="showTab('logistics')">Logistics & Role</button>
-<button class="tabbtn" data-tab="workflow" onclick="showTab('workflow')">Workflow / What to Do</button>
-<button class="tabbtn" data-tab="labor" onclick="showTab('labor')">Normal Labor</button>
-<button class="tabbtn" data-tab="fhr" onclick="showTab('fhr')">FHR / Fetal Status</button>
-<button class="tabbtn" data-tab="bleeding" onclick="showTab('bleeding')">Bleeding</button>
-<button class="tabbtn" data-tab="htn" onclick="showTab('htn')">HTN / Preeclampsia</button>
-<button class="tabbtn" data-tab="abdpain" onclick="showTab('abdpain')">Abdominal Pain</button>
-<button class="tabbtn" data-tab="rom" onclick="showTab('rom')">ROM / Chorio</button>
-<button class="tabbtn" data-tab="ptl" onclick="showTab('ptl')">Preterm Labor</button>
-<button class="tabbtn" data-tab="dfm" onclick="showTab('dfm')">Decreased Fetal Movement</button>
-<button class="tabbtn" data-tab="delivery" onclick="showTab('delivery')">Delivery Day / Dystocia</button>
-<button class="tabbtn" data-tab="csection" onclick="showTab('csection')">C-Section</button>
-<button class="tabbtn" data-tab="pph" onclick="showTab('pph')">PPH</button>
-<button class="tabbtn" data-tab="postpartum" onclick="showTab('postpartum')">Postpartum</button>
-<button class="tabbtn" data-tab="ebm" onclick="showTab('ebm')">Key Trials</button>
-<button class="tabbtn" data-tab="assessment" onclick="showTab('assessment')">Assessment Framework</button>
-<button class="tabbtn" data-tab="cheat" onclick="showTab('cheat')">Cheat Sheet</button>
+<button class="tabbtn active" data-tab="logistics" data-cat="logistics" onclick="showTab('logistics')">Logistics & Role</button>
+<button class="tabbtn" data-tab="workflow" data-cat="logistics" onclick="showTab('workflow')">Workflow / What to Do</button>
+<button class="tabbtn" data-tab="labor" data-cat="antepartum" onclick="showTab('labor')">Normal Labor</button>
+<button class="tabbtn" data-tab="fhr" data-cat="antepartum" onclick="showTab('fhr')">FHR / Fetal Status</button>
+<button class="tabbtn" data-tab="bleeding" data-cat="antepartum" onclick="showTab('bleeding')">Bleeding</button>
+<button class="tabbtn" data-tab="htn" data-cat="antepartum" onclick="showTab('htn')">HTN / Preeclampsia</button>
+<button class="tabbtn" data-tab="abdpain" data-cat="antepartum" onclick="showTab('abdpain')">Abdominal Pain</button>
+<button class="tabbtn" data-tab="rom" data-cat="antepartum" onclick="showTab('rom')">ROM / Chorio</button>
+<button class="tabbtn" data-tab="ptl" data-cat="antepartum" onclick="showTab('ptl')">Preterm Labor</button>
+<button class="tabbtn" data-tab="dfm" data-cat="antepartum" onclick="showTab('dfm')">Decreased Fetal Movement</button>
+<button class="tabbtn" data-tab="triage" data-cat="antepartum" onclick="showTab('triage')">Triage Complaints</button>
+<button class="tabbtn" data-tab="delivery" data-cat="delivery" onclick="showTab('delivery')">Delivery Day / Dystocia</button>
+<button class="tabbtn" data-tab="csection" data-cat="delivery" onclick="showTab('csection')">C-Section</button>
+<button class="tabbtn" data-tab="pph" data-cat="delivery" onclick="showTab('pph')">PPH</button>
+<button class="tabbtn" data-tab="postpartum" data-cat="postpartum" onclick="showTab('postpartum')">Postpartum</button>
+<button class="tabbtn" data-tab="ebm" data-cat="reference" onclick="showTab('ebm')">Key Trials</button>
+<button class="tabbtn" data-tab="assessment" data-cat="reference" onclick="showTab('assessment')">Assessment Framework</button>
+<button class="tabbtn" data-tab="cheat" data-cat="reference" onclick="showTab('cheat')">Cheat Sheet</button>
+<button class="tabbtn" data-tab="notes" data-cat="reference" onclick="showTab('notes')">Note Templates</button>
+<button class="tabbtn" data-tab="board" data-cat="reference" onclick="showTab('board')">Board Abbreviations</button>
+<button class="tabbtn" data-tab="decisiontree" data-cat="practice" onclick="showTab('decisiontree')">Decision Tree Practice</button>
 </div>
 
 <!-- ============ LOGISTICS ============ -->
@@ -174,25 +256,71 @@
   <li>Add your name/initials to the L&D board next to the patient(s) you're following</li>
   <li>Goal: follow ≥1 laboring patient per shift</li>
   <li>L&D led by <b>PGY4 Resident Chief</b> — your main contact; MFM fellow may also be present</li>
+  <li>Your <b>Resident Point Person (RPP)</b> this rotation is the PGY3 assigned as such for the block — your go-to when unsure what to do or have questions; they'll walk you through the board on day 1</li>
 </ul>
 <div class="grid2">
   <div><b>Scrubs</b></div><div>Misty green, from Ravdin Basement</div>
   <div><b>White coat</b></div><div>Not expected on L&D (OK to skip it)</div>
-  <div><b>Door code</b></div><div><code>0243</code> or <code>243</code> — don't post/share</div>
+  <div><b>Door code</b></div><div>Ask a team member — not posted here for security</div>
   <div><b>Lockers</b></div><div>8 on Ravdin 7 near conference room, temp code — email Phil if locked out</div>
 </div>
 <div class="never">Never do a cervical/pelvic exam without resident or APP supervision. Don't scrub into a STAT C-section unless instructed. Don't write notes in the chart.</div>
 </div>
+
+<div class="block alt">
+<h3>Day 1 Checklist</h3>
+<ul>
+  <li>Arrive on Ravdin 7 in time for 7am signout (6:30am Thursdays) — room is crowded until night team leaves, that's normal</li>
+  <li>Wear appropriate scrubs + shoes you don't mind getting dirty</li>
+  <li>Before arriving: review "Student Roles and Expectations" on Canvas + watch the board orientation video (RPP will also walk you through the board in person)</li>
+  <li>Complete (or be working through) the FHR Tracing and Labor modules on Canvas under Study Tools</li>
+</ul>
+<h4>What to bring</h4>
+<ul>
+  <li>Food (no set mealtimes — eat when hungry, even if residents aren't)</li>
+  <li>Laptop/tablet</li>
+  <li>Suture/knot-tying practice kit</li>
+  <li>Learning mindset</li>
+</ul>
+<div class="pearl">If stepping off the floor to eat, leave your phone number with the residents in case of an imminent delivery.</div>
+</div>
+
+<div class="block green">
+<h3>Floor Culture Notes</h3>
+<ul>
+  <li>When the team is slammed: hold off on questions, use the time to look things up yourself, practice suturing/tying, or check on patients</li>
+  <li>When the pace eases: ask questions, discuss patients — don't hesitate</li>
+  <li>This is a high-acuity floor with sometimes scary/difficult situations — reach out to your RPP if you're feeling upset, concerned, or shaken. That's expected support, not a weakness</li>
+</ul>
+</div>
+
 </div>
 
 <!-- ============ WORKFLOW ============ -->
 <div class="panel" id="panel-workflow">
 <h2 class="pageh">Workflow / What to Do — Step by Step</h2>
+<div class="block">
+<p>Every scenario below follows the same shape: <b>When this applies → What to do, in order → What to say/ask → Common mistakes → When to escalate.</b> Pick a scenario to jump straight to it.</p>
+</div>
 
+<div class="tabbar" style="margin-bottom:14px;">
+<button class="wfbtn active" data-wf="wf-admission" onclick="showWorkflow('wf-admission')">New Admission</button>
+<button class="wfbtn" data-wf="wf-laboring" onclick="showWorkflow('wf-laboring')">Following Laboring Patient</button>
+<button class="wfbtn" data-wf="wf-antepartum" onclick="showWorkflow('wf-antepartum')">Antepartum Coverage</button>
+<button class="wfbtn" data-wf="wf-delivery" onclick="showWorkflow('wf-delivery')">Delivery Imminent</button>
+<button class="wfbtn" data-wf="wf-csection" onclick="showWorkflow('wf-csection')">Called to C-Section</button>
+<button class="wfbtn" data-wf="wf-emergency" onclick="showWorkflow('wf-emergency')">Overhead Emergency</button>
+<button class="wfbtn" data-wf="wf-postpartum" onclick="showWorkflow('wf-postpartum')">Postpartum Rounds</button>
+<button class="wfbtn" data-wf="wf-downtime" onclick="showWorkflow('wf-downtime')">Downtime</button>
+<button class="wfbtn" data-wf="wf-pimped" onclick="showWorkflow('wf-pimped')">Don't Know / Pimped</button>
+</div>
+
+<div class="wf-block" id="wf-admission" style="display:block;">
 <div class="block alt">
-<h3>New Patient Rolls In — Full Framework</h3>
+<h3>New Patient Admission (Triage)</h3>
+<h4>When this applies</h4>
+<p>A new patient is being triaged/admitted — you weren't following her before now.</p>
 <h4>Step 1: Chart review BEFORE you walk in (aim for 3-5 min)</h4>
-<p><b>What to pull up in Epic and why:</b></p>
 <table class="mini">
 <tr><th>Source</th><th>What you're looking for</th><th>Why it matters</th></tr>
 <tr><td>Most recent OB note / problem list</td><td>GTPAL, confirmed EDD + dating method, chronic conditions, allergies, meds</td><td>Sets the baseline — you shouldn't ask the patient things already documented</td></tr>
@@ -224,7 +352,7 @@
 <h4>Step 3: Structure the interview</h4>
 <ol>
   <li>Chief complaint in her own words</li>
-  <li>HPI specific to the complaint (see the relevant scenario tab — Bleeding, ROM, PTL, etc. — for what to ask)</li>
+  <li>HPI specific to the complaint (see the relevant scenario tab — Bleeding, ROM, PTL, Triage Complaints, etc. — for what to ask)</li>
   <li>Confirm/update what you pulled from the chart rather than re-asking all of it</li>
   <li>Pertinent ROS (headache/visual changes, RUQ pain, fever, fetal movement)</li>
 </ol>
@@ -236,56 +364,363 @@ fluid [normal], placenta [clear of os / previa noted], presentation [vertex/bree
 She denies [pertinent negatives]. Exam/monitor: [findings].
 This is most consistent with [assessment], and my plan would be to [__]."</div>
 <div class="pearl">Notice this pulls directly from your chart review (growth, fluid, placenta, presentation) — that's what turns a bare fact-recitation into a presentation that shows you did the prep work.</div>
+
+<h4>Must-Know Numbers — Complete Checklist for This Scenario</h4>
+<table class="mini">
+<tr><th>Category</th><th>Number/criterion to know cold</th></tr>
+<tr><td>GBS prophylaxis</td><td>GBS+ → penicillin G or ampicillin first-line; PCN-allergic low risk → cefazolin; high anaphylaxis risk → clindamycin if susceptible, vancomycin if clindamycin-resistant</td></tr>
+<tr><td>Reactive NST</td><td>≥2 accelerations ≥15bpm above baseline lasting ≥15sec, within a 20-min window (10bpm/10sec if &lt;32w)</td></tr>
+<tr><td>ROM confirmation</td><td>Nitrazine (pH — turns blue), ferning (microscopy), pooling (speculum) — all three support the diagnosis</td></tr>
+<tr><td>Term definitions</td><td>Early term 37w0d-38w6d, Full term 39w0d-40w6d, Late term 41w0d-41w6d, Postterm ≥42w0d</td></tr>
+<tr><td>Dating reliability</td><td>1st-trimester US (CRL) trumps LMP if discordant &gt;5-7 days</td></tr>
+<tr><td>Bishop score</td><td>≥8 = favorable for induction; &lt;6 usually needs cervical ripening first</td></tr>
+</table>
+<p>Sources: GTPAL/Dating and Bishop Score on Normal Labor tab; ROM criteria on ROM/Chorio tab.</p>
+
+<h4>How to Weave Multiple Numbers Into One Presentation</h4>
+<div class="template">"This is [name], a [age]yo G_P____ at [EGA] by [dating method — 1st-tri US preferred
+if discordant from LMP]. [Chief complaint/HPI]. She's GBS-[positive/negative]
+[— if PCN-allergic: and I'd plan for cefazolin/clindamycin/vancomycin given her
+allergy history]. [If ROM concern: exam shows [+/−] nitrazine, ferning, and pooling].
+[If NST done: NST is reactive, meeting criteria with [X] accelerations of [Y] bpm].
+Assessment: [__]. Plan: [__]."</div>
+<div class="pearl">The pattern: dating method with its reliability caveat → GBS status with the actual antibiotic logic (not just "positive/negative") → confirmatory test results named specifically (not just "checked") → tied together into one assessment. Each number should change what you'd actually order, not just decorate the presentation.</div>
+
+<h4>Common mistakes</h4>
+<ul>
+  <li>Asking the patient questions that are already answered in the chart (wastes her time and makes you look unprepared)</li>
+  <li>Presenting a wall of facts with no assessment at the end</li>
+  <li>Not knowing the GBS/allergy status before orders are placed</li>
+</ul>
+<h4>Escalate when</h4>
+<p>Any pertinent positive on your ROS (bleeding, severe headache, decreased movement, fever) — tell the resident immediately rather than finishing the full interview first.</p>
+</div>
 </div>
 
-<div class="cols2">
+<div class="wf-block" id="wf-laboring" style="display:none;">
 <div class="block green">
-<h3>Your Patient Is Laboring</h3>
+<h3>Following a Laboring Patient</h3>
+<h4>When this applies</h4>
+<p>You've been assigned a patient in labor and are checking in over the course of your shift.</p>
+<h4>What you should know about her specifically (not just the strip)</h4>
+<ul>
+  <li>How was her due date determined — optimal early dating, or LMP only?</li>
+  <li>Gravidity/parity and prior pregnancy outcomes (prior delivery type, complications)</li>
+  <li>Current pregnancy complications and how they're being managed</li>
+  <li>Has her routine prenatal care been complete and on time?</li>
+  <li>If induced: why, and which induction/augmentation agents are being used (see Normal Labor tab)</li>
+  <li>Duration of latent vs. active labor for this specific patient so far</li>
+</ul>
+<h4>Ongoing monitoring</h4>
 <ol>
   <li>Check the board periodically — still assigned?</li>
   <li>Pop in without hovering; ask the nurse "anything change?"</li>
-  <li>Look at the strip yourself before the resident does — walk through it systematically (see "DR C BRAVADO" framework on the FHR/Fetal Status tab: risk factors → contractions → baseline → variability → accelerations → decelerations → overall category), form your own Category I/II/III read, then compare it to what the resident says</li>
-  <li>Ask to accompany the next cervical exam (q2–4h)</li>
+  <li>Review her FHR tracing at least once a day, ideally with the resident — walk through it systematically (see "DR C BRAVADO" framework on the FHR/Fetal Status tab: risk factors → contractions → baseline → variability → accelerations → decelerations → overall category), form your own Category I/II/III read, then compare it to what the resident says</li>
+  <li>Ask to accompany the next cervical exam (typically q4h in latent labor, q2h in active labor)</li>
   <li>Stay near the room as she approaches complete</li>
 </ol>
+<div class="never">Do not perform cervical checks yourself.</div>
+
+<h4>Must-Know Numbers — Complete Checklist for This Scenario</h4>
+<table class="mini">
+<tr><th>Category</th><th>Number/criterion to know cold</th></tr>
+<tr><td>FHR baseline</td><td>110-160 bpm normal</td></tr>
+<tr><td>Variability</td><td>Absent (undetectable) / Minimal (≤5bpm) / Moderate (6-25bpm, normal) / Marked (&gt;25bpm)</td></tr>
+<tr><td>Tachysystole</td><td>&gt;5 contractions/10min, averaged over 30min</td></tr>
+<tr><td>Adequate contractions</td><td>Montevideo units &gt;200 via IUPC, or palpably strong q2-3min by exam</td></tr>
+<tr><td>Active phase arrest</td><td>≥6cm + ROM + no cervical change ≥4h with adequate contractions (or ≥6h if inadequate/augmented)</td></tr>
+<tr><td>2nd stage arrest, nullip</td><td>≥3h pushing (≥4h with epidural)</td></tr>
+<tr><td>2nd stage arrest, multip</td><td>≥2h pushing (≥3h with epidural)</td></tr>
+<tr><td>Cervical exam frequency</td><td>~q4h in latent labor, ~q2h in active labor</td></tr>
+<tr><td>Bishop score</td><td>≥8 = favorable (like spontaneous labor); &lt;6 usually needs ripening</td></tr>
+</table>
+<p>All from the Normal Labor and FHR/Fetal Status tabs — this table just collects the numbers specifically relevant to a laboring patient in one place.</p>
+
+<h4>How to Weave Multiple Numbers Into One Presentation</h4>
+<div class="template">"[Name] is now [X] hours into active labor, [dilation trend — e.g., progressed from 6 to 8cm
+over the last 2 hours]. Contractions have been adequate — [Montevideo units over 200 on
+the IUPC / strong and q2-3min by exam]. Tracing remains Category [I/II], baseline [__],
+[variability], [decel status]. She's at [X hours] with [change/no change], so
+[we're progressing normally / we're approaching the 4-hour arrest window if this
+doesn't change / this already meets criteria for arrest given no change over 4h with
+adequate contractions]."</div>
+<div class="pearl">The pattern: state the trend (not a snapshot) → state contraction adequacy with its actual definition → state the tracing category → connect the timing to the specific threshold, proactively, before being asked. Using 3+ of these numbers together in one coherent statement is what separates "knows some facts" from "has the framework."</div>
+
+<h4>Common mistakes</h4>
+<ul>
+  <li>Checking in so rarely that you miss a meaningful change (or so often it becomes hovering)</li>
+  <li>Reading the tracing only when the resident does, instead of forming your own read first</li>
+  <li>Not knowing whether she's on Pitocin/at what rate when asked</li>
+</ul>
+<h4>Escalate when</h4>
+<p>Any new Category II/III finding, a fever, or a maternal symptom (severe pain, bleeding change) — tell the nurse/resident right away, don't wait for your next scheduled check-in.</p>
+</div>
 </div>
 
+<div class="wf-block" id="wf-antepartum" style="display:none;">
+<div class="block">
+<h3>Antepartum Coverage</h3>
+<h4>When this applies</h4>
+<p>A patient is admitted but not in labor — being monitored for a medical/obstetric indication (e.g., preeclampsia, PTL, PPROM latency).</p>
+<h4>Step by step</h4>
+<ol>
+  <li>Shadow MFM (Maternal-Fetal Medicine) rounds on Mondays, after signout</li>
+  <li>Review her chart before rounds — know the admitting indication and the specific monitoring plan (see the matching tab: HTN/Preeclampsia, Preterm Labor, or ROM/Chorio)</li>
+  <li>Deliveries and C-sections always take priority over antepartum rounding — if one is happening, go to that instead</li>
+  <li>Use the Antepartum Daily Note framework (Note Templates tab) for how to structure a check-in</li>
+</ol>
+
+<h4>Must-Know Numbers — Complete Checklist, by Admitting Diagnosis</h4>
+<table class="mini">
+<tr><th>If admitted for</th><th>Numbers/criteria to track daily</th></tr>
+<tr><td>Preeclampsia</td><td>BP ≥160/110 x2 ≥4h apart = severe; platelets &lt;100k; Cr &gt;1.1 or 2x baseline; LFTs ≥2x normal — any ONE upgrades to severe (HTN/Preeclampsia tab)</td></tr>
+<tr><td>PPROM (expectant management)</td><td>Fever ≥39.0°C once or 38.0-38.9°C x2 30min apart + 1 of (fetal tachycardia, leukocytosis, uterine tenderness, foul fluid) = chorio; steroids given if &lt;34w; Mag given if &lt;32w (ROM/Chorio tab)</td></tr>
+<tr><td>Preterm labor (threatened/latent)</td><td>Betamethasone course = 2 doses; Mag for neuroprotection if &lt;32w; tocolysis is a 48h bridge, not ongoing (Preterm Labor tab)</td></tr>
+<tr><td>Any antepartum admission</td><td>Daily fetal movement/FHR category; daily vitals trend, not just today's snapshot</td></tr>
+</table>
+<p>Each row maps directly to that diagnosis's own tab — this table is the "which numbers matter today" index across all of them.</p>
+
+<h4>How to Weave This Into a Presentation</h4>
+<div class="template">"[Name] is day [#] of admission for [indication]. [State the specific numbers tracked
+for that diagnosis — e.g., BP trending __, no severe features today / afebrile,
+tracing reassuring, on latency antibiotics day __ of __ / received both doses of
+betamethasone on [date], Mag not yet indicated at [EGA]]. If [specific trigger —
+matching that diagnosis's severe-feature/chorio/arrest criteria] develops, the plan
+would change to [specific next step]."</div>
+<div class="pearl">The pattern is identical across every antepartum diagnosis: state where she is on the diagnosis-specific numeric criteria today, then state the trigger that would change the plan — this is the contingency-planning habit (Assessment Framework tab) applied specifically to a multi-day admission.</div>
+
+<h4>Common mistakes</h4>
+<ul>
+  <li>Treating antepartum patients as lower priority to check on just because nothing acute is happening — a change here (new severe feature, new fever) is just as important to catch early</li>
+</ul>
+<h4>Escalate when</h4>
+<p>Any change matching that patient's admitting diagnosis's warning signs (see that diagnosis's tab) — same urgency as any acute change.</p>
+</div>
+</div>
+
+<div class="wf-block" id="wf-delivery" style="display:none;">
+<div class="block alt">
+<h3>Delivery Imminent — You're Called In</h3>
+<h4>When this applies</h4>
+<p>A nurse or resident tells you a delivery is close, or you notice your patient is approaching complete.</p>
+<h4>Step by step</h4>
+<ol>
+  <li>Go immediately — gown + gloves on even before the room/table is ready</li>
+  <li>Position where directed (usually beside, not in front)</li>
+  <li>Help with comfort/positioning: ice chips, heat pack, holding legs</li>
+  <li>Gown on delivery table + pull your own gloves early — have them ready before the table is set up</li>
+  <li>Watch for cues to help hand-over-hand with infant delivery and/or placenta — don't grab without being invited</li>
+  <li>Help retract during any vaginal repairs afterward</li>
+</ol>
+<p>Full clinical detail (shoulder dystocia algorithm, etc.) is on the Delivery Day / Dystocia tab.</p>
+
+<h4>Must-Know Numbers — Complete Checklist for This Scenario</h4>
+<table class="mini">
+<tr><th>Category</th><th>Number/criterion to know cold</th></tr>
+<tr><td>Apgar scoring</td><td>Scored at 1 and 5min (10min if still low); 0-2 pts each on Appearance, Pulse, Grimace, Activity, Respiration (5 categories, max 10)</td></tr>
+<tr><td>Apgar interpretation</td><td>7-10 normal; 4-6 moderately abnormal; 0-3 low, needs resuscitation</td></tr>
+<tr><td>Delayed cord clamping</td><td>~30-60 seconds for term, vigorous infants — improves neonatal iron stores</td></tr>
+<tr><td>2nd stage arrest (context for timing)</td><td>Nullip: ≥3h pushing (≥4h epidural); Multip: ≥2h (≥3h epidural) — see Normal Labor tab</td></tr>
+<tr><td>Shoulder dystocia documentation</td><td>Head delivery time and body delivery time both recorded — critical if HELPERR is invoked (Delivery Day tab)</td></tr>
+<tr><td>3rd stage</td><td>Normal placental delivery within ~30 min of infant delivery; longer raises retained placenta concern (PPH tab)</td></tr>
+</table>
+
+<h4>How to Weave Multiple Numbers Into a Presentation/Debrief</h4>
+<div class="template">"Delivery at [time], Apgars [X] and [Y] at 1 and 5 minutes [— name which categories
+were docked if not 10]. [Delayed cord clamping performed for ~__ seconds]. Placenta
+delivered at [time], [~__ min after infant, within normal 3rd-stage window].
+[If applicable: shoulder dystocia resolved with [maneuver] — head-to-body interval
+[__] seconds]."</div>
+<div class="pearl">The pattern: precise timestamps + the actual Apgar breakdown (not just the total) + confirming the 3rd stage stayed in the normal window — together these show you were tracking the delivery as a timed sequence with real thresholds, not just watching it happen.</div>
+
+<h4>Common mistakes</h4>
+<ul>
+  <li>Arriving un-gowned and losing time getting ready while the team waits</li>
+  <li>Standing where you block the resident's/attending's view or access</li>
+</ul>
+<h4>Escalate when</h4>
+<p>You don't — this is the team's moment to run the delivery. Your job is to help when asked and stay out of the way otherwise.</p>
+</div>
+</div>
+
+<div class="wf-block" id="wf-csection" style="display:none;">
+<div class="block green">
+<h3>Called to a C-Section</h3>
+<h4>When this applies</h4>
+<p>You're told to scrub in (or asked if you'd like to) for a C-section.</p>
+<h4>Step by step</h4>
+<ol>
+  <li>Confirm you're actually scrubbing (vs. observing) before gowning</li>
+  <li>Pull up the H&P/indication on your phone/workstation en route if possible</li>
+  <li>Introduce yourself to the patient in pre-op/holding if you can catch her before the OR</li>
+  <li>Scrub in properly; in the room, ask "where do you want me" rather than guessing</li>
+  <li>Follow graded responsibility as offered: suture-cutting → retraction → skin suturing/knot-tying</li>
+  <li>Limit talking — the patient is awake</li>
+</ol>
+<div class="never">Do not scrub into a STAT C-section unless instructed.</div>
+<p>Full indications list and detail on the C-Section tab.</p>
+
+<h4>Must-Know Numbers — Complete Checklist for This Scenario</h4>
+<table class="mini">
+<tr><th>Category</th><th>Number/criterion to know cold</th></tr>
+<tr><td>EBL estimation methods</td><td>Visual estimation (traditional, tends to underestimate) vs. QBL (Quantitative Blood Loss — weighing soaked materials, subtracting dry weight, more accurate)</td></tr>
+<tr><td>PPH threshold</td><td>≥1000mL blood loss (any route) or signs/symptoms of hypovolemia, regardless of delivery mode (PPH tab)</td></tr>
+<tr><td>Repeat C-section thresholds</td><td>≥2 prior low transverse C-sections, or any prior classical incision, are common repeat-section indications (C-Section tab)</td></tr>
+<tr><td>Post-op recovery targets</td><td>Typical discharge ~POD2-3 for uncomplicated C-section; bowel function (flatus/BM) and ambulation are the functional milestones tracked (Note Templates tab)</td></tr>
+<tr><td>Antibiotic timing</td><td>Prophylactic antibiotics typically given within 60 min prior to incision</td></tr>
+</table>
+
+<h4>How to Weave This Into a Presentation/Debrief</h4>
+<div class="template">"This is [primary/repeat] C-section for [indication, stated specifically — e.g.,
+'arrest of dilation after 5 hours with adequate contractions' or 'repeat section,
+now her third, for two prior low transverse sections']. EBL was [estimated at __mL
+by [visual/QBL]], [below/at/above] the 1000mL PPH threshold. [If relevant: prophylactic
+antibiotics given at [time], within the 60-min pre-incision window]."</div>
+<div class="pearl">The pattern: state the indication with its actual criteria (not just "failure to progress") + report EBL with the method used (not just a number) + note timing-sensitive details like antibiotic administration — each of these ties a raw fact back to a real threshold or standard.</div>
+
+<h4>Common mistakes</h4>
+<ul>
+  <li>Scrubbing in without confirming you're wanted (wastes time/sterile supplies if you have to step back)</li>
+  <li>Narrating or chatting during the case — the patient is awake and listening</li>
+</ul>
+<h4>Escalate when</h4>
+<p>N/A — you're supporting, not leading; flag concerns to the team quietly rather than acting independently.</p>
+</div>
+</div>
+
+<div class="wf-block" id="wf-emergency" style="display:none;">
 <div class="block">
 <h3>Overhead Emergency (STAT section, dystocia, PPH)</h3>
+<h4>When this applies</h4>
+<p>An emergency is called or unfolding — either your patient or another one on the floor.</p>
+<h4>Step by step</h4>
 <ol>
   <li>Move toward the room but <b>stay out of the way</b> unless waved in</li>
   <li>Don't ask questions during the event — debrief after</li>
-  <li>If already in the room, step to the wall unless given a task</li>
+  <li>If already in the room when it starts (e.g., your own patient), step to the wall unless given a task</li>
+  <li>After it resolves, ask a resident to walk you through what happened — a genuine teaching opportunity</li>
 </ol>
 <div class="never">Never insert yourself into a code/emergency uninvited — you can be more harmful than helpful in a crowded room.</div>
+
+<h4>Must-Know Numbers — Complete Checklist for This Scenario</h4>
+<table class="mini">
+<tr><th>Emergency type</th><th>Numbers/sequence to know cold</th></tr>
+<tr><td>Shoulder dystocia (HELPERR)</td><td>Help → Evaluate for episiotomy → Legs (McRoberts) → Pressure (suprapubic) → Enter (internal rotation) → Remove posterior arm → Roll (Gaskin) — in this order (Delivery Day tab)</td></tr>
+<tr><td>PPH (4 T's, by frequency)</td><td>Tone ~70-80% → Trauma ~20% → Tissue ~10% → Thrombin &lt;1% (PPH tab)</td></tr>
+<tr><td>PPH threshold</td><td>≥1000mL blood loss (any route) or signs/symptoms of hypovolemia</td></tr>
+<tr><td>Atony medication ladder</td><td>Bimanual massage → oxytocin → methylergonovine (avoid HTN) → carboprost (avoid asthma) → misoprostol → TXA adjunct (PPH tab)</td></tr>
+<tr><td>Category III tracing</td><td>Absent variability + recurrent late/variable decels or bradycardia, or sinusoidal — triggers urgent resuscitation ± expedited delivery (FHR tab)</td></tr>
+<tr><td>EBL estimation</td><td>QBL (weighing materials) more accurate than visual estimate</td></tr>
+</table>
+
+<h4>How to Weave This Into a Debrief Afterward</h4>
+<div class="template">"That was [shoulder dystocia/PPH/Category III event] — [maneuvers/interventions used,
+in the order they happened]. [If dystocia: head-to-body interval was ~[__] seconds,
+resolved with [specific maneuver]]. [If PPH: EBL was [~__mL by QBL/visual], cause was
+[T] given [finding], resolved with [intervention on the ladder]]."</div>
+<div class="pearl">The pattern: name the actual sequence used (not just "they did stuff"), tie the outcome back to the specific criterion that defined the emergency (EBL threshold, HELPERR step, deceleration criteria), and use the debrief to test whether you can reconstruct the logic, not just the memory of what happened.</div>
+
+<h4>Common mistakes</h4>
+<ul>
+  <li>Asking "what's happening?" mid-emergency, which pulls attention away from the patient</li>
+  <li>Leaving the area entirely instead of staying nearby in case you're needed</li>
+</ul>
+<h4>Escalate when</h4>
+<p>N/A — by definition this is already the escalated state; your job is to support without adding noise.</p>
 </div>
 </div>
 
-<div class="cols2">
+<div class="wf-block" id="wf-postpartum" style="display:none;">
 <div class="block alt">
-<h3>Downtime</h3>
+<h3>Postpartum Rounds</h3>
+<h4>When this applies</h4>
+<p>Daily rounding on patients who have delivered.</p>
+<h4>Step by step</h4>
 <ol>
-  <li>Default to PEC (triage) — ask if you can take a history</li>
-  <li>Shadow a Mag check</li>
-  <li>Work through the Labor/FHR Canvas modules</li>
-  <li>Check on postpartum patients from deliveries you attended</li>
-  <li>Stay locatable — don't disappear</li>
+  <li>Review the chart before signout — do <b>not</b> pre-round in person (avoid disturbing new families)</li>
+  <li>Check in with the rotating POGA attending after signout — introduce yourself, name your patient(s)</li>
+  <li>Walk in with the attending if possible; if not, present later that day and do your own check-in separately</li>
+  <li>Check on your patient(s) at least once daily using the Postpartum Daily Note framework (Note Templates tab)</li>
 </ol>
+<div class="never">Do not write notes in the chart.</div>
+
+<h4>Must-Know Numbers — Complete Checklist for This Scenario</h4>
+<table class="mini">
+<tr><th>Category</th><th>Number/criterion to know cold</th></tr>
+<tr><td>Fundal descent</td><td>At/near umbilicus right after delivery, then descends ~1 fingerbreadth (~1cm) per day</td></tr>
+<tr><td>Lochia timeline</td><td>Rubra (bloody, days 1-3) → serosa (pink/brown, days 4-10) → alba (yellow-white, day 10+)</td></tr>
+<tr><td>Postpartum fever timing (7 W's)</td><td>POD1 = Wind (atelectasis); POD2-3 = Womb/Water (endometritis/UTI); POD4-7 = Wound/Walking/Weaning (wound infection/DVT/mastitis) — Postpartum tab</td></tr>
+<tr><td>PPH threshold</td><td>≥1000mL blood loss or signs/symptoms of hypovolemia — relevant if reviewing delivery details</td></tr>
+<tr><td>Discharge targets</td><td>Vaginal delivery often POD1-2; uncomplicated C-section often POD2-3</td></tr>
+<tr><td>Rh/Rubella</td><td>Rhogam if Rh-negative mom + Rh-positive/unknown baby; rubella vaccine if non-immune, given before discharge</td></tr>
+</table>
+
+<h4>How to Weave Multiple Numbers Into a Presentation</h4>
+<div class="template">"[Name], POD[#] s/p [delivery type]. Fundus is [__ fingerbreadths above/below
+umbilicus], [appropriate/not appropriate] for POD[#]. Lochia is [rubra/serosa/alba],
+[matching/not matching] expected timeline. [Afebrile / febrile to __, and given
+POD[#] the most likely cause is __ per the timing pattern]. [Rh status: __, Rhogam
+[given/pending]]. [Rubella: immune/vaccinated]. Anticipating discharge [today/
+tomorrow], meeting criteria of [__]."</div>
+<div class="pearl">The pattern: state fundus/lochia against their expected trajectory (not just "normal") → if there's a fever, use the POD-based timing logic to lead your differential → close with the specific pending items (Rhogam/rubella) and discharge criteria. This turns a routine check into a presentation that shows you know what "on track" actually means for that specific day.</div>
+
+<h4>Common mistakes</h4>
+<ul>
+  <li>Pre-rounding in person before the team (disrupts new families unnecessarily)</li>
+  <li>Not knowing the delivery details (EBL, complications) when presenting</li>
+</ul>
+<h4>Escalate when</h4>
+<p>New fever, heavy bleeding, or a symptom matching the Postpartum Fever ddx (Postpartum tab) — flag same-day, don't wait for the next day's rounds.</p>
+</div>
 </div>
 
+<div class="wf-block" id="wf-downtime" style="display:none;">
 <div class="block green">
+<h3>Downtime</h3>
+<h4>When this applies</h4>
+<p>Nothing urgent is happening and you have unstructured time.</p>
+<h4>Step by step, in priority order</h4>
+<ol>
+  <li>Default to PEC (triage) — ask if you can take a history on a new patient there</li>
+  <li>Shadow a Mag check on a patient who's on Mag</li>
+  <li>Check on postpartum patients from deliveries you attended earlier in the shift</li>
+  <li>Work through the Labor/FHR Canvas modules, or this guide's Decision Tree Practice tab</li>
+</ol>
+<h4>Common mistakes</h4>
+<ul>
+  <li>Disappearing somewhere you can't be reached — always stay locatable</li>
+  <li>Defaulting to your phone instead of one of the above options</li>
+</ul>
+<h4>Escalate when</h4>
+<p>N/A — this is unstructured time by definition; just stay ready to be pulled in.</p>
+</div>
+</div>
+
+<div class="wf-block" id="wf-pimped" style="display:none;">
+<div class="block">
 <h3>Don't Know What's Going On / Getting Pimped</h3>
+<h4>When this applies</h4>
+<p>You've walked into a situation without context, or you're asked a question you don't know the answer to.</p>
+<h4>Step by step</h4>
 <ol>
   <li>Ask the nurse first — fast, and they're usually happy to orient you</li>
   <li>Pull the chart yourself before asking a resident something Epic could answer</li>
   <li>When pimped: say what you know, then name the gap ("I know it's related to X but not sure of the exact criteria") — don't guess and state it as fact</li>
-  <li>Look it up right after and follow up later if relevant — shows initiative</li>
+  <li>Look it up right after (this guide, UpToDate) and follow up later if relevant — shows initiative</li>
 </ol>
+<h4>Common mistakes</h4>
+<ul>
+  <li>Guessing confidently instead of naming the gap — attendings notice and prefer honesty</li>
+  <li>Never circling back after looking something up, so the same gap resurfaces later</li>
+</ul>
+<h4>Escalate when</h4>
+<p>N/A — this is itself the resolution step for uncertainty; there's no further escalation needed beyond asking.</p>
 </div>
 </div>
 </div>
 
 <!-- ============ NORMAL LABOR ============ -->
+
 <div class="panel" id="panel-labor">
 <h2 class="pageh">Normal Labor — Stages, GTPAL, Induction</h2>
 
@@ -346,6 +781,15 @@ This is most consistent with [assessment], and my plan would be to [__]."</div>
 
 <div class="block alt">
 <h3>Induction / Augmentation Agents — Explained</h3>
+<h4>Indications for Induction of Labor (IOL)</h4>
+<ul>
+  <li><b>Maternal:</b> preeclampsia/gestational HTN (see HTN tab — timing depends on severity/GA), chronic HTN, pregestational or poorly-controlled gestational diabetes, intrahepatic cholestasis of pregnancy (ICP — see Triage Complaints/Itching, typically induced ~36-39w depending on bile acid level), significant renal disease, certain cardiac conditions, antiphospholipid syndrome/other maternal coagulopathies, other maternal medical conditions where continuing pregnancy poses risk</li>
+  <li><b>Fetal:</b> post-term or late-term pregnancy (typically offered ≥39w electively per ARRIVE trial, or medically indicated by 41-42w), IUGR/growth restriction, oligohydramnios, non-reassuring antenatal testing (abnormal NST/BPP/Dopplers), Rh alloimmunization/isoimmunization with fetal anemia risk, multiple gestation (timing varies by chorionicity — e.g., uncomplicated dichorionic twins ~38w, monochorionic ~34-37w), suspected fetal macrosomia (more often discussed than acted on alone — usually combined with another indication like diabetes)</li>
+  <li><b>Membrane/infection-related:</b> PROM at or near term (see ROM/Chorio tab), chorioamnionitis (delivery is part of treatment regardless of GA)</li>
+  <li><b>Other:</b> fetal demise, logistical/elective induction at ≥39w in an otherwise low-risk pregnancy (per ARRIVE — see Key Trials tab), maternal request in appropriate candidates, prior stillbirth (often prompts earlier delivery timing discussions)</li>
+  <li><b>Contraindications to induction (same general contraindications as labor itself):</b> placenta/vasa previa, transverse lie, active genital herpes, prior classical C-section or extensive uterine surgery, umbilical cord prolapse, category III tracing (delivery indicated but not via induced labor)</li>
+</ul>
+<div class="pearl">On the board/in the details column, IOL is often paired with the reason (e.g., "IOL GDMA1," "IOL dFM & FGR") — that pairing IS the indication, so read the abbreviation next to IOL as the answer to "why is she being induced."</div>
 <ul>
   <li><b>Cervical ripening</b> — the cervix has to soften/thin/dilate somewhat before labor can be effectively induced (see Bishop Score). If it's unfavorable, you "ripen" it first with:
     <ul>
@@ -355,7 +799,12 @@ This is most consistent with [assessment], and my plan would be to [__]."</div>
     </ul>
   </li>
   <li><b>Oxytocin (Pitocin):</b> a synthetic version of the hormone that stimulates uterine contractions — given as a continuous IV drip that's titrated up gradually to build an effective contraction pattern; this is what most people mean by "being induced" or "augmented"</li>
-  <li><b>Amniotomy (AROM = Artificial Rupture Of Membranes):</b> the provider uses a small hook-like tool to manually break the amniotic sac ("break the water") — this can jump-start or strengthen labor on its own, and is often done alongside Pitocin. Usually only done once the fetal head is engaged in the pelvis (so there's no space for the umbilical cord to slip down first — a cord prolapse risk)</li>
+  <li><b>Amniotomy (AROM = Artificial Rupture Of Membranes):</b> the provider uses a small hook-like tool to manually break the amniotic sac ("break the water") — this can jump-start or strengthen labor on its own, and is often done alongside Pitocin. Usually only done once the fetal head is engaged in the pelvis (so there's no space for the umbilical cord to slip down first — a cord prolapse risk)
+    <ul>
+      <li><b>Indications:</b> to induce or augment labor (speeds up active phase and can reduce need for as much Pitocin); to allow internal monitoring (placing a fetal scalp electrode or IUPC when external monitoring is inadequate); to assess fluid (checking for meconium) when clinically relevant; sometimes done simply to move a stalled labor forward when the cervix is otherwise favorable</li>
+      <li><b>Contraindications/cautions:</b> unengaged fetal head (cord prolapse risk), malpresentation, active genital herpes lesion, vasa previa or unknown placental location, HIV/Hep C with high viral load (can slightly increase transmission risk — case-by-case)</li>
+    </ul>
+  </li>
 </ul>
 <div class="warn"><b>Tachysystole</b> = too many contractions — specifically &gt;5 contractions in a 10-minute window, averaged over 30 minutes. This matters because contractions that are too frequent don't give the placenta/fetus enough recovery time between them, which can cause fetal heart rate changes. First step: reduce/stop Pitocin, reposition the mother, consider <b>terbutaline</b> (a medication that relaxes the uterine muscle to quickly calm down an overly active contraction pattern).</div>
 </div>
@@ -416,7 +865,13 @@ the plan is to [continue/augment/reassess in __ hrs]."</div>
 <div class="block">
 <h3>Read Every Strip — "DR C BRAVADO"</h3>
 <ul>
-  <li><b>D</b>etermine Risk (maternal/fetal risk factors)</li>
+  <li><b>D</b>etermine Risk — check for maternal/fetal risk factors that raise your baseline suspicion before you even look at the strip:
+    <ul>
+      <li><b>Maternal:</b> preeclampsia/HTN, diabetes (GDM or pregestational), fever/chorio, post-term or preterm gestation, prior C-section (uterine rupture risk), oligo/polyhydramnios, on Pitocin or Mag</li>
+      <li><b>Fetal:</b> IUGR/growth restriction, known anomalies, abnormal Dopplers, multiple gestation, breech/malpresentation</li>
+      <li>Why it matters: the same tracing (e.g., minimal variability) is read with more concern in a growth-restricted fetus than in an otherwise low-risk one — risk factors set your threshold for concern</li>
+    </ul>
+  </li>
   <li><b>R</b>eview <b>C</b>ontractions (freq, duration, strength)</li>
   <li><b>BRA</b>: <b>B</b>aseline rate (110–160 normal)</li>
   <li><b>V</b>ariability (absent/minimal/moderate/marked)</li>
@@ -432,7 +887,7 @@ the plan is to [continue/augment/reassess in __ hrs]."</div>
 <table class="mini">
 <tr><th>Cat</th><th>Meaning</th><th>Action</th></tr>
 <tr><td>I</td><td>Normal — baseline 110–160, moderate variability, no late/variable decels</td><td>Routine care</td></tr>
-<tr><td>II</td><td>Indeterminate — everything not I or III</td><td>Evaluate + intervene as indicated</td></tr>
+<tr><td>II</td><td>Indeterminate — everything not I or III</td><td>Start intrauterine resuscitation ("LOOK" — below) for the specific abnormal feature present (e.g., minimal variability, recurrent variable/late decels); reassess after; escalate if it doesn't improve or worsens toward Category III</td></tr>
 <tr><td>III</td><td>Absent variability + recurrent late/variable decels or bradycardia, or sinusoidal</td><td>Urgent resuscitation, may need expedited delivery</td></tr>
 </table>
 <table class="mini">
@@ -466,6 +921,20 @@ the plan is to [continue/augment/reassess in __ hrs]."</div>
 <tr><td>Prolonged</td><td>≥2min but &lt;10min</td><td>Many causes</td><td>Evaluate urgently, LOOK</td></tr>
 </table>
 <div class="pearl">Mnemonic: "Early = Head, Late = Placenta (bad), Variable = Cord."</div>
+</div>
+
+<div class="block green">
+<h3>Tracing: Interpretation → Assessment → Plan</h3>
+<p>Once you've walked through DR C BRAVADO and landed on a category, here's how that turns into the note/presentation:</p>
+<table class="mini">
+<tr><th>What you found</th><th>Assessment phrasing</th><th>Plan</th></tr>
+<tr><td>Baseline 110-160, moderate variability, no concerning decels</td><td>"Category I tracing, reassuring"</td><td>Continue routine monitoring — no intervention needed</td></tr>
+<tr><td>Minimal or marked variability alone, no other findings</td><td>"Category II tracing given [minimal/marked] variability"</td><td>Start LOOK (reposition, O2 if needed, IV fluids); reassess in a short interval; no need to alarm the room, but tell the resident/nurse you noted it</td></tr>
+<tr><td>Recurrent late decelerations</td><td>"Category II tracing given recurrent late decelerations, concerning for uteroplacental insufficiency"</td><td>LOOK immediately (especially: stop/reduce Pitocin, reposition, O2, IV bolus); reassess after resuscitation; escalate to resident if it doesn't improve</td></tr>
+<tr><td>Recurrent variable decelerations</td><td>"Category II tracing given recurrent variable decelerations, concerning for cord compression"</td><td>Reposition, consider amnioinfusion, check for cord prolapse; reassess</td></tr>
+<tr><td>Absent variability + recurrent late/variable decels, or bradycardia, or sinusoidal</td><td>"Category III tracing given [specific finding] — this is abnormal/non-reassuring"</td><td>Get the resident immediately, start LOOK, prepare for possible expedited delivery if it doesn't resolve — this is not a "monitor and see" situation</td></tr>
+</table>
+<div class="pearl">The plan should always name a specific next action and a reassessment point ("reassess in X minutes" or "if this doesn't resolve, next step is Y") — "continue to monitor" alone is a weak plan for anything Category II or III. See the Assessment Framework tab for the general contingency-planning habit this reflects.</div>
 </div>
 
 <div class="block alt">
@@ -595,8 +1064,10 @@ monitoring / prepare for delivery]."</div>
 [with/without severe-range readings]. She [endorses/denies] headache, visual changes,
 RUQ pain. Labs show platelets [__], Cr [__], LFTs [__]. [On Mag — DTRs intact,
 no clonus, I/Os adequate]. FHR Category [__]. This [does/does not] meet criteria for
-severe features, so the plan is [continue Mag + BP control / deliver given severe
-features and GA / expectant management to 37w]."</div>
+severe features (BP ≥160/110 x2 ≥4h apart, headache unresponsive to Tylenol, visual
+changes, RUQ/epigastric pain, plt <100k, Cr >1.1 or 2x baseline, LFTs ≥2x normal, or
+pulmonary edema — any ONE is sufficient), so the plan is [continue Mag + BP control /
+deliver given severe features and GA / expectant management to 37w]."</div>
 </div>
 
 <div class="block alt">
@@ -698,7 +1169,7 @@ now given chorio]."</div>
 <tr><td>Round ligament/MSK pain</td><td>Positional, sharp, unilateral, reproducible w/ movement</td><td>No regular contraction pattern, no cervical change</td></tr>
 <tr><td>UTI-triggered contractions</td><td>Dysuria, +UA, contractions resolve w/ tx</td><td>—</td></tr>
 </table>
-<div class="pearl">Fetal fibronectin (22–34w, membranes intact, minimal dilation) and TVUS cervical length both have strong negative predictive value to rule OUT true preterm labor.</div>
+<div class="pearl">Fetal fibronectin (fFN — a protein that leaks from the amniotic sac interface when the cervix is remodeling; tested 22–34w, membranes intact, minimal dilation) and TVUS cervical length (Trans-Vaginal UltraSound-measured cervical length) both have strong negative predictive value to rule OUT true preterm labor.</div>
 </div>
 
 <div class="cols2">
@@ -785,6 +1256,96 @@ antenatal testing / admit for closer monitoring]."</div>
 </div>
 </div>
 
+<!-- ============ TRIAGE COMPLAINTS ============ -->
+<div class="panel" id="panel-triage">
+<h2 class="pageh">Common Triage Complaints — Quick Index</h2>
+<div class="block">
+<p>One row per common chief complaint. For complaints with a full dedicated tab (bleeding, leaking fluid, decreased movement, abdominal pain, contractions), this gives the compressed version — go to that tab for the complete workup. Complaints without their own tab (headache, itching, swelling, urinary symptoms, nausea/vomiting, fever) are covered in full below.</p>
+</div>
+
+<div class="block alt">
+<h3>Quick Index — Already-Covered Complaints</h3>
+<table class="mini">
+<tr><th>Complaint</th><th>Top differential</th><th>Key pertinent +/-</th><th>Go to</th></tr>
+<tr><td>"I think I'm in labor" / contractions</td><td>True labor vs. Braxton-Hicks vs. PPROM vs. UTI-triggered</td><td>Cervical change on serial exam is the deciding factor; fFN/cervical length can rule out</td><td>Preterm Labor tab (or Normal Labor if term)</td></tr>
+<tr><td>Vaginal bleeding</td><td>Previa, abruption, vasa previa, bloody show, rupture</td><td>Painless vs. painful is the key branch point; never digital exam before previa is ruled out</td><td>Bleeding tab</td></tr>
+<tr><td>"My water broke" / leaking fluid</td><td>SROM, PPROM, incontinence, normal discharge</td><td>Nitrazine/ferning/pooling triad confirms true ROM</td><td>ROM/Chorio tab</td></tr>
+<tr><td>Decreased fetal movement</td><td>Benign/normal, IUGR/insufficiency, demise, oligohydramnios</td><td>NST first, then BPP/Dopplers if non-reassuring</td><td>Decreased Fetal Movement tab</td></tr>
+<tr><td>Abdominal pain</td><td>Labor, abruption, round ligament, appendicitis, pyelo, HELLP, rupture</td><td>Location, constancy, associated bleeding/fever distinguish these</td><td>Abdominal Pain tab</td></tr>
+</table>
+</div>
+
+<div class="block green">
+<h3>Headache</h3>
+<table class="mini">
+<tr><th>Dx</th><th>Pertinent (+)</th><th>Pertinent (−)</th></tr>
+<tr><td>Preeclampsia-related</td><td>New/different from baseline, unresponsive to Tylenol, associated visual changes/RUQ pain, elevated BP</td><td>BP normal, no visual/RUQ symptoms, responds to Tylenol</td></tr>
+<tr><td>Migraine</td><td>Prior history of similar headaches, photophobia/phonophobia, throbbing/unilateral, possible aura</td><td>BP normal, no new neuro deficits</td></tr>
+<tr><td>Tension headache</td><td>Bilateral, band-like, stress-associated, responds to rest/Tylenol</td><td>No visual changes, normal BP, no neuro deficits</td></tr>
+<tr><td>Post-dural puncture headache (if recent epidural/spinal)</td><td>Positional — worse sitting/standing, better lying flat; recent neuraxial procedure</td><td>No BP elevation, no visual changes</td></tr>
+</table>
+<div class="pearl">Plan: check BP and urine protein first — any headache in the second half of pregnancy gets a preeclampsia workup (BP, UP:C or urine protein, platelets, LFTs, Cr) before being called benign. Severe/persistent/unresponsive headache with an elevated BP is treated as preeclampsia with severe features until proven otherwise.</div>
+</div>
+
+<div class="block">
+<h3>Itching / Pruritus</h3>
+<table class="mini">
+<tr><th>Dx</th><th>Pertinent (+)</th><th>Pertinent (−)</th></tr>
+<tr><td>Intrahepatic Cholestasis of Pregnancy (ICP)</td><td>Palms/soles itching, worse at night, no rash, 3rd trimester, elevated bile acids/LFTs</td><td>No primary skin lesions (itching without a rash is the hallmark)</td></tr>
+<tr><td>PUPPP (Pruritic Urticarial Papules and Plaques of Pregnancy)</td><td>Itchy rash starting in abdominal striae, often 3rd trimester, primigravida</td><td>Normal bile acids/LFTs, rash IS present (unlike ICP)</td></tr>
+<tr><td>Normal pregnancy-related itching</td><td>Mild, diffuse, no palm/sole predominance, no rash</td><td>Normal labs, no sleep disruption</td></tr>
+</table>
+<div class="pearl">Plan: send bile acids and LFTs for any itching that's worse on palms/soles or disrupting sleep, especially without a visible rash. ICP matters because it raises stillbirth risk and often changes delivery timing (typically delivery recommended around 36-39w depending on bile acid level).</div>
+</div>
+
+<div class="block alt">
+<h3>Swelling / Edema</h3>
+<table class="mini">
+<tr><th>Dx</th><th>Pertinent (+)</th><th>Pertinent (−)</th></tr>
+<tr><td>Normal pregnancy edema</td><td>Bilateral, gradual onset, lower extremities, improves with elevation/overnight</td><td>Normal BP, no proteinuria, no unilateral swelling</td></tr>
+<tr><td>Preeclampsia-related edema</td><td>Rapid onset, facial/hand involvement, associated with elevated BP</td><td>Not the deciding factor alone — BP and labs matter more than edema severity</td></tr>
+<tr><td>DVT (Deep Vein Thrombosis)</td><td>Unilateral swelling, calf pain/tenderness, warmth, cord-like feel</td><td>Bilateral, symmetric swelling argues against DVT</td></tr>
+</table>
+<div class="pearl">Plan: edema alone (even significant) is not diagnostic of preeclampsia — check BP and urine protein regardless of how dramatic the swelling looks. Any unilateral asymmetric swelling gets a DVT workup (lower extremity Doppler ultrasound).</div>
+</div>
+
+<div class="block green">
+<h3>Urinary Symptoms</h3>
+<table class="mini">
+<tr><th>Dx</th><th>Pertinent (+)</th><th>Pertinent (−)</th></tr>
+<tr><td>UTI (cystitis)</td><td>Dysuria, urgency, frequency, suprapubic discomfort, +UA (leukocyte esterase/nitrites)</td><td>No fever, no CVA tenderness</td></tr>
+<tr><td>Pyelonephritis</td><td>Fever, CVA tenderness/flank pain, nausea/vomiting, +UA and +urine culture</td><td>—</td></tr>
+<tr><td>Normal pregnancy urinary frequency</td><td>Frequency without dysuria/urgency, worse as pregnancy progresses (bladder compression)</td><td>−UA, no dysuria, no fever</td></tr>
+<tr><td>Labor (urinary urgency can be a labor symptom)</td><td>Associated with contractions/pelvic pressure</td><td>−UA</td></tr>
+</table>
+<div class="pearl">Plan: UA + urine culture for any urinary symptoms in pregnancy (asymptomatic bacteriuria is also treated in pregnancy, unlike in non-pregnant patients, due to pyelonephritis risk). Pyelo in pregnancy usually warrants admission for IV antibiotics.</div>
+</div>
+
+<div class="block">
+<h3>Nausea / Vomiting</h3>
+<table class="mini">
+<tr><th>Dx</th><th>Pertinent (+)</th><th>Pertinent (−)</th></tr>
+<tr><td>Normal pregnancy N/V ("morning sickness")</td><td>1st trimester predominant, tolerating some oral intake, stable weight</td><td>No RUQ pain, normal BP, no significant dehydration</td></tr>
+<tr><td>Hyperemesis Gravidarum</td><td>Persistent vomiting, weight loss (&gt;5% pre-pregnancy weight), ketonuria, dehydration, electrolyte abnormalities</td><td>—</td></tr>
+<tr><td>HELLP / severe preeclampsia</td><td>3rd trimester, associated RUQ/epigastric pain, elevated BP, abnormal labs (LFTs/platelets)</td><td>No RUQ pain, normal BP, normal labs argue against</td></tr>
+<tr><td>Gastroenteritis</td><td>Associated diarrhea, sick contacts, self-limited</td><td>—</td></tr>
+</table>
+<div class="pearl">Plan: new N/V in the 2nd-3rd trimester (not classic 1st trimester morning sickness) should prompt a preeclampsia/HELLP screen (BP, labs) before assuming it's benign — this presentation is a classic HELLP mimic of "just a stomach bug."</div>
+</div>
+
+<div class="block alt">
+<h3>Fever (Antepartum)</h3>
+<table class="mini">
+<tr><th>Dx</th><th>Pertinent (+)</th><th>Pertinent (−)</th></tr>
+<tr><td>Chorioamnionitis</td><td>Confirmed ROM, uterine tenderness, fetal tachycardia, foul fluid (full criteria on ROM/Chorio tab)</td><td>Membranes intact argues strongly against</td></tr>
+<tr><td>Pyelonephritis</td><td>CVA tenderness, dysuria, +UA/urine culture</td><td>No urinary symptoms</td></tr>
+<tr><td>Viral illness (URI, flu, etc.)</td><td>Associated cough/congestion/myalgias, sick contacts</td><td>No uterine tenderness, no urinary symptoms</td></tr>
+<tr><td>Appendicitis or other intraabdominal source</td><td>Localized abdominal pain, anorexia, leukocytosis</td><td>—</td></tr>
+</table>
+<div class="pearl">Plan: check FHR (fetal tachycardia is a chorio clue), assess membrane status, UA, and consider a broader infectious workup based on associated symptoms — don't anchor on chorio if membranes are confirmed intact.</div>
+</div>
+</div>
+
 <!-- ============ DELIVERY ============ -->
 <div class="panel" id="panel-delivery">
 <h2 class="pageh">Delivery Day — 2nd/3rd Stage & Shoulder Dystocia</h2>
@@ -853,7 +1414,8 @@ Plan: [continue observation / Pitocin titration / anticipate delivery]"</div>
   <li>Placenta previa / vasa previa</li>
   <li>Repeat (prior classical or ≥2 prior low transverse, or maternal request)</li>
   <li>Cord prolapse (emergent)</li>
-  <li>Active herpes lesion, certain maternal medical conditions</li>
+  <li>Active genital herpes lesion or prodromal symptoms at labor onset</li>
+  <li>Maternal medical conditions incompatible with pushing/vaginal delivery — e.g., severe cardiac disease (contraindication to Valsalva), certain aortic/vascular conditions, some prior uterine surgeries beyond low transverse C-section</li>
 </ul>
 </div>
 <div class="block alt">
@@ -887,7 +1449,7 @@ Anesthesia: [spinal/epidural/general]. Relevant risk factors: [__]."</div>
 <tr><td><b>T</b>one</td><td>~70-80%</td><td>Myometrium fails to contract on spiral arteries after separation (risk: overdistended uterus, prolonged labor, chorio, grand multip) → boggy uterus</td></tr>
 <tr><td><b>T</b>rauma</td><td>~20%</td><td>Mechanical disruption — laceration, hematoma, uterine rupture/inversion</td></tr>
 <tr><td><b>T</b>issue</td><td>~10%</td><td>Retained placenta/clots prevent contraction over that segment — "missing portion" on inspection</td></tr>
-<tr><td><b>T</b>hrombin</td><td>&lt;1%</td><td>Coagulopathy (DIC from abruption/AFE) — fibrinogen drops first/fastest</td></tr>
+<tr><td><b>T</b>hrombin</td><td>&lt;1%</td><td>Coagulopathy (DIC = Disseminated Intravascular Coagulation, from abruption or AFE = Amniotic Fluid Embolism) — fibrinogen drops first/fastest</td></tr>
 </table>
 <div class="pearl">Definition: ≥1000mL blood loss (any route) or signs/symptoms of hypovolemia, regardless of delivery mode.</div>
 </div>
@@ -934,7 +1496,7 @@ prepare for OR if refractory]."</div>
 <h3>Pimping Pearls</h3>
 <dl class="qa">
 <dt>Why is fibrinogen checked first in suspected obstetric coagulopathy?</dt>
-<dd>Fibrinogen is the first factor to drop and drops disproportionately in obstetric hemorrhage/DIC (e.g., abruption, AFE) compared to other pregnancies' baseline elevated fibrinogen.</dd>
+<dd>Fibrinogen is the first factor to drop and drops disproportionately in obstetric hemorrhage/DIC (Disseminated Intravascular Coagulation — e.g., from abruption or AFE/Amniotic Fluid Embolism) compared to other pregnancies' baseline elevated fibrinogen.</dd>
 <dt>Why is oxytocin first-line for atony over ergot/prostaglandin agents?</dt>
 <dd>Best safety profile, fewest contraindications, and standard first-line per ACOG — other agents reserved for refractory cases or when oxytocin is contraindicated/insufficient.</dd>
 </dl>
@@ -1011,7 +1573,7 @@ Plan: [continue routine care / discharge planning]"</div>
 <tr><td>CHAP (2022)</td><td>Treatment target for chronic HTN in pregnancy (&lt;140/90 vs. higher threshold)</td><td>Tighter control (&lt;140/90) improved outcomes without increasing SGA — changed chronic HTN treatment threshold</td></tr>
 <tr><td>HYPITAT (2009)</td><td>Induction vs. expectant mgmt for gestational HTN/mild preeclampsia at term</td><td>Induction reduced maternal morbidity without worsening neonatal outcomes — supports delivery at term for these diagnoses</td></tr>
 <tr><td>Term Breech Trial (2000)</td><td>Planned C-section vs. vaginal delivery for term breech</td><td>C-section reduced perinatal morbidity/mortality — shifted practice toward planned C-section for breech presentation</td></tr>
-<tr><td>PROLONG (2019)</td><td>17-OHP progesterone for preterm birth prevention (recurrent PTB)</td><td>Failed to show benefit (contradicted earlier positive trial) — led to withdrawal of 17-OHP from the market</td></tr>
+<tr><td>PROLONG (2019)</td><td>17-OHP (17-alpha-hydroxyprogesterone caproate — a synthetic progesterone shot) for preterm birth (PTB) prevention (recurrent PTB)</td><td>Failed to show benefit (contradicted earlier positive trial) — led to withdrawal of 17-OHP from the market</td></tr>
 <tr><td>CHIPS (2015)</td><td>Tight vs. less-tight BP control for non-severe chronic/gestational HTN</td><td>No difference in major outcomes — informed later, more nuanced targets (see CHAP above)</td></tr>
 <tr><td>FASTER (2005)</td><td>First- vs. second-trimester aneuploidy screening strategies</td><td>Combined first-trimester screening performed comparably to later strategies — supports early aneuploidy screening options</td></tr>
 </table>
@@ -1035,7 +1597,38 @@ with __], now [current status / key finding], concerning for OR consistent with
   <li>If it's a normal/reassuring situation, say so explicitly — "reassuring," "appropriate," "uncomplicated" — don't just go silent on the assessment because nothing is wrong</li>
   <li>One line is usually enough; add a differential only when the diagnosis is genuinely uncertain</li>
 </ul>
-<div class="pearl">The test of a good assessment: could someone who only heard your assessment (not your whole presentation) know what's going on and what you think is happening? If not, it's still just data.</div>
+</div>
+
+<div class="block green">
+<h3>How to Actually Derive the Assessment (not just phrase it)</h3>
+<p>The formula above tells you how to <i>say</i> the assessment. This is the checklist for how to <i>arrive at it</i> — the actual numbers to check, in order, before you decide what your interpretation is.</p>
+
+<h4>Worked example: "Normal laboring patient, progressing well"</h4>
+<ol>
+  <li><b>Confirm what phase she's in:</b> Latent (&lt;6cm) or Active (≥6cm)? This changes which clock you're using.</li>
+  <li><b>Check the rate of cervical change, not just the current number:</b>
+    <ul>
+      <li>Pull the last 2 exams and the time between them — e.g., "6cm → 8cm over 2 hours" = ~1cm/hr</li>
+      <li>Rough expected pace in active labor: multips often ~1-2cm/hr, nullips can be slower (~0.5-1.5cm/hr) — modern (Zhang) curves are slower than the old Friedman numbers, so don't panic at a nulliparous patient moving ~0.5cm/hr</li>
+      <li>The number that actually matters for calling something abnormal is the <b>arrest threshold</b>, not the rate: ≥6cm + ROM + <b>no change at all for ≥4h</b> with adequate contractions (or ≥6h if contractions are inadequate/being augmented) — see Normal Labor tab</li>
+    </ul>
+  </li>
+  <li><b>Check contraction adequacy</b> (this gates whether "no progress" even counts as a real arrest): freq q2-3min by palpation, or Montevideo units &gt;200 if an IUPC is in place. If contractions are NOT adequate, "no cervical change" doesn't yet mean arrest — it means augment first.</li>
+  <li><b>Check the FHR category:</b> must be Category I to call the tracing "reassuring" in your assessment — if it's II or III, that becomes part of the assessment, not a footnote.</li>
+  <li><b>Check maternal status:</b> afebrile, vitals stable, pain reasonably controlled — a normal assessment requires this to be true too, not just the cervix/tracing.</li>
+  <li><b>Conclude:</b> if change is occurring (even slowly) and hasn't hit the arrest threshold, contractions are adequate, tracing is Category I, and mom is stable → "progressing appropriately." If any one of these fails, that failure IS your assessment (e.g., "arrest of dilation" or "Category II tracing" becomes the lead, not an aside).</li>
+</ol>
+<div class="pearl">Notice the pattern: check phase → check rate/trend against a real threshold → check the gating factor (adequate contractions) → check FHR → check maternal status → THEN conclude. Skipping straight to "she's progressing well" without checking the threshold and the gating factor is guessing, not assessing.</div>
+
+<h4>The same 5-check pattern applies elsewhere — just swap the numbers</h4>
+<table class="mini">
+<tr><th>Scenario</th><th>What you're checking (in order)</th></tr>
+<tr><td>Preeclampsia severity</td><td>BP trend (≥160/110 x2 ≥4h apart?) → any severe symptom (headache/visual/RUQ)? → platelets &lt;100k? → Cr &gt;1.1? → LFTs ≥2x normal? → ANY one positive = severe</td></tr>
+<tr><td>PPROM vs. chorio</td><td>Confirm ROM (nitrazine/ferning/pooling) → temp (≥39.0°C once or 38.0-38.9°C x2) → + fetal tachycardia/leukocytosis/uterine tenderness/foul fluid? → any one + fever = chorio</td></tr>
+<tr><td>PPH cause</td><td>Fundus firm or boggy? → inspect for laceration → inspect for retained tissue → check labs/clinical bleeding pattern for coagulopathy → whichever is positive drives the assessment</td></tr>
+<tr><td>Postpartum fever</td><td>What POD is it? (narrows the differential) → exam findings matching that POD's most likely cause → confirm/exclude with the specific findings on that tab's ddx table</td></tr>
+</table>
+<div class="pearl">General principle: identify the 3-5 concrete numbers/findings that actually define the diagnosis (not vague concepts), check each one in a consistent order, and let whichever one is abnormal become your assessment — rather than starting from a vibe and backfilling support for it.</div>
 </div>
 
 <div class="block alt">
@@ -1068,6 +1661,363 @@ with __], now [current status / key finding], concerning for OR consistent with
   <li>It's fine (and expected as a student) to have a shorter differential than a resident — 1-2 named possibilities with your reasoning beats a long unranked list</li>
 </ul>
 </div>
+
+<div class="block alt">
+<h3>The Gap Between Student and Intern Plans: Contingency</h3>
+<p>A student plan usually stops at "what we're doing right now." A thoughtful intern's plan also answers: <b>what would change this plan, and what would we do instead?</b> This is the single most common thing missing from a student's assessment/plan.</p>
+<div class="template">Formula: "[Current plan]. If [specific trigger — e.g., no cervical change in 4 more hours,
+tracing becomes Category III, temp spikes], we would [specific next step — e.g.,
+start Pitocin, move to C-section, start antibiotics]."</div>
+<table class="mini">
+<tr><th>Scenario</th><th>Contingency to include</th></tr>
+<tr><td>Laboring patient, early stage</td><td>"If no cervical change by [time], next step is [augment with Pitocin / reassess for arrest]"</td></tr>
+<tr><td>Trial of labor, augmenting</td><td>"If still not progressing after [X]h of adequate contractions, this would meet criteria for arrest (≥6cm + ROM + no cervical change for ≥4h with adequate contractions, or ≥6h if contractions are inadequate/being augmented) and move to C-section"</td></tr>
+<tr><td>PPROM, expectant management</td><td>"If she develops fever, uterine tenderness, or fetal tachycardia, that would be chorio and change the plan to delivery + antibiotics"</td></tr>
+<tr><td>Preeclampsia w/o severe features</td><td>"If she develops a severe feature (BP, symptoms, labs) before 37w, we'd move to delivery"</td></tr>
+<tr><td>Category II tracing</td><td>"If it doesn't improve with repositioning/O2/fluids, next step would be to consider expedited delivery"</td></tr>
+<tr><td>PPH, responding to uterotonics</td><td>"If bleeding continues despite the medication ladder, next step is balloon tamponade"</td></tr>
+</table>
+<div class="pearl">Naming the trigger AND the response is what separates this from just being cautious — "we'll keep an eye on it" is not a contingency. "If X, then Y" is.</div>
+</div>
+</div>
+
+<!-- ============ BOARD ABBREVIATIONS ============ -->
+<div class="panel" id="panel-board">
+<h2 class="pageh">L&D Grease Board — Abbreviation Guide</h2>
+
+<div class="block">
+<h3>Column Headers</h3>
+<table class="mini">
+<tr><th>Column</th><th>Meaning</th></tr>
+<tr><td>GA</td><td>Gestational Age</td></tr>
+<tr><td>BP</td><td>Blood Pressure</td></tr>
+<tr><td>Hbg</td><td>Hemoglobin</td></tr>
+<tr><td>Plt</td><td>Platelets</td></tr>
+<tr><td>ABO</td><td>Blood type (A/B/AB/O)</td></tr>
+<tr><td>AbScr</td><td>Antibody Screen (Rh antibody status) — "Ne" = negative</td></tr>
+<tr><td>Cr</td><td>Creatinine</td></tr>
+<tr><td>AST / ALT</td><td>Liver enzymes (part of preeclampsia/HELLP labs)</td></tr>
+<tr><td>Fibr</td><td>Fibrinogen</td></tr>
+<tr><td>Gluc</td><td>Glucose</td></tr>
+<tr><td>UP:C</td><td>Urine Protein:Creatinine ratio (preeclampsia workup)</td></tr>
+<tr><td>HBS</td><td>Hepatitis B Surface antigen status</td></tr>
+<tr><td>HIV / RPR</td><td>HIV status / Rapid Plasma Reagin (syphilis screen)</td></tr>
+<tr><td>I:O (24hr)</td><td>Ins and Outs (fluid intake vs. urine output) over 24h — important on Mag</td></tr>
+<tr><td>Mg</td><td>Magnesium level (if on Mag sulfate)</td></tr>
+<tr><td>T/O</td><td>Site-specific shorthand — likely "Time Out" or a turnover/transfer marker. Confirm exact meaning with your RPP; not a standardized abbreviation.</td></tr>
+</table>
+<div class="pearl">A colored/highlighted cell (yellow/red) usually flags an abnormal value — cross-reference against the normal ranges elsewhere in this guide (e.g., Plt &lt;100k, Cr &gt;1.1 for preeclampsia workup).</div>
+</div>
+
+<div class="block alt">
+<h3>"Details" Column — Common Abbreviations</h3>
+<table class="mini">
+<tr><th>Abbreviation</th><th>Meaning</th></tr>
+<tr><td>PTL</td><td>Preterm Labor</td></tr>
+<tr><td>r/i, r/o</td><td>Rule in / Rule out — what's being worked up</td></tr>
+<tr><td>gHTN</td><td>Gestational Hypertension</td></tr>
+<tr><td>wnl</td><td>Within Normal Limits</td></tr>
+<tr><td>EFW</td><td>Estimated Fetal Weight</td></tr>
+<tr><td>IOL</td><td>Induction Of Labor</td></tr>
+<tr><td>GDMA1 / GDMA2</td><td>Gestational Diabetes, class A1 (diet-controlled) or A2 (medication-controlled)</td></tr>
+<tr><td>PEC</td><td>PreEClampsia</td></tr>
+<tr><td>w/ SF, w/o SF</td><td>With / Without Severe Features (see HTN/Preeclampsia tab for the criteria)</td></tr>
+<tr><td>siPEC</td><td>Superimposed PreEClampsia — preeclampsia developing on top of chronic hypertension</td></tr>
+<tr><td>IOLAC</td><td>Induction Of Labor After Cesarean (i.e., a TOLAC/VBAC candidate being induced)</td></tr>
+<tr><td>TOLAC / VBAC</td><td>Trial Of Labor After Cesarean / Vaginal Birth After Cesarean</td></tr>
+<tr><td>"CNM"</td><td>Certified Nurse Midwife — indicates the midwifery service is managing this patient</td></tr>
+<tr><td>"MFM"</td><td>Maternal-Fetal Medicine — the high-risk OB subspecialty service is involved</td></tr>
+<tr><td>dFM</td><td>Decreased Fetal Movement</td></tr>
+<tr><td>FGR</td><td>Fetal Growth Restriction (same concept as IUGR)</td></tr>
+<tr><td>SVT</td><td>SupraVentricular Tachycardia (here, a fetal arrhythmia)</td></tr>
+<tr><td>pCS</td><td>Primary Cesarean Section (patient's first C-section)</td></tr>
+<tr><td>rCS #</td><td>Repeat Cesarean Section, with the number indicating which repeat (e.g., rCS#3 = third C-section)</td></tr>
+<tr><td>S/p</td><td>Status Post (i.e., after/history of)</td></tr>
+<tr><td>hx</td><td>History</td></tr>
+<tr><td>EBL</td><td>Estimated Blood Loss</td></tr>
+<tr><td>#</td><td>Pounds (birth weight shorthand, e.g., "8# (0215)" = 8 lb 2 oz or similar weight notation)</td></tr>
+</table>
+</div>
+
+<div class="block green">
+<h3>"L&D Tasks" Column — Common Entries</h3>
+<table class="mini">
+<tr><th>Entry</th><th>Meaning</th></tr>
+<tr><td>AROM</td><td>Artificial Rupture Of Membranes — a task/event to perform or that occurred (see Normal Labor tab for what this actually is)</td></tr>
+<tr><td>SVE</td><td>Sterile Vaginal Exam — a cervical check is due/was done</td></tr>
+<tr><td>ADM</td><td>Admission — patient is being admitted</td></tr>
+<tr><td>q3, q2, etc.</td><td>"Every 3 hours," "every 2 hours" — a recurring task frequency (e.g., vitals, exams)</td></tr>
+<tr><td>Time (e.g., 1540, 1530)</td><td>Military time the task is due — a scheduled action, not necessarily the abbreviation next to it</td></tr>
+<tr><td>Initials after ADM (e.g., "EB" in "adm EB")</td><td>Not a standard clinical abbreviation — most likely the initials of the admitting/covering provider or nurse. Unconfirmed — ask your RPP or the nurse on that patient.</td></tr>
+<tr><td>TN</td><td>Site-specific shorthand seen paired with times (e.g., "1540 TN") — meaning unconfirmed; possible options include a temperature check or a nursing task marker. Ask your RPP or a nurse to confirm on day 1.</td></tr>
+</table>
+<div class="warn">A few entries on this board (T/O, TN, and the initials-only entries) are local shorthand that isn't standardized across institutions — rather than guess, the fastest path is to ask your RPP or a nurse to walk you through the board's exact key on day 1, which the welcome email already promises will happen.</div>
+</div>
+
+<div class="block">
+<h3>Other Common L&D Abbreviations to Anticipate</h3>
+<p>Not all seen on this specific screenshot, but standard shorthand you'll run into constantly on the floor, in notes, and in presentations:</p>
+<table class="mini">
+<tr><th>Abbreviation</th><th>Meaning</th></tr>
+<tr><td>NSVD</td><td>Normal Spontaneous Vaginal Delivery</td></tr>
+<tr><td>OVD</td><td>Operative Vaginal Delivery (forceps or vacuum-assisted)</td></tr>
+<tr><td>C/S or CS</td><td>Cesarean Section</td></tr>
+<tr><td>VE</td><td>Vaginal Exam (same idea as SVE)</td></tr>
+<tr><td>ROM / SROM / AROM / PPROM</td><td>Rupture Of Membranes / Spontaneous ROM / Artificial ROM / Preterm Premature ROM</td></tr>
+<tr><td>NST</td><td>Non-Stress Test</td></tr>
+<tr><td>BPP</td><td>Biophysical Profile</td></tr>
+<tr><td>FHR / FHT</td><td>Fetal Heart Rate / Fetal Heart Tones</td></tr>
+<tr><td>ctx</td><td>Contractions</td></tr>
+<tr><td>NRFHT</td><td>Non-Reassuring Fetal Heart Tones</td></tr>
+<tr><td>meconium (or "mec")</td><td>Meconium-stained amniotic fluid — noted when membranes rupture</td></tr>
+<tr><td>Vtx</td><td>Vertex (head-down fetal presentation)</td></tr>
+<tr><td>LOA / ROA / LOT / ROT / LOP / ROP</td><td>Fetal head position — Left/Right, Occiput, Anterior/Transverse/Posterior (e.g., LOA = Left Occiput Anterior, the most common favorable position)</td></tr>
+<tr><td>EDD</td><td>Estimated Date of Delivery</td></tr>
+<tr><td>LMP</td><td>Last Menstrual Period</td></tr>
+<tr><td>PP hem / PPH</td><td>Postpartum Hemorrhage</td></tr>
+<tr><td>POD#</td><td>Post-Operative Day number (used after C-sections)</td></tr>
+<tr><td>GBS +/-</td><td>Group B Strep status (positive = needs intrapartum antibiotic prophylaxis)</td></tr>
+<tr><td>NICU</td><td>Neonatal Intensive Care Unit</td></tr>
+<tr><td>Epi'd / epidural in</td><td>Shorthand for epidural anesthesia placed</td></tr>
+<tr><td>Pit / Pitocin</td><td>Oxytocin drip (see Normal Labor tab)</td></tr>
+<tr><td>D&C</td><td>Dilation and Curettage (uterine procedure, e.g., for retained products)</td></tr>
+<tr><td>TAB / SAB</td><td>Therapeutic Abortion / Spontaneous Abortion (used in GYN history, not this delivery)</td></tr>
+<tr><td>RUQ / RLQ / LUQ / LLQ</td><td>Right Upper Quadrant / Right Lower Quadrant / Left Upper Quadrant / Left Lower Quadrant (abdominal exam location)</td></tr>
+<tr><td>CVA tenderness</td><td>Costo-Vertebral Angle tenderness — pain with percussion over the kidney area, a sign of pyelonephritis</td></tr>
+<tr><td>UA</td><td>Urinalysis</td></tr>
+<tr><td>DIC</td><td>Disseminated Intravascular Coagulation — a widespread clotting/bleeding disorder that can complicate abruption, AFE, or severe sepsis</td></tr>
+<tr><td>AFE</td><td>Amniotic Fluid Embolism — a rare, catastrophic maternal complication where amniotic fluid enters the bloodstream</td></tr>
+<tr><td>PTB</td><td>PreTerm Birth</td></tr>
+<tr><td>17-OHP</td><td>17-alpha-hydroxyprogesterone caproate — a synthetic progesterone injection formerly used for preterm birth prevention (withdrawn from market, see Key Trials tab)</td></tr>
+</table>
+</div>
+</div>
+
+<!-- ============ NOTE TEMPLATES ============ -->
+<div class="panel" id="panel-notes">
+<h2 class="pageh">Note Templates — Admission, Progress, Mag Check, Tracing Check</h2>
+
+<div class="block">
+<h3>General Framework — Every L&D Note</h3>
+<ul>
+  <li><b>SOAP for progress-type notes</b> (labor progress, Mag checks, tracing checks): Subjective → Objective → Assessment → Plan</li>
+  <li><b>H&P format for admission notes:</b> HPI → OB/GYN/Med/Surg/Social/Family history → Meds/Allergies → relevant labs → Exam → numbered Assessment/Plan (one numbered problem per active issue)</li>
+  <li>Every plan ends with: <b>"Discussed with [resident level] resident, who agreed with above stated plan."</b> — this is a required line, not optional, since a student can't independently order things</li>
+  <li>Objective vitals are given as a current value AND a range/trend for the shift (e.g., "BP 142/89 (Shift range: 129-151/80-92)") — a single number without the trend hides whether things are worsening or stable</li>
+</ul>
+</div>
+
+<div class="block alt">
+<h3>Admission H&P (from Triage)</h3>
+<div class="template">HPI: [age]yo G_P____ @ [EGA] by [dating method], presents to L&D triage
+complaining of [chief complaint]. [Details of the complaint in the patient's words/
+description]. [Pertinent positives and negatives relevant to that complaint — see
+that complaint's tab for the full list, e.g. bleeding, contractions, fevers/chills,
+trauma, recent intercourse, fetal movement].
+
+OBHx: [Prior delivery type, year, EGA, birth weight, any complications] — one line
+per prior pregnancy
+
+GYNHx: [Pap history, fibroids/cysts, STI history]
+
+PMHx: [Chronic medical conditions]
+
+PSHx: [Prior surgeries]
+
+SocHx: [Substance use — tobacco/EtOH/marijuana/other]
+
+FHx: [Relevant family history, or "non-contributory"]
+
+Meds: [Current medications]
+
+Allergies: [Drug allergies + reaction type]
+
+Prenatal labs: [Reviewed and up to date / notable results — e.g., GBS status,
+blood type, antibody screen]
+
+EXAM: T / HR / BP / O2 / RR
+Gen: [mental status, comfort level]
+Lungs: [e.g., CTAB = Clear To Auscultation Bilaterally]
+Heart: [e.g., RRR = Regular Rate and Rhythm]
+Abd: [gravid, tenderness?]
+Ext: [edema, pain?]
+Sterile Speculum Exam (if ROM concern): [pooling/dye test/ferning results]
+SVE: [cervix checked by (level), dilation/effacement/station]
+FHT: [reactive/nonreactive NST or Category], contractions [frequency]
+
+A/P: [age]yo G_P____ @ [EGA] by [dating], presented with [complaint] and found to
+have [diagnosis].
+1. [Primary diagnosis]
+   -[Admission plan / induction plan / medications per protocol]
+   -[Monitoring plan — cervical check frequency, etc.]
+   -[Relevant antibiotics if GBS+ or other indication]
+   -[Diet]
+   -[Labs ordered]
+   -[Consults notified — e.g., anesthesiology]
+2. [Secondary medical problem, e.g., asthma]
+   -[Relevant management, e.g., inhaler PRN]
+3. [Relevant psychiatric/social history, e.g., prior postpartum depression]
+   -[Plan, e.g., social work consult postpartum]
+4. [Postpartum planning]
+   -[Contraception desired]
+   -[Feeding plan]</div>
+</div>
+
+<div class="block green">
+<h3>Labor Progress Note (incl. Tracing Check)</h3>
+<p>Use this for a routine check-in on a laboring patient — this doubles as your "tracing check" note; there isn't a separate note type, the tracing assessment is folded into the O and A sections.</p>
+<div class="template">S: MS3 in to see patient for examination. [Current complaints — pain level/
+character, request for pain control, any new symptoms]. [Pertinent negatives —
+bleeding, fluid leakage, etc., or note if a new symptom just started, e.g., "reports
+a gush of fluid X minutes ago"].
+
+O: T / HR (range) / BP (shift range) / O2 / RR
+UOP: [within normal limits / specific value]
+Perineum: [pad findings — blood, fluid, meconium if ROM occurred]
+SVE: cervix checked by [level], [dilation/effacement/station]
+FHT: [baseline], [variability], [+/- accels], [decels present/absent], Category [__]
+Contractions: [frequency]
+
+A: [age]yo G_P__ @ [EGA], now in [phase] labor [s/p SROM/AROM if applicable,
+with/without meconium]. [Tracing category summary].
+
+P: [Continue expectant management / augment / other plan]. Plan to recheck in
+[interval]. [Any consults — e.g., anesthesia for epidural, peds for meconium].
+[PRN orders, e.g., pain meds]. Discussed with [level] resident, who agreed with
+above stated plan.</div>
+<div class="pearl">Notice the Assessment line always restates GTPAL + EGA + current labor status — even in a quick check-in note, not just the admission note. This is what lets anyone reading just the A line understand the whole picture without reading the S/O.</div>
+</div>
+
+<div class="block">
+<h3>Mag Check Note (Preeclampsia/Eclampsia Monitoring)</h3>
+<div class="template">S: MS3 in to see patient for examination [X] hours s/p [delivery type] complicated
+by [preeclampsia with/without severe features]. Currently [endorses/denies]
+headache, changes in vision, chest pain, shortness of breath, nausea, vomiting, and
+RUQ pain — [this symptom checklist is the Mag-check-specific ROS; always ask all
+of these, since they're the severe-feature/Mag-toxicity screen]. Pain [level]/10.
+[Vaginal bleeding amount/flow]. [Feeding plan status — pumping/breastfeeding,
+any difficulty].
+
+O: T / HR (range) / BP (shift range) / O2 / RR
+I/O: [intake / output, e.g., "345 (678) / 2300 (2800)" — running total plus recent
+interval in parentheses] — this matters because output tracks renal clearance
+of Mag and volume status
+Lungs: CTAB
+Heart: RRR
+Abd: [fundal tenderness?]
+Ext: [edema]
+Neuro: AOx3 (Alert & Oriented x3), [reflexes — e.g., 2+], [clonus present/absent]
+— DTRs and clonus are the bedside screen for Mag toxicity
+Perineum: [pad findings]
+
+A: [age]yo G_P____, PPD#[_] s/p [delivery type] @ [EGA] complicated by [preeclampsia
+with severe features]. Currently with [normal/abnormal] vitals, exam, and UOP.
+[Any postpartum concerns, or "no concerns"].
+
+P: Continue Mg drip @ [rate] until 24hrs postpartum. [Diet plan]. Monitor BP, UOP,
+and symptoms of severe preeclampsia (SPEC). Continue Mag checks Q[interval]hrs.
+Labs PRN. [Lactation consult if needed]. [Pain control PRN]. Discussed with [level]
+resident, who agreed with above stated plan.</div>
+<div class="warn">The symptom checklist in S (headache, visual changes, chest pain, SOB, N/V, RUQ pain) and the DTR/clonus check in O are not optional filler — they're the actual clinical screen for both worsening preeclampsia and Mag toxicity. Skipping them isn't just incomplete documentation, it's missing the point of the note.</div>
+
+<h4>Mag Check: Interpretation → Assessment → Plan</h4>
+<table class="mini">
+<tr><th>What you found</th><th>Interpretation</th><th>Plan</th></tr>
+<tr><td>Normal DTRs (2+), no clonus, RR normal, UOP adequate, symptoms all negative</td><td>Therapeutic Mag level, no toxicity, no worsening preeclampsia</td><td>Continue current Mg rate, continue routine checks at the same interval</td></tr>
+<tr><td>Diminished/absent DTRs</td><td>Early sign of Mag toxicity (DTRs are lost before respiratory depression)</td><td>Check Mag level, consider holding/reducing the drip, notify resident — don't wait for respiratory symptoms to act</td></tr>
+<tr><td>RR &lt;12, or O2 desaturation</td><td>More advanced Mag toxicity — respiratory depression</td><td>Stop the Mag drip immediately, notify resident/attending, have calcium gluconate (the antidote) ready</td></tr>
+<tr><td>New headache, visual changes, RUQ pain, or worsening BP despite Mag</td><td>Possible progression of preeclampsia severity, not a Mag-dosing issue</td><td>Recheck BP series, consider repeat labs (platelets, LFTs, Cr), notify resident — this may change the delivery timeline, not just the Mag rate</td></tr>
+<tr><td>UOP declining / I/O trending negative</td><td>Reduced renal clearance of Mag — risk of accumulation and toxicity even without other symptoms yet</td><td>Notify resident, consider checking a Mag level, watch DTRs more closely</td></tr>
+</table>
+<div class="pearl">The through-line: DTRs and RR are your fastest bedside toxicity check (labs take time), while the symptom ROS is your fastest bedside check for whether the underlying preeclampsia is actually getting worse — these are two different questions being screened by the same note.</div>
+</div>
+
+<div class="block">
+<h3>Postpartum Daily Progress Note (Vaginal Delivery)</h3>
+<div class="template">S: MS3 in to see patient POD[_] s/p [SVD/OVD]. [Pain level/location], [feeding
+status — breast/formula, any difficulty], [ambulating/voiding status], [any new
+complaints — fever, bleeding, headache if preeclamptic].
+
+O: T (24h range) / HR / BP / O2 / RR
+Lochia: [rubra/serosa/alba, amount]
+Fundus: [firm/boggy, level relative to umbilicus]
+Perineum: [healing well / laceration site if applicable]
+Ext: [edema if relevant, e.g., if preeclamptic]
+[Incision, if applicable — see C-section note below instead if primarily post-op]
+
+A: [age]yo G_P__, POD[_] s/p [delivery type] @ [EGA] [complicated by __, or
+"uncomplicated"]. Doing well postpartum with stable vitals and exam.
+
+P: Continue routine postpartum care. [Pain regimen]. [Feeding support/lactation
+consult if needed]. [Rhogam/rubella status if pending]. [Anticipate discharge
+date/criteria]. Discussed with [level] resident, who agreed with above stated plan.</div>
+<div class="pearl">See the Postpartum tab for the full routine-check list (fundus, lochia, Rh/rubella) and the Postpartum Fever ddx if a new fever comes up during this note.</div>
+</div>
+
+<div class="block alt">
+<h3>C-Section Post-Op Day Note</h3>
+<div class="template">S: MS3 in to see patient POD[_] s/p [primary/repeat] C-section. Pain [level,
+controlled on __], [flatus/bowel movement status — relevant post-abdominal-surgery],
+[ambulating status], [feeding status], [any new complaints].
+
+O: T (24h range) / HR / BP / O2 / RR
+Abd: [soft/distended, incision — clean/dry/intact, any erythema/drainage]
+Fundus: [firm/boggy, if palpable]
+Lochia: [amount]
+Ext: [edema, signs of DVT if relevant]
+[I/O if Foley still in place, or "Foley discontinued, voiding independently"]
+
+A: [age]yo G_P__, POD[_] s/p [primary/repeat] C-section for [original indication].
+[Incision healing well / no signs of infection]. [Tolerating diet advancement /
+ambulating appropriately].
+
+P: [Diet advancement plan]. [Pain regimen — transition from IV to PO]. [Foley
+discontinuation if not yet done]. [Incision care instructions]. [Anticipate
+discharge date/criteria — typically POD2-3 for uncomplicated C-section]. Discussed
+with [level] resident, who agreed with above stated plan.</div>
+<div class="pearl">Bowel function (flatus/BM) and ambulation are specifically tracked after a C-section — unlike a vaginal delivery note — because it's abdominal surgery and ileus/DVT are real post-op risks.</div>
+</div>
+
+<div class="block green">
+<h3>Antepartum Daily Note (Admitted, Not Yet Delivered)</h3>
+<div class="template">S: MS3 in to see patient, day [#] of admission for [indication — e.g., PTL,
+preeclampsia, PPROM]. [Contraction status if PTL], [symptom screen relevant to
+admitting diagnosis — e.g., severe-feature symptoms if preeclamptic, fever/
+leakage if PPROM], [fetal movement].
+
+O: T (24h range) / HR / BP (trend) / O2 / RR
+[Relevant exam depending on admitting diagnosis — fundal tenderness, edema, etc.]
+FHT: [category], contractions: [frequency if relevant]
+[Relevant labs if trending — e.g., platelets/LFTs if preeclamptic]
+
+A: [age]yo G_P__ @ [EGA], day [#] of admission for [indication]. [Currently
+stable/still meeting criteria for continued admission / new development].
+
+P: Continue [indication-specific management — e.g., steroids course, Mag if
+applicable, antibiotics if PPROM]. Continue [monitoring frequency]. [Plan for
+eventual delivery timing, or continued expectant management]. Discussed with
+[level] resident, who agreed with above stated plan.</div>
+<div class="pearl">This note type borrows its S/O content directly from whichever admitting diagnosis tab applies (HTN/Preeclampsia, Preterm Labor, or ROM/Chorio) — the framework doesn't change, just which symptom/exam checklist you're pulling from.</div>
+</div>
+
+<div class="block alt">
+<h3>Abbreviations Used in These Notes</h3>
+<table class="mini">
+<tr><th>Abbreviation</th><th>Meaning</th></tr>
+<tr><td>PPD#</td><td>Post-Partum Day number</td></tr>
+<tr><td>UOP</td><td>Urine Output</td></tr>
+<tr><td>I/O</td><td>Intake/Output</td></tr>
+<tr><td>CTAB</td><td>Clear To Auscultation Bilaterally (lung exam)</td></tr>
+<tr><td>RRR</td><td>Regular Rate and Rhythm (heart exam)</td></tr>
+<tr><td>AOx3 / AAOx3</td><td>Alert and (Fully) Oriented x3 — to person, place, and time</td></tr>
+<tr><td>DTR</td><td>Deep Tendon Reflex</td></tr>
+<tr><td>SPEC</td><td>Severe Preeclampsia (shorthand seen in plans, e.g., "monitor for symptoms of SPEC")</td></tr>
+<tr><td>T&S</td><td>Type and Screen (blood bank order)</td></tr>
+<tr><td>RA</td><td>Room Air (i.e., O2 sat on room air, no supplemental oxygen)</td></tr>
+<tr><td>SW</td><td>Social Work</td></tr>
+<tr><td>Q2-4hr</td><td>"Every 2 to 4 hours" — a range for how often to repeat something</td></tr>
+</table>
+</div>
 </div>
 
 <!-- ============ CHEAT SHEET ============ -->
@@ -1098,7 +2048,7 @@ Plan: [admit/observe/discharge, next steps]"</div>
   <dt>Avoid methylergonovine in?</dt><dd>Hypertension</dd>
   <dt>Avoid carboprost in?</dt><dd>Asthma</dd>
   <dt>What makes a deceleration "late"?</dt><dd>Onset/nadir/recovery occur after the peak of the contraction</dd>
-  <dt>Chorio fever criteria?</dt><dd>≥39.0°C once, or 38.0–38.9°C x2 30min apart + 1 supporting criterion</dd>
+  <dt>Chorio fever criteria?</dt><dd>≥39.0°C once, or 38.0–38.9°C x2 30min apart + 1 of: fetal tachycardia, maternal leukocytosis, uterine tenderness, purulent/foul-smelling fluid</dd>
   <dt>Classic sign of shoulder dystocia?</dt><dd>Turtle sign</dd>
   <dt>First maneuver in shoulder dystocia?</dt><dd>McRoberts (after calling for help)</dd>
 </dl>
@@ -1109,14 +2059,323 @@ Sources: HUP Day Student L&D Expectations (2025-12-29) + standard OB/Gyn clerksh
 </div>
 </div>
 
+<!-- ============ DECISION TREE PRACTICE ============ -->
+<div class="panel" id="panel-decisiontree">
+<h2 class="pageh">Decision Tree Practice</h2>
+<div class="block">
+<h3>Pick a Framework to Walk Through</h3>
+<div class="tabbar" style="margin-bottom:0;">
+<button class="treebtn active" data-tree="fhr" onclick="startTree('fhr')">FHR Category</button>
+<button class="treebtn" data-tree="arrest" onclick="startTree('arrest')">Labor Arrest</button>
+<button class="treebtn" data-tree="preeclampsia" onclick="startTree('preeclampsia')">Preeclampsia Severity</button>
+<button class="treebtn" data-tree="chorio" onclick="startTree('chorio')">PPROM vs. Chorio</button>
+<button class="treebtn" data-tree="pph" onclick="startTree('pph')">PPH Cause (4 T's)</button>
+</div>
+</div>
+
+<div class="block alt" id="tree-container">
+<h3 id="tree-title">FHR Category</h3>
+<div id="tree-differential" style="margin-bottom:10px;"></div>
+<div id="tree-question"></div>
+<div id="tree-options" style="margin-top:10px;"></div>
+<div id="tree-result" style="margin-top:10px;"></div>
+<button id="tree-restart" class="treebtn" style="display:none; margin-top:12px;" onclick="startTree(currentTreeName)">Restart this framework</button>
+</div>
+</div>
+
 <script>
+function showCategory(cat) {
+  document.querySelectorAll('.catbtn').forEach(b => b.classList.remove('active'));
+  document.querySelector('.catbtn[data-cat="' + cat + '"]').classList.add('active');
+  const tabs = document.querySelectorAll('.tabbtn');
+  let firstVisible = null;
+  tabs.forEach(b => {
+    if (b.getAttribute('data-cat') === cat) {
+      b.classList.remove('cat-hidden');
+      if (!firstVisible) firstVisible = b.getAttribute('data-tab');
+    } else {
+      b.classList.add('cat-hidden');
+    }
+  });
+  if (firstVisible) showTab(firstVisible);
+}
 function showTab(id) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tabbtn').forEach(b => b.classList.remove('active'));
   document.getElementById('panel-' + id).classList.add('active');
-  document.querySelector('.tabbtn[data-tab="' + id + '"]').classList.add('active');
+  const btn = document.querySelector('.tabbtn[data-tab="' + id + '"]');
+  btn.classList.add('active');
+  const cat = btn.getAttribute('data-cat');
+  document.querySelectorAll('.catbtn').forEach(b => b.classList.remove('active'));
+  const catBtn = document.querySelector('.catbtn[data-cat="' + cat + '"]');
+  if (catBtn) catBtn.classList.add('active');
+  document.querySelectorAll('.tabbtn').forEach(b => {
+    if (b.getAttribute('data-cat') === cat) b.classList.remove('cat-hidden');
+    else b.classList.add('cat-hidden');
+  });
   window.scrollTo(0,0);
 }
+
+var TREES = {
+  fhr: {
+    title: "FHR Category",
+    differential: ["Category I (normal/reassuring)", "Category II (indeterminate) — subtypes: minimal variability, marked variability, recurrent late decelerations, recurrent variable decelerations", "Category III (abnormal) — absent variability + recurrent late/variable decels or bradycardia, or sinusoidal pattern"],
+    start: "variability",
+    nodes: {
+      variability: {
+        q: "What is the baseline variability?",
+        opts: [
+          {label: "Absent", next: "absent_decel"},
+          {label: "Minimal (≤5 bpm)", next: "res_minimal"},
+          {label: "Moderate (6-25 bpm)", next: "moderate_decel"},
+          {label: "Marked (>25 bpm)", next: "res_marked"}
+        ]
+      },
+      absent_decel: {
+        q: "Are there recurrent late decelerations, recurrent variable decelerations, or fetal bradycardia?",
+        opts: [
+          {label: "Yes", next: "res_cat3"},
+          {label: "No", next: "res_absent_noD"}
+        ]
+      },
+      moderate_decel: {
+        q: "Are there any late or variable decelerations?",
+        opts: [
+          {label: "No decelerations", next: "res_cat1"},
+          {label: "Yes, decelerations present", next: "moderate_recurrent"}
+        ]
+      },
+      moderate_recurrent: {
+        q: "Are they recurrent (present with ≥50% of contractions)?",
+        opts: [
+          {label: "Yes, recurrent", next: "res_cat2_mod"},
+          {label: "No, isolated/occasional", next: "res_cat1_caveat"}
+        ]
+      },
+      res_minimal: {result: true, cls: "", text: "Category II. Minimal variability alone (without meeting Category I's moderate-variability requirement) is enough to make this indeterminate — it does not need accompanying decelerations to be Category II."},
+      res_marked: {result: true, cls: "", text: "Category II. Marked variability doesn't meet the strict Category I definition (moderate variability required) — it's indeterminate, not automatically reassuring."},
+      res_cat3: {result: true, cls: "wrong", text: "Category III. Absent variability + recurrent late decels, recurrent variable decels, or bradycardia = Category III. This needs urgent intrauterine resuscitation and consideration of expedited delivery if it doesn't resolve."},
+      res_absent_noD: {result: true, cls: "", text: "Category II. Absent variability alone, without recurrent late/variable decels or bradycardia, doesn't meet full Category III criteria — but absent variability is never Category I, so this is indeterminate (II)."},
+      res_cat1: {result: true, cls: "", text: "Category I (assuming baseline 110-160 bpm too). Moderate variability + no decelerations is the reassuring, normal tracing."},
+      res_cat2_mod: {result: true, cls: "", text: "Category II. Moderate variability with recurrent late or variable decelerations is indeterminate — start intrauterine resuscitation (LOOK) and reassess."},
+      res_cat1_caveat: {result: true, cls: "", text: "Category I. Moderate variability with only isolated/occasional decelerations (not recurrent) is still consistent with Category I — but keep watching, since a shift to recurrent would reclassify it."}
+    }
+  },
+  arrest: {
+    title: "Labor Arrest",
+    differential: ["Not yet eligible to call arrest (earlier in labor, or membranes intact)", "Normal labor progression (slow but ongoing change)", "Active phase arrest of dilation (≥6cm + ROM + no change ≥4h with adequate contractions, or ≥6h if inadequate)"],
+    start: "dilation_rom",
+    nodes: {
+      dilation_rom: {
+        q: "Is the patient ≥6cm dilated with ruptured membranes?",
+        opts: [
+          {label: "Yes", next: "adequate_ctx"},
+          {label: "No — earlier in labor or membranes intact", next: "res_not_eligible"}
+        ]
+      },
+      adequate_ctx: {
+        q: "Are contractions adequate? (Montevideo units >200 via IUPC, or clinically strong q2-3min)",
+        opts: [
+          {label: "Yes, adequate", next: "change_4h"},
+          {label: "No, inadequate / being augmented", next: "change_6h"}
+        ]
+      },
+      change_4h: {
+        q: "Has there been ANY cervical change in the last 4 hours?",
+        opts: [
+          {label: "No change at all", next: "res_arrest"},
+          {label: "Yes, some change (even slow)", next: "res_progressing"}
+        ]
+      },
+      change_6h: {
+        q: "Has there been ANY cervical change in the last 6 hours despite augmentation?",
+        opts: [
+          {label: "No change at all", next: "res_arrest_6h"},
+          {label: "Yes, some change", next: "res_continue_augment"}
+        ]
+      },
+      res_not_eligible: {result: true, cls: "", text: "Doesn't meet criteria for arrest yet — arrest of dilation specifically requires ≥6cm + ROM as the starting point. Continue monitoring; different criteria apply to 2nd-stage (pushing) arrest."},
+      res_arrest: {result: true, cls: "wrong", text: "Meets criteria for ARREST OF DILATION — ≥6cm + ROM + no change for ≥4h with adequate contractions. This is an indication to move toward C-section."},
+      res_progressing: {result: true, cls: "", text: "Not arrest — labor is progressing (even if slowly). Continue expectant management and re-check in a few hours."},
+      res_arrest_6h: {result: true, cls: "wrong", text: "Meets criteria for ARREST OF DILATION using the 6-hour threshold (since contractions were inadequate/being augmented). Indication to move toward C-section."},
+      res_continue_augment: {result: true, cls: "", text: "Not arrest yet — continue augmenting and reassess; the clock resets with each period of adequate contractions and any change."}
+    }
+  },
+  preeclampsia: {
+    title: "Preeclampsia Severity",
+    differential: ["Preeclampsia without severe features", "Preeclampsia with severe features — possible criteria: BP ≥160/110 x2, headache unresponsive to Tylenol, visual changes, RUQ/epigastric pain, platelets <100k, Cr >1.1 or 2x baseline, LFTs ≥2x normal, pulmonary edema (any ONE is sufficient)", "Possible HELLP overlap if hepatic/platelet criteria met"],
+    start: "bp",
+    nodes: {
+      bp: {
+        q: "Is BP ≥160 systolic OR ≥110 diastolic on two occasions ≥4h apart?",
+        opts: [
+          {label: "Yes", next: "res_severe_bp"},
+          {label: "No", next: "headache"}
+        ]
+      },
+      headache: {
+        q: "Headache unresponsive to Tylenol, or visual changes (blurred vision, scotomata)?",
+        opts: [
+          {label: "Yes", next: "res_severe_neuro"},
+          {label: "No", next: "hepatic"}
+        ]
+      },
+      hepatic: {
+        q: "RUQ/epigastric pain, or LFTs ≥2x normal?",
+        opts: [
+          {label: "Yes", next: "res_severe_hepatic"},
+          {label: "No", next: "platelets"}
+        ]
+      },
+      platelets: {
+        q: "Platelets <100k?",
+        opts: [
+          {label: "Yes", next: "res_severe_plt"},
+          {label: "No", next: "renal_pulm"}
+        ]
+      },
+      renal_pulm: {
+        q: "Cr >1.1 (or 2x baseline), or pulmonary edema?",
+        opts: [
+          {label: "Yes", next: "res_severe_renal"},
+          {label: "No", next: "res_not_severe"}
+        ]
+      },
+      res_severe_bp: {result: true, cls: "wrong", text: "Severe features present (BP criterion met). One severe feature alone is sufficient — proteinuria is not required. This changes management toward delivery depending on GA."},
+      res_severe_neuro: {result: true, cls: "wrong", text: "Severe features present (neuro criterion met — headache/visual changes)."},
+      res_severe_hepatic: {result: true, cls: "wrong", text: "Severe features present (hepatic criterion met) — also raises concern for HELLP overlap; check hemolysis labs (LDH, haptoglobin, peripheral smear for schistocytes)."},
+      res_severe_plt: {result: true, cls: "wrong", text: "Severe features present (platelets <100k) — also raises concern for HELLP overlap."},
+      res_severe_renal: {result: true, cls: "wrong", text: "Severe features present (renal/pulmonary criterion met)."},
+      res_not_severe: {result: true, cls: "", text: "No severe features identified on this pass (assuming the diagnostic criterion of proteinuria or another qualifying finding was already established). This is preeclampsia WITHOUT severe features — different, less urgent management than severe."}
+    }
+  },
+  chorio: {
+    title: "PPROM vs. Chorio",
+    differential: ["ROM not confirmed — consider urinary incontinence or normal discharge", "PPROM without infection", "Fever alone without a supporting criterion — chorio not yet confirmed", "Clinical chorioamnionitis (fever + ≥1 of: fetal tachycardia, maternal leukocytosis, uterine tenderness, purulent/foul fluid)"],
+    start: "rom",
+    nodes: {
+      rom: {
+        q: "Is rupture of membranes confirmed (nitrazine+/ferning+/pooling+)?",
+        opts: [
+          {label: "Yes", next: "temp"},
+          {label: "No", next: "res_not_rom"}
+        ]
+      },
+      temp: {
+        q: "Maternal temp ≥39.0°C once, OR 38.0-38.9°C x2, 30min apart?",
+        opts: [
+          {label: "Yes", next: "supporting"},
+          {label: "No", next: "res_pprom_no_fever"}
+        ]
+      },
+      supporting: {
+        q: "Any of: fetal tachycardia, maternal leukocytosis, uterine tenderness, purulent/foul fluid?",
+        opts: [
+          {label: "Yes, at least one present", next: "res_chorio"},
+          {label: "No", next: "res_fever_alone"}
+        ]
+      },
+      res_not_rom: {result: true, cls: "", text: "ROM not confirmed — consider urinary incontinence or normal 3rd-trimester discharge instead. Re-examine with all three tests (nitrazine, ferning, pooling) if still suspicious."},
+      res_pprom_no_fever: {result: true, cls: "", text: "PPROM without chorio. Manage per gestational age: term → induce; PPROM <34w without infection → expectant management + latency antibiotics + steroids ± Mag if <32w."},
+      res_chorio: {result: true, cls: "wrong", text: "Meets criteria for clinical chorioamnionitis. Deliver + start broad-spectrum antibiotics (ampicillin + gentamicin ± clindamycin/azithro) regardless of gestational age."},
+      res_fever_alone: {result: true, cls: "", text: "Fever alone without a supporting criterion doesn't meet full chorio criteria — consider another fever source, reassess closely, chorio not yet confirmed."}
+    }
+  },
+  pph: {
+    title: "PPH Cause (4 T's)",
+    differential: ["Tone (atony) — ~70-80% of PPH, boggy uterus", "Trauma — laceration, hematoma, uterine rupture/inversion, ~20%", "Tissue — retained placenta/clots, ~10%", "Thrombin — coagulopathy (e.g., DIC from abruption/AFE), <1%"],
+    start: "tone",
+    nodes: {
+      tone: {
+        q: "Is the fundus boggy/soft on bimanual exam?",
+        opts: [
+          {label: "Yes, boggy", next: "res_tone"},
+          {label: "No, firm", next: "trauma"}
+        ]
+      },
+      trauma: {
+        q: "Is there a visible laceration, hematoma, or signs of uterine inversion/rupture?",
+        opts: [
+          {label: "Yes", next: "res_trauma"},
+          {label: "No", next: "tissue"}
+        ]
+      },
+      tissue: {
+        q: "Is a portion of placenta missing on inspection, or an irregular fundal contour on ultrasound?",
+        opts: [
+          {label: "Yes", next: "res_tissue"},
+          {label: "No", next: "res_thrombin"}
+        ]
+      },
+      res_tone: {result: true, cls: "wrong", text: "Tone (atony) — the most common cause (~70-80% of PPH). Start bimanual massage + oxytocin first-line, then work down the medication ladder if bleeding continues."},
+      res_trauma: {result: true, cls: "wrong", text: "Trauma — repair the laceration, or manage inversion/rupture accordingly (these need different, often surgical, management)."},
+      res_tissue: {result: true, cls: "wrong", text: "Tissue — retained placenta or clots. Manual or ultrasound-guided removal is indicated; the uterus can't contract fully over the retained segment."},
+      res_thrombin: {result: true, cls: "wrong", text: "By elimination, consider Thrombin (coagulopathy) — check fibrinogen (drops first/fastest in obstetric hemorrhage/DIC), consider a DIC workup, and treat any underlying cause (e.g., abruption, amniotic fluid embolism) with blood products."}
+    }
+  }
+};
+
+var currentTreeName = "fhr";
+var treePath = [];
+
+function showWorkflow(id) {
+  document.querySelectorAll('.wf-block').forEach(function(b) { b.style.display = 'none'; });
+  document.getElementById(id).style.display = 'block';
+  document.querySelectorAll('.wfbtn').forEach(function(b) {
+    b.classList.toggle('active', b.getAttribute('data-wf') === id);
+  });
+}
+function startTree(name) {
+  currentTreeName = name;
+  treePath = [];
+  document.querySelectorAll('.treebtn').forEach(function(b) {
+    b.classList.toggle('active', b.getAttribute('data-tree') === name);
+  });
+  document.getElementById('tree-title').textContent = TREES[name].title;
+  document.getElementById('tree-restart').style.display = 'none';
+  var diff = TREES[name].differential;
+  var diffHtml = '<div class="pearl"><b>Full differential being considered:</b><ul style="margin:6px 0 0 0;">';
+  diff.forEach(function(d) { diffHtml += '<li>' + d + '</li>'; });
+  diffHtml += '</ul></div>';
+  document.getElementById('tree-differential').innerHTML = diffHtml;
+  renderTreeNode(TREES[name].start);
+}
+
+function renderTreeNode(nodeKey) {
+  var tree = TREES[currentTreeName];
+  var node = tree.nodes[nodeKey];
+  var qDiv = document.getElementById('tree-question');
+  var optDiv = document.getElementById('tree-options');
+  var resDiv = document.getElementById('tree-result');
+  var restartBtn = document.getElementById('tree-restart');
+
+  var pathHtml = treePath.length ? '<div class="tree-path">' + treePath.join(' → ') + '</div>' : '';
+
+  if (node.result) {
+    qDiv.innerHTML = pathHtml;
+    optDiv.innerHTML = '';
+    resDiv.innerHTML = '<div class="tree-result-box ' + (node.cls || '') + '">' + node.text + '</div>';
+    restartBtn.style.display = 'inline-block';
+    return;
+  }
+
+  qDiv.innerHTML = pathHtml + '<div class="tree-q">' + node.q + '</div>';
+  resDiv.innerHTML = '';
+  restartBtn.style.display = 'none';
+  optDiv.innerHTML = '';
+  node.opts.forEach(function(opt) {
+    var btn = document.createElement('button');
+    btn.className = 'tree-opt';
+    btn.textContent = opt.label;
+    btn.onclick = function() {
+      treePath.push(opt.label);
+      renderTreeNode(opt.next);
+    };
+    optDiv.appendChild(btn);
+  });
+}
+
+window.addEventListener('DOMContentLoaded', () => { showCategory('logistics'); startTree('fhr'); });
 </script>
 
 </body>
