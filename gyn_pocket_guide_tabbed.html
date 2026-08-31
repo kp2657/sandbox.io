@@ -1,0 +1,1039 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Benign Gyn Rotation — Pocket Guide</title>
+<style>
+  :root {
+    --pink: #b5486e;
+    --pink-light: #f7e8ee;
+    --ink: #2b2b33;
+    --muted: #6b6b76;
+    --line: #e8e2e6;
+    --bg: #fffbf9;
+    --card: #ffffff;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    line-height: 1.45;
+    min-height: 100vh;
+    -webkit-overflow-scrolling: touch;
+  }
+  header {
+    background: linear-gradient(135deg, var(--pink), #8a3a5c);
+    color: white;
+    padding: 20px 20px 16px;
+    text-align: center;
+  }
+  header h1 { margin: 0 0 2px; font-size: 1.2rem; letter-spacing: 0.3px; }
+  header p { margin: 0; font-size: 0.78rem; opacity: 0.9; }
+
+  nav {
+    display: flex;
+    overflow-x: auto;
+    background: white;
+    border-bottom: 1px solid var(--line);
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  nav::-webkit-scrollbar { display: none; }
+  nav button {
+    flex: 0 0 auto;
+    background: none;
+    border: none;
+    padding: 12px 14px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--muted);
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    font-family: inherit;
+  }
+  nav button.active {
+    color: var(--pink);
+    border-bottom: 3px solid var(--pink);
+  }
+
+  main {
+    padding: 16px;
+    max-width: 480px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .page { display: none; }
+  .page.active { display: block; animation: fadein 0.18s ease; }
+  @keyframes fadein { from { opacity: 0; transform: translateY(4px);} to { opacity: 1; transform: translateY(0);} }
+
+  .card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  }
+  .card h2 {
+    font-size: 1.02rem;
+    margin: 0 0 10px;
+    color: var(--pink);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card h3 { font-size: 0.88rem; margin: 14px 0 6px; color: var(--ink); }
+  .card p, .card li { font-size: 0.88rem; color: var(--ink); }
+  .card ul { margin: 4px 0; padding-left: 20px; }
+  .muted { color: var(--muted); font-size: 0.8rem; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 0.8rem; margin-top: 6px; }
+  th, td { text-align: left; padding: 6px 4px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.3px; }
+  .table-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-top: 6px;
+  }
+  .table-wrap table { margin-top: 0; min-width: 480px; }
+
+  .schedule-day { display: flex; gap: 10px; padding: 9px 0; border-bottom: 1px dashed var(--line); }
+  .schedule-day:last-child { border-bottom: none; }
+  .schedule-day .d { min-width: 56px; font-weight: 700; font-size: 0.78rem; color: var(--pink); }
+  .schedule-day .t { font-size: 0.83rem; }
+
+  .goal {
+    background: var(--pink-light);
+    border-left: 3px solid var(--pink);
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+  }
+  .goal b { color: var(--pink); }
+
+  .checklist li { list-style: none; margin-bottom: 8px; padding-left: 28px; position: relative; font-size: 0.85rem; cursor: pointer; }
+  .checklist li::before {
+    content: "☐";
+    position: absolute;
+    left: 0;
+    color: var(--pink);
+    font-size: 1.05rem;
+  }
+  .checklist li.done { color: var(--muted); text-decoration: line-through; }
+  .checklist li.done::before { content: "☑"; }
+
+  .tree { font-size: 0.83rem; background: #faf7f5; border-radius: 10px; padding: 12px; }
+  .tree .step { margin-bottom: 10px; }
+  .tree .step b { color: var(--pink); display: block; margin-bottom: 2px; }
+  .tree .arrow { text-align: center; color: var(--muted); font-size: 0.9rem; margin: 2px 0; }
+
+  .flags {
+    background: #fff4f2;
+    border: 1px solid #f3d9d4;
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 0.82rem;
+  }
+  .flags b { color: #b5482e; }
+
+  code {
+    background: var(--pink-light);
+    color: var(--pink);
+    padding: 1px 6px;
+    border-radius: 5px;
+    font-size: 0.82rem;
+    font-family: "SF Mono", Menlo, monospace;
+  }
+  .card ol { margin: 4px 0; padding-left: 20px; }
+  .card ol li { margin-bottom: 8px; }
+
+  details.acc {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    margin-bottom: 10px;
+    overflow: hidden;
+  }
+  details.acc summary {
+    list-style: none;
+    padding: 14px 18px;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--pink);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  details.acc summary::-webkit-details-marker { display: none; }
+  details.acc summary::after {
+    content: "+";
+    font-size: 1.2rem;
+    color: var(--muted);
+    font-weight: 400;
+    margin-left: 8px;
+  }
+  details.acc[open] summary::after { content: "–"; }
+  details.acc[open] summary { border-bottom: 1px solid var(--line); }
+  details.acc .acc-body { padding: 14px 18px 16px; }
+  details.acc .acc-body .sec-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--muted);
+    margin: 14px 0 4px;
+  }
+  details.acc .acc-body .sec-label:first-child { margin-top: 0; }
+  details.acc .acc-body ul { margin: 2px 0 4px; padding-left: 18px; }
+  details.acc .acc-body ul li { margin-bottom: 5px; font-size: 0.86rem; }
+  .role-box {
+    background: var(--pink-light);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-top: 6px;
+  }
+  .role-box ul { margin: 2px 0; padding-left: 18px; }
+  .role-box li { font-size: 0.85rem; margin-bottom: 5px; }
+  details.acc .sub {
+    font-size: 0.76rem;
+    color: var(--muted);
+    font-weight: 400;
+    display: block;
+    margin-top: 2px;
+  }
+
+  .pill-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+  .pill {
+    background: var(--pink-light);
+    color: var(--pink);
+    font-size: 0.72rem;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-weight: 600;
+  }
+
+  .footer-note { text-align: center; color: var(--muted); font-size: 0.72rem; margin-top: 8px; padding: 0 10px 8px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🩺 Benign Gyn Pocket Guide</h1>
+  <p>Quick-reference for the rotation</p>
+</header>
+
+<nav id="tabnav">
+  <button class="tab-btn active" data-page="checklists">✅ Checklists</button>
+  <button class="tab-btn" data-page="aub">🌳 Frameworks</button>
+  <button class="tab-btn" data-page="cases">📋 Cases</button>
+  <button class="tab-btn" data-page="responsibilities">🧰 Duties</button>
+  <button class="tab-btn" data-page="schedule">🗓️ Schedule</button>
+</nav>
+
+<main>
+
+  <!-- CHECKLISTS PAGE -->
+  <section class="page active" id="page-checklists">
+    <div class="card">
+      <h2>Before Every OR Case</h2>
+      <ul class="checklist">
+        <li>Meet assigned resident in pre-op ~6:50–7am for first patient</li>
+        <li>Know chief complaint + surgical indication before scrubbing in</li>
+        <li>Confirm Pelvic EUA consent signed</li>
+        <li>If consented, remind team to teach bimanual/speculum exam</li>
+        <li>Carelign made the night before (if major/overnight case)</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>During the Case</h2>
+      <ul class="checklist">
+        <li>Assist with retraction, uterine manipulation, closing ports</li>
+        <li>Note EBL, UOP, IVF for Carelign update after</li>
+        <li>Ask a prepped question or float a differential when appropriate</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>After the Case</h2>
+      <ul class="checklist">
+        <li>Update Carelign: EBL, UOP, IVF</li>
+        <li>Set POC (postop check) time — 4–6 hrs after leaving OR</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Before Rounds (AM)</h2>
+      <ul class="checklist">
+        <li>Read one-liner in Carelign — understand what surgery + why</li>
+        <li>Check with intern for overnight verbal updates not yet charted</li>
+        <li>Pull vitals, UOP, drain output (last 12 hrs)</li>
+        <li>Pull labs — know the POD1 Hgb trend + EBL context</li>
+        <li>Pre-round if possible: pain, ambulation, voiding, diet tolerance, flatus</li>
+        <li>Do pertinent exam (abdomen, incision, foley, JP output)</li>
+        <li>Review Carelign plan by system — form your own opinion on any updates</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Weekly / Recurring</h2>
+      <ul class="checklist">
+        <li>Check Friday email for next week's OR assignments</li>
+        <li>Review any pre-circulated articles before Tuesday preop conference</li>
+        <li>Prep Thursday Quantbook 5–10 min article presentation</li>
+        <li>Help with discharge summaries as needed</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- AUB TREE PAGE -->
+  <section class="page" id="page-aub">
+    <details class="acc" open>
+      <summary>Key Pelvic Ligaments<span class="sub">Quick lookup — contents &amp; attachments</span></summary>
+      <div class="acc-body">
+      <div class="table-wrap"><table>
+        <tr><th>Ligament</th><th>Runs from → to</th><th>Contains / clinical note</th></tr>
+        <tr><td><b>Round ligament</b></td><td>Uterine cornu → through inguinal canal → labia majora</td><td>Sampson's artery (small vessel). First structure transected in hysterectomy — opens the broad ligament.</td></tr>
+        <tr><td><b>Infundibulopelvic (IP) / suspensory ligament of ovary</b></td><td>Pelvic sidewall → ovary</td><td><b>Ovarian artery + vein</b> (artery = direct branch of aorta), lymphatics, nerves. Ureter runs medial/deep to it — ID ureter before clamping. Transected for oophorectomy/BSO.</td></tr>
+        <tr><td><b>Utero-ovarian ligament</b></td><td>Ovary → uterine cornu</td><td>Small anastomotic vessel. Transected instead of the IP ligament when ovaries are conserved.</td></tr>
+        <tr><td><b>Cardinal (Mackenrodt's) ligament</b></td><td>Cervix/upper vagina → pelvic sidewall</td><td>Uterine artery runs within it. Main lateral support of the cervix — transected during hysterectomy after uterine vessels are ligated.</td></tr>
+        <tr><td><b>Uterosacral ligament</b></td><td>Cervix → sacrum</td><td>Posterior support; landmark for posterior colpotomy. Common site of endometriosis implants.</td></tr>
+        <tr><td><b>Broad ligament</b></td><td>Lateral uterus → pelvic sidewall</td><td>Peritoneal fold draped over the round ligament, fallopian tube, uterine vessels, and ovarian ligament — not a discrete structure itself, more a "peritoneal envelope."</td></tr>
+      </table></div>
+      <p class="muted" style="margin-top:8px;">High-yield distinction: <b>round ligament</b> = anterior/superior, no major vessel, divided first. <b>IP ligament</b> = lateral/posterior, contains the ovarian vessels, divided only if removing the ovary — always find the ureter first.</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>Key Pelvic Fascia<span class="sub">The dissection planes, not just the ligaments</span></summary>
+      <div class="acc-body">
+      <p class="muted" style="margin-top:-4px;">Ligaments are discrete cord-like structures you clamp/cut. Fascia is more like connective-tissue "sheets" you develop dissection planes through — this is the tissue you're actually separating during bladder flap and posterior dissection.</p>
+      <div class="table-wrap"><table>
+        <tr><th>Fascia</th><th>Location</th><th>Clinical relevance</th></tr>
+        <tr><td><b>Vesicouterine (vesicocervical) fascia</b></td><td>Between the bladder and the anterior uterus/cervix</td><td>The plane developed when creating the <b>bladder flap</b> during hysterectomy — separating the bladder off the lower uterine segment/cervix. Thin here in patients with prior C-sections (scarring fuses the planes), raising bladder injury risk.</td></tr>
+        <tr><td><b>Rectovaginal fascia (Denonvilliers' fascia)</b></td><td>Between the posterior vaginal wall and rectum</td><td>The plane developed posteriorly, especially relevant when the <b>posterior cul-de-sac is obliterated by endometriosis</b> — dissecting the rectum off the posterior vagina/cervix here is one of the highest-risk steps for bowel injury in the endo case.</td></tr>
+        <tr><td><b>Endopelvic fascia</b></td><td>General connective tissue investing pelvic organs, condensing to form the cardinal/uterosacral ligament complex</td><td>Not a single sheet — think of it as the fibromuscular "matrix" the named ligaments are thickenings of. Provides overall pelvic organ support (relevant to pelvic organ prolapse, less so to your current case list).</td></tr>
+        <tr><td><b>Presacral fascia</b></td><td>Overlying the sacrum, posterior to the rectum</td><td>Relevant if dissection extends deep posteriorly (e.g., rectosigmoid mobilization for CRS-involved endo cases) — presacral venous plexus here can bleed significantly if injured.</td></tr>
+      </table></div>
+      <div class="sec-label">Where this shows up in your cases</div>
+      <ul>
+        <li><b>Every TLH</b> — vesicouterine fascia must be divided to create the bladder flap before uterine vessel ligation</li>
+        <li><b>Endo/CRS case</b> — rectovaginal fascia dissection is the critical (and highest bowel-injury-risk) step when the cul-de-sac is obliterated; presacral fascia relevant if bowel is mobilized further</li>
+      </ul>
+      <p class="muted">Pimping-ready line: "Ligaments are what you clamp and cut; fascia is what you dissect through to get there safely."</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>AUB Decision Tree</summary>
+      <div class="acc-body">
+      <div class="tree">
+        <div class="step">
+          <b>1. Risk stratify</b>
+          Postmenopausal bleeding (PMB) → any bleeding abnormal, r/o cancer.<br>
+          Reproductive age → r/o pregnancy first, then PALM-COEIN.
+        </div>
+        <div class="arrow">↓</div>
+        <div class="step">
+          <b>2. Imaging (TVUS ± saline sonogram)</b>
+          Thick stripe → sample. Focal lesion → polyp. Submucosal mass → fibroid. Irregular contour → adhesions/retained POC. Normal → likely non-structural.
+        </div>
+        <div class="arrow">↓</div>
+        <div class="step">
+          <b>3. OR vs. medical mgmt</b>
+          Surgery if: cancer risk (PMB/thick stripe) OR structural lesion that's diagnostic+treatable via hysteroscopy.<br>
+          No structural cause + low risk → trial medical (hormonal) management first.
+        </div>
+        <div class="arrow">↓</div>
+        <div class="step">
+          <b>4. In the OR — "see and treat"</b>
+          Diagnostic hysteroscopy visualizes cavity → findings dictate add-on:
+          <ul style="margin-top:6px;">
+            <li>Polyp → polypectomy</li>
+            <li>Submucosal fibroid → hysteroscopic myomectomy</li>
+            <li>Adhesions → lysis of adhesions (LOA)</li>
+            <li>Nothing focal → D&C alone (tissue dx)</li>
+          </ul>
+        </div>
+      </div>
+      <p class="muted" style="margin-top:8px;">Core logic: hysteroscopy = diagnostic; D&C = diagnostic + therapeutic. The procedure is whatever hysteroscopy reveals.</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>PALM-COEIN Cheat Sheet</summary>
+      <div class="acc-body">
+      <div class="table-wrap"><table>
+        <tr><th>Structural (PALM)</th><th>Non-structural (COEIN)</th></tr>
+        <tr><td>Polyp</td><td>Coagulopathy</td></tr>
+        <tr><td>Adenomyosis</td><td>Ovulatory dysfunction</td></tr>
+        <tr><td>Leiomyoma (fibroid)</td><td>Endometrial</td></tr>
+        <tr><td>Malignancy/hyperplasia</td><td>Iatrogenic</td></tr>
+        <tr><td></td><td>Not otherwise classified</td></tr>
+      </table></div>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>FIGO Fibroid Classification<span class="sub">Which fibroids get HSC vs. LSC vs. open</span></summary>
+      <div class="acc-body">
+      <div class="table-wrap"><table>
+        <tr><th>Type</th><th>Description</th><th>Approach</th></tr>
+        <tr><td>0</td><td>Pedunculated, entirely intracavitary</td><td>HSC mmx</td></tr>
+        <tr><td>1</td><td>Submucosal, &lt;50% intramural</td><td>HSC mmx</td></tr>
+        <tr><td>2</td><td>Submucosal, ≥50% intramural</td><td>HSC mmx (harder, may need staging)</td></tr>
+        <tr><td>3</td><td>Contacts endometrium, 100% intramural</td><td>LSC/open mmx</td></tr>
+        <tr><td>4</td><td>Intramural, no cavity/serosal contact</td><td>LSC/open mmx</td></tr>
+        <tr><td>5–7</td><td>Subserosal (increasing % intramural to pedunculated)</td><td>LSC mmx</td></tr>
+        <tr><td>8</td><td>Other (cervical, parasitic)</td><td>Case-specific</td></tr>
+      </table></div>
+      <p class="muted" style="margin-top:8px;">Rule of thumb: Type 0–2 = "in the cavity, go hysteroscopic." Type 3+ = "in the wall, go laparoscopic/open."</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>Hysteroscopy Fluid Deficit Safety<span class="sub">Relevant for every HSC D&C case</span></summary>
+      <div class="acc-body">
+      <ul>
+        <li><b>Electrolyte-poor media</b> (e.g., glycine/sorbitol) — used with monopolar energy. Stop case at <b>~1000 mL deficit</b> (risk of hyponatremia/hypervolemia).</li>
+        <li><b>Electrolyte-rich media</b> (normal saline) — used with bipolar energy (most current resectoscopes). Safer; stop at <b>~2500 mL deficit</b> in healthy patients, lower (~1000 mL) if cardiac/renal comorbidity.</li>
+        <li>Circulating nurse/anesthesia tracks inflow vs. outflow continuously — ask what the running deficit is if the case is running long (fibroid resections take longer than polypectomies).</li>
+      </ul>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>Cystoscopy Interpretation<span class="sub">End-of-case check for TLH/BS</span></summary>
+      <div class="acc-body">
+      <ul>
+        <li><b>Bladder mucosa</b> — should be smooth, no suture, no thermal injury, no filling defect.</li>
+        <li><b>Ureteral jets</b> — bilateral efflux of urine (sometimes IV indigo carmine or fluorescein used to enhance visibility) confirms ureteral patency — the key safety check after hysterectomy dissection near the ureters.</li>
+        <li>Absent/sluggish jet on one side → concern for ureteral kinking, ligation, or injury → may prompt intraop urology consult.</li>
+      </ul>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>Endometriosis Staging (ASRM)<span class="sub">Context for your AUB-L/O + endo case</span></summary>
+      <div class="acc-body">
+      <div class="table-wrap"><table>
+        <tr><th>Stage</th><th>Findings</th></tr>
+        <tr><td>I — Minimal</td><td>Isolated superficial implants</td></tr>
+        <tr><td>II — Mild</td><td>Superficial implants + mild adhesions</td></tr>
+        <tr><td>III — Moderate</td><td>Deeper implants, endometriomas, moderate adhesions</td></tr>
+        <tr><td>IV — Severe</td><td>Deep implants, large endometriomas, dense adhesions ± cul-de-sac obliteration</td></tr>
+      </table></div>
+      <p class="muted" style="margin-top:8px;">Bowel involvement (as in your case) suggests deep infiltrating disease — beyond ASRM staging, often described separately as DIE (deep infiltrating endometriosis).</p>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>Preop Optimization Framework<span class="sub">Why patients get PAT, T&S DOS, or med holds</span></summary>
+      <div class="acc-body">
+      <ul>
+        <li><b>T&S at PAT vs. DOS:</b> Higher anticipated blood loss (TLH, myomectomy, endo/CRS cases) → often T&S or type & cross done ahead at PAT so blood is ready. Lower-risk cases (HSC D&C alone) → T&S same-day is usually sufficient.</li>
+        <li><b>New H&P needed:</b> Most institutions require H&P within ~30 days of surgery — if the case date has slipped, a new one is required before OR day.</li>
+        <li><b>GLP-1 agonists (Mounjaro, etc.):</b> Held preop per ASA guidance — delayed gastric emptying → aspiration risk under anesthesia. Confirm hold duration (often 1 week for weekly formulations).</li>
+        <li><b>Preop misoprostol:</b> Given for hysteroscopic cases to ripen the cervix and ease dilation, especially nulliparous patients or anticipated difficult entry.</li>
+        <li><b>Bowel prep:</b> Reserved for cases with anticipated bowel involvement (deep endometriosis with CRS co-management) — not routine for standard hysterectomy/myomectomy.</li>
+        <li><b>MRI preop:</b> Ordered for fibroid mapping when precise size/location changes the surgical plan (e.g., choosing LSC mmx vs. TLH, or planning a complex myomectomy).</li>
+      </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- CASES PAGE -->
+  <section class="page" id="page-cases">
+    <details class="acc" open>
+      <summary>Preop To-Do Patterns<span class="sub">What those checkboxes mean</span></summary>
+      <div class="acc-body">
+      <ul>
+        <li><b>New H&P</b> — history & physical needs updating before surgery (usually if last one is aging out, ~30 day rule).</li>
+        <li><b>T&S DOS vs. PAT appt</b> — Type & Screen: either done day-of-surgery or at a separate pre-admission testing (PAT) visit, depending on case complexity/blood loss risk.</li>
+        <li><b>Consents</b> — surgical consent must list every planned procedure (e.g., "add polyp," "add endo," CRS consents) — if a possible add-on isn't consented, it can't be done intraop.</li>
+        <li><b>EUA consent</b> — separate consent for student pelvic exam under anesthesia.</li>
+        <li><b>Preop misoprostol (miso)</b> — given before hysteroscopy to soften/ripen the cervix, easing dilation.</li>
+        <li><b>HOLD medications</b> — GLP-1 agonists (Mounjaro, etc.) held preop (aspiration risk from delayed gastric emptying); other home meds per anesthesia/surgeon protocol.</li>
+        <li><b>TXA</b> — tranexamic acid, sometimes given to reduce intraop blood loss (esp. myomectomy).</li>
+        <li><b>Bowel prep</b> — required when colorectal surgery (CRS) involvement is anticipated (e.g., deep endometriosis with bowel disease).</li>
+        <li><b>MRI</b> — often obtained preop for fibroid mapping (size/location) to plan surgical approach.</li>
+        <li><b>Mirena/IUD ordered</b> — placed at time of D&C for ongoing AUB management post-procedure.</li>
+      </ul>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>🩸 Fibroids → TLH, BS, cysto</summary>
+      <div class="acc-body">
+      <div class="sec-label">Anatomy</div>
+      <ul>
+        <li>Fibroids (leiomyomas) = benign monoclonal smooth muscle tumors of the myometrium</li>
+        <li>TLH chosen when fibroids are intramural/subserosal, large, multiple, or cavity distortion too extensive for uterine-sparing surgery</li>
+        <li><b>Ureters</b> — cross under the uterine artery ~1–2cm lateral to the cervix ("water under the bridge")</li>
+        <li><b>Uterine artery</b> — branches off internal iliac</li>
+        <li><b>Bladder</b> — dissected off the lower uterine segment/cervix</li>
+        <li><b>Round ligament</b> — runs from the uterine cornu, through the inguinal canal, to the labia majora; contains Sampson's artery (small vessel, needs ligation). First structure typically transected — divide it to open the broad ligament and access the pelvic sidewall/retroperitoneum.</li>
+        <li><b>Infundibulopelvic (IP) ligament / suspensory ligament of the ovary</b> — contains the <b>ovarian artery and vein</b> (ovarian artery = direct branch of the aorta), plus lymphatics and nerve fibers. Runs from the pelvic sidewall to the ovary. <i>Only relevant here if ovaries are also being removed</i> — if ovaries are conserved, the utero-ovarian ligament is transected instead (connects ovary to uterine cornu, contains a small anastomotic vessel).</li>
+        <li>The <b>ureter runs just medial/deep to the IP ligament</b> as it crosses the pelvic brim — a key reason to identify the ureter before clamping the IP ligament if oophorectomy is being performed.</li>
+      </ul>
+      <div class="sec-label">Indications</div>
+      <ul>
+        <li>Symptomatic fibroids (bleeding, bulk symptoms, pain), childbearing complete</li>
+        <li>Failed or declined medical/uterine-sparing management</li>
+        <li>Very large or numerous fibroids</li>
+        <li>Suspected leiomyosarcoma (rare — rapid growth or postmenopausal growth raises concern)</li>
+      </ul>
+      <div class="sec-label">Medical management (tried first)</div>
+      <ul>
+        <li>NSAIDs, tranexamic acid for bleeding</li>
+        <li>Hormonal: combined OCPs, progestin IUD, GnRH agonists/antagonists (leuprolide, elagolix) — shrink fibroids, often a bridge to surgery or to correct anemia preop</li>
+      </ul>
+      <div class="sec-label">Surgical steps — structures to identify first</div>
+      <ul>
+        <li>Before any cutting: <b>trace the ureter</b> along the pelvic sidewall (visualize peristalsis if possible) — do this before touching the round ligament or IP ligament</li>
+        <li>Identify the <b>uterine vessels</b> at the level of the internal os before skeletonizing</li>
+        <li>Identify the <b>bladder reflection/peritoneal fold</b> before developing the bladder flap</li>
+      </ul>
+      <div class="sec-label">Surgical steps — sequence</div>
+      <p>Port placement → transect round ligament (opens broad ligament) → transect/ligate tube ± utero-ovarian ligament or IP ligament (depending on whether ovaries are conserved) → develop bladder flap by incising the <b>vesicouterine fascia</b> to separate the bladder off the lower uterine segment/cervix → skeletonize and ligate uterine arteries at the level of the internal os → transect cardinal ligaments (lateral) then uterosacral ligaments (posterior) → colpotomy (open vaginal cuff circumferentially) → deliver specimen → close vaginal cuff → cystoscopy.</p>
+      <div class="sec-label">Blood supply — what gets divided</div>
+      <ul>
+        <li><b>Uterine artery</b> — main supply, branch of the internal iliac (anterior division); identified and ligated at the level of the internal os, right where it crosses over the ureter ("water under the bridge") — the single highest-stakes vessel in the case</li>
+        <li><b>Ovarian artery</b> (via IP ligament) — only divided if oophorectomy performed; direct branch off the aorta. If ovaries conserved, only the smaller utero-ovarian vessel is divided instead</li>
+        <li><b>Vaginal artery contributions</b> — anastomose with the uterine artery's descending cervicovaginal branch; encountered near colpotomy</li>
+        <li><b>Sampson's artery</b> — small vessel in the round ligament, ligated when the round ligament is transected</li>
+        <li>Uterine size/fibroid bulk increases collateral vascularity — larger uteri bleed more from these same vessels, so expect more careful hemostasis with bigger specimens</li>
+      </ul>
+      <div class="sec-label">Complications</div>
+
+      <ul>
+        <li>Ureteral injury (transection, thermal, kinking) — why cystoscopy is done</li>
+        <li>Bladder injury, esp. with prior C-sections/scarring</li>
+        <li>Hemorrhage from uterine vessels</li>
+        <li>Vaginal cuff dehiscence (delayed)</li>
+        <li>VTE — pneumatic compression intraop, early ambulation postop</li>
+      </ul>
+      <div class="sec-label">Pimping-ready facts</div>
+      <ul>
+        <li>Fibroids are estrogen/progesterone-responsive — regress after menopause</li>
+        <li>Higher incidence and earlier onset in Black patients</li>
+        <li>Opportunistic BS reduces ovarian cancer risk — most high-grade serous cancers arise from the fallopian tube fimbria, not the ovary</li>
+        <li>Cystoscopy checks bilateral ureteral jets (± indigo carmine/fluorescein) — absent jet → concern for injury</li>
+      </ul>
+      <div class="sec-label">Your role — what to do</div>
+      <div class="role-box">
+        <ul>
+          <li>Pull the MRI beforehand — know fibroid size/location before scrubbing in</li>
+          <li>Confirm EUA consent status and T&S/PAT plan</li>
+          <li>In the OR: help with uterine manipulation, watch vessel ligation and ureter identification closely</li>
+          <li>At the end: watch cystoscopy — try to identify the ureteral jets yourself before someone points them out</li>
+          <li>Postop: track EBL/UOP/IVF for Carelign; know her Hgb trend for rounds</li>
+        </ul>
+      </div>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>🩸 Fibroids → LSC mmx<span class="sub">Uterine-sparing</span></summary>
+      <div class="acc-body">
+      <div class="sec-label">Anatomy</div>
+      <ul>
+        <li>Targets intramural/subserosal fibroids (FIGO 3–7) too deep/exophytic for hysteroscopic removal</li>
+        <li>Myometrium incised over fibroid → pseudocapsule developed → fibroid enucleated → closed in layers</li>
+        <li><b>Round ligament</b> — not typically transected in myomectomy (uterus is preserved in place) but serves as a key surface landmark for orienting anterior vs. posterior uterine fibroids and for avoiding the adjacent uterine vessels running along the broad ligament</li>
+        <li>Anterior/fundal fibroids: incision planned to avoid the tubes/round ligament insertion at the cornu; posterior fibroids: watch for proximity to the uterosacral ligaments and rectum</li>
+      </ul>
+      <div class="sec-label">Indications</div>
+      <ul>
+        <li>Symptomatic fibroids, patient desires future fertility or wants to retain uterus</li>
+        <li>Contraindicated if malignancy suspected (rapid growth, postmenopausal enlargement)</li>
+      </ul>
+      <div class="sec-label">Medical management</div>
+      <ul>
+        <li>GnRH agonists preop sometimes used to shrink fibroid/reduce vascularity before surgery</li>
+        <li>Not a substitute for removal if cavity-distorting or symptomatic and fertility desired</li>
+      </ul>
+      <div class="sec-label">Surgical steps — structures to identify first</div>
+      <ul>
+        <li>Confirm fibroid location/orientation relative to the cavity (via preop imaging or intraop ultrasound) before incising — determines single vs. multiple incisions and whether the cavity will be entered</li>
+        <li>Identify the uterine vessels along the lateral broad ligament to avoid inadvertent injury during deep enucleation</li>
+      </ul>
+      <div class="sec-label">Surgical steps — sequence</div>
+      <p>Vasopressin/vasoconstrictor injected into the myometrium overlying the fibroid (reduces bleeding) → serosal/myometrial incision made down to the fibroid pseudocapsule → enucleate the fibroid with traction (tenaculum/corkscrew) and countertraction (scissors/energy along the capsule plane) → inspect for cavity breach (if entered, closure includes reapproximating endometrium separately) → multi-layer closure: deep myometrium, superficial myometrium, then serosa (imbricating layers reduces dead space and hematoma risk) → morcellation in a containment bag for specimen removal. TXA often given systemically.</p>
+      <div class="sec-label">Blood supply — what gets divided</div>
+      <ul>
+        <li>No named vessel is deliberately ligated up front (unlike TLH) — bleeding here comes from the <b>myometrial vasculature feeding the fibroid pseudocapsule</b>, branches of the arcuate arteries (which arise from the uterine artery and encircle the myometrium)</li>
+        <li>Vasopressin injection is the main proactive bleeding-control step — it's a vasoconstrictor injected locally into the myometrium/pseudocapsule before incision, not a vessel ligation</li>
+        <li>Larger/deeper fibroids have a richer pseudocapsule blood supply — expect more bleeding and more energy/suture use for hemostasis as fibroid size increases</li>
+        <li>If bleeding is significant and uncontrolled locally, next step is often <b>uterine artery occlusion</b> (temporary clips/tourniquet on the uterine vessels) before continuing — a good thing to ask about if the case is bleeding more than expected</li>
+      </ul>
+      <div class="sec-label">Complications</div>
+      <ul>
+        <li>Significant intraop bleeding — myometrium is vascular</li>
+        <li>Future uterine rupture risk if closure inadequate → often counseled toward C-section</li>
+        <li>Conversion to laparotomy if bleeding uncontrolled</li>
+        <li>Adhesion formation affecting future fertility</li>
+      </ul>
+
+      <div class="sec-label">Pimping-ready facts</div>
+      <ul>
+        <li>"Enucleation" = removal along the pseudocapsule, not through healthy tissue</li>
+        <li>Whether the cavity was entered determines future delivery counseling</li>
+        <li>Power morcellation risks disseminating an occult sarcoma — hence containment bags</li>
+      </ul>
+      <div class="sec-label">Your role — what to do</div>
+      <div class="role-box">
+        <ul>
+          <li>Confirm TXA/cysto plan noted for this case beforehand</li>
+          <li>In the OR: watch enucleation technique and multi-layer closure — good chance to ask about future delivery counseling</li>
+          <li>Track EBL closely — bleeding risk is higher here than in a straightforward TLH</li>
+        </ul>
+      </div>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>🔴 AUB-P → HSC D&C, polypectomy</summary>
+      <div class="acc-body">
+      <div class="sec-label">Anatomy</div>
+      <ul>
+        <li>Endometrial polyps = focal overgrowths of endometrial glands/stroma around a central vascular ("feeder") vessel</li>
+        <li>Can be sessile (broad base) or pedunculated (on a stalk)</li>
+      </ul>
+      <div class="sec-label">Indications</div>
+      <ul>
+        <li>Symptomatic polyp (AUB, intermenstrual bleeding) on TVUS/saline sonography</li>
+        <li>Asymptomatic polyps in postmenopausal women or with risk factors (tamoxifen, obesity) often removed given malignancy risk</li>
+        <li>Infertility workup finding a polyp</li>
+      </ul>
+      <div class="sec-label">Medical management</div>
+      <ul>
+        <li>Polyps don't respond to hormonal therapy the way fibroids do</li>
+        <li>Progestins may reduce bleeding symptoms but don't resolve the polyp — mechanical removal is definitive</li>
+      </ul>
+      <div class="sec-label">Surgical steps</div>
+      <p>Cervical dilation (± preop miso) → hysteroscope + distension media → cavity survey → polyp resected at base (scissors/graspers/morcellator) → D&C samples remainder → specimens sent separately if possible.</p>
+      <div class="sec-label">Blood supply — what to consider</div>
+      <ul>
+        <li>Each polyp has a single central <b>feeder vessel</b> (a basal-layer arteriole) — this is usually what's actually causing the abnormal bleeding, not diffuse endometrial bleeding</li>
+        <li>Resecting the polyp at its base (not just shaving the visible portion) is what controls the feeder vessel and prevents recurrence/bleeding</li>
+        <li>Mechanical morcellator systems typically achieve hemostasis as they cut; if using scissors/graspers instead, brief point-cautery may be needed at the base</li>
+        <li>No named artery is at risk here (unlike TLH) — bleeding is local and endometrial, not from major pelvic vessels</li>
+      </ul>
+      <div class="sec-label">Complications</div>
+      <ul>
+        <li>Uterine perforation (higher risk with stenotic/flexed cervix)</li>
+        <li>Excess fluid absorption (see Frameworks tab)</li>
+        <li>Incomplete resection — base missed, recurrence</li>
+        <li>Postop intrauterine adhesions (rare, single polypectomy)</li>
+      </ul>
+      <div class="sec-label">Pimping-ready facts</div>
+      <ul>
+        <li>Malignant transformation ~0–13% of polyps, risk rises with age/postmenopausal status</li>
+        <li>Tamoxifen is a known risk factor for polyp formation</li>
+        <li>"See and treat" = diagnostic + therapeutic in one setting — good answer if asked why hysteroscopy is favored</li>
+      </ul>
+      <div class="sec-label">Your role — what to do</div>
+      <div class="role-box">
+        <ul>
+          <li>Check if preop miso was given/needed</li>
+          <li>Confirm consent explicitly lists "polypectomy," not just D&C</li>
+          <li>In the OR: ask the running fluid deficit at some point — good habit</li>
+          <li>Quick case — good one to ask a focused question about "why hysteroscopy vs. blind D&C alone" if there's downtime</li>
+        </ul>
+      </div>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>🔴 AUB-L → HSC D&C, mmx</summary>
+      <div class="acc-body">
+      <div class="sec-label">Anatomy</div>
+      <ul>
+        <li>Submucosal fibroid (FIGO 0/1/2) bulging into the cavity, covered by thin/often ulcerated endometrium — why submucosal fibroids bleed disproportionately to size</li>
+      </ul>
+      <div class="sec-label">Indications</div>
+      <ul>
+        <li>AUB attributed to a submucosal fibroid on imaging</li>
+        <li>Infertility/recurrent pregnancy loss with a submucosal fibroid distorting the cavity</li>
+      </ul>
+      <div class="sec-label">Medical management</div>
+      <ul>
+        <li>Progestin IUD, GnRH agonists/antagonists, TXA can reduce bleeding</li>
+        <li>Mechanical removal usually needed for definitive treatment, especially if fertility desired</li>
+      </ul>
+      <div class="sec-label">Surgical steps</div>
+      <p>Resectoscope with cutting loop shaves fibroid into strips, removed as chips. Deeper (type 2) fibroids may need staged procedures.</p>
+      <div class="sec-label">Blood supply — what to consider</div>
+      <ul>
+        <li>Submucosal fibroids are supplied by <b>myometrial arcuate/radial artery branches</b> feeding into the fibroid pseudocapsule from beneath — cutting into the fibroid opens these small vessels</li>
+        <li>Bipolar/monopolar cutting loop energy provides simultaneous cutting and coagulation — this is why bleeding is usually well-controlled during active resection, but can increase once the fibroid is fully removed and the underlying myometrial bed is exposed</li>
+        <li>Deeper (type 2) fibroids expose more of the myometrial vascular bed, which is part of why they carry higher fluid intravasation risk (open venous sinuses absorb distension fluid more readily) — vessels and fluid deficit are directly linked here</li>
+        <li>No named major artery (uterine artery itself is not approached) — all bleeding control is local, via the resectoscope's energy source</li>
+      </ul>
+      <div class="sec-label">Complications</div>
+      <ul>
+        <li>Fluid overload/hyponatremia (glycine) or fluid overload alone (saline)</li>
+        <li>Uterine perforation, more likely with type 2 fibroids</li>
+        <li>Incomplete resection requiring a second procedure</li>
+        <li>Intrauterine adhesion formation postop</li>
+      </ul>
+      <div class="sec-label">Pimping-ready facts</div>
+      <ul>
+        <li>FIGO 0/1 usually resectable in one setting; type 2 often needs staging</li>
+        <li>Home med holds (e.g., GLP-1 agonists) apply regardless of how "minor" the procedure is</li>
+        <li>Bipolar resectoscopes use saline (safer, higher fluid deficit threshold) vs. monopolar (needs electrolyte-poor media)</li>
+      </ul>
+      <div class="sec-label">Your role — what to do</div>
+      <div class="role-box">
+        <ul>
+          <li>Confirm Mounjaro/GLP-1 hold was completed per protocol</li>
+          <li>In the OR: track fluid deficit running total — ask if not posted visibly</li>
+          <li>Know FIGO type of this specific fibroid before the case if documented on imaging</li>
+        </ul>
+      </div>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>🟣 AUB, Thickened EMS → HSC D&C, IUD</summary>
+      <div class="acc-body">
+      <div class="sec-label">Anatomy</div>
+      <ul>
+        <li>Endometrial stripe = both endometrial layers measured together on TVUS</li>
+        <li>Normal: varies by cycle phase premenopausally; generally &lt;4mm reassuring if postmenopausal + non-bleeding</li>
+        <li>Thickened stripe = increased glandular proliferation — could be benign hyperplasia or premalignant/malignant</li>
+      </ul>
+      <div class="sec-label">Indications</div>
+      <ul>
+        <li>AUB with thickened stripe on imaging, esp. perimenopausal/postmenopausal</li>
+        <li>Risk factors for unopposed estrogen: obesity, PCOS, nulliparity, tamoxifen</li>
+      </ul>
+      <div class="sec-label">Medical management</div>
+      <ul>
+        <li>Benign hyperplasia without atypia → progestin therapy (oral or IUD) first-line, avoids hysterectomy</li>
+        <li>Atypical hyperplasia or cancer found → management escalates (often hysterectomy)</li>
+      </ul>
+      <div class="sec-label">Surgical steps</div>
+      <p>D&C/sampling first (send pathology) → if benign, levonorgestrel IUD placed → confirm fundal placement.</p>
+      <div class="sec-label">Blood supply — what to consider</div>
+      <ul>
+        <li>The endometrium is supplied by <b>spiral arterioles</b> (functional layer, shed with menses) and <b>basal arterioles</b> (basal layer, not shed) — both branch from the radial arteries within the myometrium</li>
+        <li>Curettage scrapes the functional layer down to the basalis — some bleeding from disrupted spiral arterioles is expected and typically self-limited</li>
+        <li>No named major vessel is at risk — this is the lowest blood-supply-risk case on your list; hemostasis is usually not a significant intraoperative concern</li>
+        <li>IUD placement itself carries no vascular risk beyond the small risk of perforation</li>
+      </ul>
+      <div class="sec-label">Complications</div>
+      <ul>
+        <li>Uterine perforation during D&C or IUD insertion</li>
+        <li>IUD malposition/expulsion</li>
+        <li>Missed focal lesion — blind D&C samples ~60% of cavity vs. hysteroscopy-guided</li>
+      </ul>
+      <div class="sec-label">Pimping-ready facts</div>
+      <ul>
+        <li>Unopposed estrogen = core driver of hyperplasia (PCOS/anovulation, obesity via peripheral aromatization, tamoxifen's estrogenic endometrial effect)</li>
+        <li>Levonorgestrel IUD thins endometrium locally — first-line for hyperplasia without atypia</li>
+        <li>Sampling always precedes definitive treatment — never treat empirically without tissue diagnosis here</li>
+      </ul>
+      <div class="sec-label">Your role — what to do</div>
+      <div class="role-box">
+        <ul>
+          <li>Confirm Mirena was ordered/available (already tracked on your list — double check it's in the room)</li>
+          <li>Know the order of operations: sample → confirm benign → then IUD, and be ready to explain why the order matters if asked</li>
+        </ul>
+      </div>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>🟢 AUB-L/O + Endometriosis → TLH, BS, cysto ± cystectomy/endo excision/CRS</summary>
+      <div class="acc-body">
+      <div class="sec-label">Anatomy</div>
+      <ul>
+        <li>Endometriosis = endometrial-like glands/stroma outside the uterus</li>
+        <li>Common sites: ovaries (endometriomas), pelvic peritoneum, uterosacral ligaments, posterior cul-de-sac, bladder, bowel (rectosigmoid most common — deep infiltrating disease/DIE)</li>
+        <li>Chronic inflammation → dense fibrotic adhesions, can fuse organs together ("frozen pelvis")</li>
+        <li><b>Infundibulopelvic (IP) ligament</b> — contains the ovarian artery and vein (ovarian artery direct off the aorta) plus lymphatics/nerves; this is the ligament transected for BS/oophorectomy when ovaries can't be conserved (e.g., destroyed by endometrioma). The ureter runs medial and deep to it as it crosses the pelvic brim — <b>identify the ureter before clamping the IP ligament</b>, especially critical here since endometriosis distorts normal planes and can directly encase the ureter.</li>
+        <li><b>Round ligament</b> — from uterine cornu through the inguinal canal to the labia majora; contains Sampson's artery. First structure divided to open the retroperitoneum and get a clean view of the ureter and pelvic vessels before proceeding into distorted, adhesion-laden tissue.</li>
+        <li>Posterior cul-de-sac obliteration (common in severe disease) fuses the rectum to the posterior uterus/cervix — must be carefully dissected off before completing colpotomy</li>
+      </ul>
+      <div class="sec-label">Indications</div>
+      <ul>
+        <li>Severe/refractory dysmenorrhea, dyspareunia, dyschezia</li>
+        <li>Failed medical management</li>
+        <li>Large/symptomatic endometriomas, suspected deep infiltrating disease (bowel/bladder)</li>
+        <li>Combined with AUB from fibroids/ovulatory dysfunction warranting definitive surgery</li>
+      </ul>
+      <div class="sec-label">Medical management (tried first)</div>
+      <ul>
+        <li>NSAIDs, combined OCPs or continuous progestin-only therapy</li>
+        <li>GnRH agonists/antagonists — induce hypoestrogenic state to suppress implants</li>
+        <li>Controls symptoms but doesn't remove disease; not fertility-preserving if pregnancy desired soon</li>
+      </ul>
+      <div class="sec-label">Surgical steps — structures to identify first</div>
+      <ul>
+        <li><b>Ureters bilaterally, from pelvic brim to bladder</b> — before any adhesiolysis or ligament transection, since endometriosis routinely distorts their normal course</li>
+        <li><b>Rectum and rectosigmoid</b> — especially if the posterior cul-de-sac is obliterated, to plan dissection off the posterior uterus/cervix safely</li>
+        <li>Extent of ovarian involvement (endometrioma size, adhesions to pelvic sidewall) — determines whether ovary can be conserved or oophorectomy is needed</li>
+        <li>Bladder margin if anterior disease is present</li>
+      </ul>
+      <div class="sec-label">Surgical steps — sequence</div>
+      <p>Diagnostic laparoscopy first → systematically map/stage disease (ASRM staging) → identify ureters bilaterally before any dissection in distorted areas → adhesiolysis to restore normal anatomic planes (release bowel/ovary/pelvic sidewall adhesions) → ovarian cystectomy for endometriomas (strip cyst wall from healthy ovarian cortex, preserving ovary if possible) or oophorectomy via IP ligament if ovary is unsalvageable → excise/ablate peritoneal and cul-de-sac implants → if cul-de-sac is obliterated, carefully develop the <b>rectovaginal fascia (Denonvilliers' fascia)</b> plane to separate the rectum off the posterior vagina/cervix → transect round ligament → proceed with TLH/BS (same core steps as standard TLH, including vesicouterine fascia/bladder flap, uterine vessel ligation, cardinal/uterosacral ligament transection, colpotomy) → CRS involvement if bowel wall infiltrated (shaving superficial disease, disc excision for partial-thickness, or segmental resection for full-thickness/circumferential disease, sometimes requiring mobilization through the presacral fascia) → cystoscopy at the end.</p>
+      <div class="sec-label">Blood supply — what gets divided</div>
+      <ul>
+        <li><b>Uterine artery</b> — same as standard TLH, ligated at the internal os after ureter identification</li>
+        <li><b>Ovarian artery</b> (IP ligament) — divided if oophorectomy needed for endometrioma destruction of the ovary; otherwise only the utero-ovarian vessel</li>
+        <li><b>Superior/middle rectal arteries</b> — become relevant only if bowel resection (segmental) is performed; branches of the inferior mesenteric and internal iliac respectively, managed by the CRS team</li>
+        <li><b>Presacral venous plexus</b> — a dense, valveless venous network overlying the sacrum; can bleed briskly and is hard to control with cautery if disturbed during deep posterior/rectal mobilization — one of the more feared bleeding sources in radical endo surgery</li>
+        <li>Endometriotic implants themselves often have abundant <b>neovascularization</b> (new fragile vessels feeding the lesion) — expect more oozing than usual during excision of individual implants, distinct from any single named vessel</li>
+      </ul>
+      <div class="sec-label">Complications</div>
+      <ul>
+        <li>Bowel injury/anastomotic leak if resection performed</li>
+        <li>Ureteral injury — endometriosis can encase the ureter</li>
+        <li>Reduced ovarian reserve from cystectomy</li>
+        <li>Longer op time → higher VTE, blood loss, infection risk</li>
+        <li>Symptom recurrence even after excision</li>
+      </ul>
+      <div class="sec-label">Pimping-ready facts</div>
+      <ul>
+        <li>Diagnosis is definitively surgical/histologic — imaging can suggest (esp. "ground glass" endometriomas) but not confirm</li>
+        <li>ASRM staging doesn't correlate well with symptom severity — stage I can be very painful, stage IV can be mild</li>
+        <li>Multiple consents needed since extent of disease often isn't clear until the surgeon is inside</li>
+        <li>Classic triad: dysmenorrhea, dyspareunia, dyschezia — presentation is highly variable</li>
+      </ul>
+      <div class="sec-label">Your role — what to do</div>
+      <div class="role-box">
+        <ul>
+          <li>Confirm new H&P completed and all consents (endo, CRS) are in place before the case</li>
+          <li>Confirm bowel prep was done and GLP-1 hold completed</li>
+          <li>Expect a long case — pace yourself, ask questions during natural pauses rather than mid-dissection</li>
+          <li>This is the case to watch retraction/exposure technique closely — distorted anatomy makes this the hardest case on your list</li>
+        </ul>
+      </div>
+      </div>
+    </details>
+
+    <details class="acc">
+      <summary>🔴 AUB-L → TLH, BS, cysto<span class="sub">Bleeding-driven fibroid hysterectomy</span></summary>
+      <div class="acc-body">
+      <div class="sec-label">How this differs from "Fibroids → TLH"</div>
+      <p>Same procedure, different primary driver. "Fibroids" often centers on bulk/pressure symptoms ± bleeding. <b>AUB-L</b> means the dominant clinical problem is heavy/abnormal bleeding — usually a submucosal or cavity-distorting fibroid, or one large enough to impair uterine contractility. Anatomy, blood supply, and surgical steps are identical to the fibroid TLH card above.</p>
+      <div class="sec-label">Indications</div>
+      <ul>
+        <li>Heavy/prolonged bleeding attributed to leiomyoma (PALM-COEIN "L")</li>
+        <li>Refractory to medical management (hormonal therapy, TXA)</li>
+        <li>Childbearing complete or hysterectomy preferred over myomectomy</li>
+      </ul>
+      <div class="sec-label">Medical management tried first</div>
+      <ul>
+        <li>TXA, hormonal suppression (progestin IUD, combined OCPs, GnRH agonist/antagonist)</li>
+        <li>Escalation to surgery when bleeding uncontrolled or anemia significant</li>
+      </ul>
+      <div class="sec-label">Pimping-ready facts</div>
+      <ul>
+        <li>Be ready to explain why this fibroid caused bleeding specifically (location matters: submucosal &gt; intramural &gt; subserosal for bleeding risk)</li>
+        <li>PALM-COEIN coding exists because AUB can have multiple simultaneous contributing causes (e.g., fibroids "L" + perimenopausal anovulation "O")</li>
+      </ul>
+      <div class="sec-label">Your role — what to do</div>
+      <div class="role-box">
+        <ul>
+          <li>Same prep checklist as the Fibroids → TLH card (EUA, T&S/PAT decision, cystoscopy at the end)</li>
+          <li>Be ready to articulate the bleeding-specific reasoning if asked, even though the procedure itself is identical</li>
+        </ul>
+      </div>
+      <p class="muted">See the Fibroids → TLH, BS, cysto card above for full anatomy/surgical steps/complications — they apply here identically.</p>
+      </div>
+    </details>
+    <details class="acc">
+      <summary>Procedure Abbreviations</summary>
+      <div class="acc-body">
+      <ul>
+        <li><b>TLH</b> — Total laparoscopic hysterectomy</li>
+        <li><b>BS</b> — Bilateral salpingectomy</li>
+        <li><b>LSC</b> — Laparoscopic</li>
+        <li><b>mmx</b> — Myomectomy</li>
+        <li><b>HSC D&C</b> — Hysteroscopy with dilation & curettage</li>
+        <li><b>cysto</b> — Cystoscopy (bladder check)</li>
+        <li><b>CRS</b> — Colorectal surgery (co-management for bowel involvement)</li>
+        <li><b>EMS</b> — Endometrial stripe</li>
+        <li><b>AUB-L/O/P</b> — AUB due to Leiomyoma / Ovulatory dysfunction / Polyp (PALM-COEIN)</li>
+      </ul>
+      </div>
+    </details>
+  </section>
+
+  <!-- SCHEDULE PAGE -->
+  <section class="page" id="page-schedule">
+    <div class="card">
+      <h2>Weekly Rhythm</h2>
+      <div class="schedule-day"><div class="d">Mon</div><div class="t">Major cases (hysterectomies, myomectomies)</div></div>
+      <div class="schedule-day"><div class="d">Tue</div><div class="t">AM: postop telehealth · 12-1pm: preop conference (residents present cases)</div></div>
+      <div class="schedule-day"><div class="d">Wed</div><div class="t">Major cases + some minors</div></div>
+      <div class="schedule-day"><div class="d">Thu</div><div class="t">AM: resident teaching (optional) · Noon: Quantbook (PUL) conference — prep 5-10 min presentation · PM: preop clinic (Dickens/Gates 1)</div></div>
+      <div class="schedule-day"><div class="d">Fri</div><div class="t">Minor cases ± majors</div></div>
+      <p class="muted" style="margin-top:8px;">Shift: 7am–6:15pm M-F. Weekly OR schedule cc'ed ~Fridays — check your assigned cases.</p>
+    </div>
+
+    <div class="card">
+      <h2>OR Survival Tips</h2>
+      <ul>
+        <li>Uterine manipulation is hard — you're the "5th arm." Expect hand corrections; it's not a grade.</li>
+        <li>If patient consented to student EUA, remind the team to teach you bimanual/speculum exam.</li>
+        <li>Bring a prepped question or brief differential when you can — shows independent thinking beyond observing.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- RESPONSIBILITIES / EXPECTATIONS PAGE -->
+  <section class="page" id="page-responsibilities">
+    <div class="card">
+      <h2>Main Responsibilities</h2>
+      <ul>
+        <li>Assisting in the OR</li>
+        <li>Rounding on postop patients in the morning; occasionally presenting on rounds</li>
+        <li>Seeing patients in weekly preop clinic</li>
+        <li>Participating in weekly educational conferences</li>
+        <li>Helping the team with other tasks: Careligns, discharge summaries, "running the Quantbook" (PUL patients)</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>OR Day Details</h2>
+      <p><b>Before the case:</b> Meet the assigned resident in pre-op ~6:50–7am to check in the first patient. Know the patient's chief complaint and surgical indication before you scrub in.</p>
+      <p><b>Consent check:</b> Confirm the patient signed the Pelvic Examination Under Anesthesia (EUA) consent form — this is your opportunity to perform a bimanual (and speculum, if applicable) exam. Ask a resident if unsure how to check this.</p>
+      <p><b>In the OR:</b> If the patient consented to a student EUA, remind the team to walk you through the bimanual/speculum exam. Otherwise, expect to assist with retraction, uterine manipulation, and closing port sites.</p>
+      <p class="muted">Uterine manipulation is genuinely difficult — you're the "5th arm." Expect frequent hand adjustments; you are not graded on how well you manipulate the uterus.</p>
+    </div>
+
+    <div class="card">
+      <h2>Postop Rounding</h2>
+      <p>When following/presenting an admitted patient, know:</p>
+      <ul>
+        <li>Pre-admission history</li>
+        <li>The surgery performed</li>
+        <li>Any overnight events</li>
+        <li>Current medications</li>
+        <li>Vital signs</li>
+        <li>Urine output</li>
+        <li>Lab findings</li>
+      </ul>
+      <p class="muted">Reference docs: "Gyn, Gyn Onc Presentations" for tips on structuring your presentation.</p>
+    </div>
+
+    <div class="card">
+      <h2>Careligns — Step by Step</h2>
+      <p class="muted" style="margin-top:-4px;">Major cases (hysterectomies, urogyn, etc.) get admitted → need a Carelign. Minor cases (hysteroscopy, D&C, lap minors) go home same-day → no Carelign needed.</p>
+      <p><b>Do it the night before</b> — helps you prep for the case and saves a day-of task.</p>
+      <ol style="padding-left: 20px; font-size: 0.88rem;">
+        <li style="margin-bottom:8px;">Find your case on the <b>OR Status Board</b>.</li>
+        <li style="margin-bottom:8px;">Double-click the patient/surgery you're in.</li>
+        <li style="margin-bottom:8px;">Go to the <b>Carelign tab</b> (search top bar if not starred).</li>
+        <li style="margin-bottom:8px;">Click the <b>"Summary one-liner"</b> box.</li>
+        <li style="margin-bottom:8px;">Use dot phrase <code>.gynonc</code> — populates template: one-liner, med hx, surg hx, OR course, labs, imaging.</li>
+        <li style="margin-bottom:8px;">Fill in what you can (med hx, surg hx). Leave OR course blank until after the case. Delete the onc history section. Be succinct — use standard acronyms (HTN, PE, etc.).</li>
+        <li style="margin-bottom:8px;">One-liner should be written <b>for next-day rounds</b>: state they are <b>POD1</b> and use the next day's date.</li>
+        <li style="margin-bottom:8px;">Go to <b>Care Plan</b> → add an Active/Acute Problem titled <b>"Postop"</b>, and another titled <b>"Global."</b></li>
+        <li style="margin-bottom:8px;">Add bundles: click <b>"+ Bundle"</b> → <b>"All"</b> → search:
+          <ul style="margin-top:4px;">
+            <li>Postop → <b>"HUP GYN ONC Post Op (MIS & Open)"</b></li>
+            <li>Global → <b>"HUP GYN ONC Post Op Global All Patients"</b></li>
+          </ul>
+        </li>
+      </ol>
+      <p class="muted">Bundles auto-populate the by-system plan and pre-discharge to-do tasks for the team.</p>
+    </div>
+
+    <div class="card">
+      <h2>Careligns — After the Case</h2>
+      <p>Update the Carelign with:</p>
+      <ul>
+        <li><b>EBL</b> — estimated blood loss</li>
+        <li><b>UOP</b> — urine output</li>
+        <li><b>IVF</b> — IV fluids given</li>
+        <li><b>POC time</b> — postop check, scheduled 4–6 hours after leaving the OR</li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>Weekly Conferences</h2>
+      <p><b>Tuesday preop conference (12–1pm):</b> Residents present upcoming surgical cases. If articles are circulated in advance, review them before conference.</p>
+      <p><b>Thursday Quantbook conference (~noon):</b> Team manages patients with pregnancy of unknown location (PUL). You'll be assigned an article and asked to prepare a 5–10 minute presentation on it. Learn how to "run the quantbook" (the PUL management tool/algorithm) over the course of the rotation.</p>
+    </div>
+
+    <div class="card">
+      <h2>Preop Clinic</h2>
+      <p>Thursday afternoons in Dickens (Gates 1). Good opportunity to see patients before their OR day and understand the reasoning behind their planned procedure — a chance to practice the AUB differential-to-management logic in real time.</p>
+    </div>
+    <div class="card">
+      <h2>Postop AM Presentation — Structure</h2>
+      <p class="muted" style="margin-top:-4px;">General outline for presenting a postop patient on benign gyn/gyn onc rounds.</p>
+      <ol style="padding-left: 20px; font-size: 0.88rem;">
+        <li style="margin-bottom:10px;">
+          <b>One-liner</b> — as written in the Carelign. On onc, this can be cluttered — pare down to what's important. Make sure you actually understand what surgery they had and why before presenting it.
+        </li>
+        <li style="margin-bottom:10px;">
+          <b>Overnight events</b> — how postop checks went, anything that happened overnight. Check with the intern before signout in case there were verbal updates from the overnight resident not yet in Carelign.
+        </li>
+        <li style="margin-bottom:10px;">
+          <b>Vital signs</b> — summarize, don't list ranges: "afebrile, normotensive, satting well on room air." If abnormal, give specifics (e.g., "hypertensive to the 160s," "desatted to 89%"). Include UOP and drain output over the last 12 hours. Adequate UOP ≥ 0.5 cc/kg/hr.
+        </li>
+        <li style="margin-bottom:10px;">
+          <b>Labs</b> — don't list everything. Always report the POD1 hemoglobin drop: "Starting Hgb was 11, this AM 9.3, after EBL of 200." Note other significant abnormalities only; otherwise "rest of CBC/BMP unremarkable." Ask for help interpreting this — it's genuinely hard as a student.
+        </li>
+        <li style="margin-bottom:10px;">
+          <b>Subjective / milestones</b> (if you pre-rounded) — pain control, ambulating, voiding without foley, tolerating diet, passing gas.
+        </li>
+        <li style="margin-bottom:10px;">
+          <b>Exam</b> — only pertinent findings based on her problems. E.g.: "Belly soft/non-tender/non-distended, midline vertical incision intact with staples, clean/dry/non-erythematous. Foley draining clear urine, JP with serosanguinous output." Tailor to relevant systems (e.g., heart/lung/LE edema if she has heart failure).
+        </li>
+        <li style="margin-bottom:10px;">
+          <b>Plan by system</b> — start from Carelign but use judgment and expand: "On clear liquids, tolerating well → advance to regular diet." Or: Carelign says hold amlodipine for chronic HTN, but if POD2 and normo/hypertensive, suggest restarting.
+        </li>
+        <li style="margin-bottom:4px;">
+          <b>Summary / to-do's for the day</b> — close with the plan: "To summarize: active trial of void, advance diet, PM CBC to follow up significant Hgb drop, switch to PO pain meds."
+        </li>
+      </ol>
+    </div>
+
+    <div class="flags">
+      <b>Remember:</b> Reliability on "scut" (Careligns, discharge summaries) builds trust fast — do it well and early, without needing double-checks.
+    </div>
+
+  </section>
+
+  <!-- CHECKLIST PAGE -->
+
+  <p class="footer-note">Pocket guide · Benign Gyn Rotation</p>
+</main>
+
+<script>
+  const buttons = document.querySelectorAll('.tab-btn');
+  const pages = document.querySelectorAll('.page');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      pages.forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('page-' + btn.dataset.page).classList.add('active');
+      window.scrollTo(0, 0);
+    });
+  });
+
+  document.querySelectorAll('.checklist li').forEach(li => {
+    li.addEventListener('click', () => li.classList.toggle('done'));
+  });
+</script>
+
+</body>
+</html>
