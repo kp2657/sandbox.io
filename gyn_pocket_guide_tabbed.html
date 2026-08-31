@@ -223,6 +223,23 @@
   }
 
   .footer-note { text-align: center; color: var(--muted); font-size: 0.72rem; margin-top: 8px; padding: 0 10px 8px; }
+  .watch-links a {
+    display: block;
+    color: var(--pink);
+    font-size: 0.85rem;
+    text-decoration: none;
+    margin-bottom: 6px;
+    padding-left: 18px;
+    position: relative;
+  }
+  .watch-links a::before {
+    content: "🖼";
+    position: absolute;
+    left: 0;
+    font-size: 0.7rem;
+    top: 2px;
+  }
+  .watch-links a span { color: var(--muted); font-size: 0.75rem; display: block; }
 </style>
 </head>
 <body>
@@ -311,6 +328,23 @@
         <tr><td><b>Broad ligament</b></td><td>Lateral uterus → pelvic sidewall</td><td>Peritoneal fold draped over the round ligament, fallopian tube, uterine vessels, and ovarian ligament — not a discrete structure itself, more a "peritoneal envelope."</td></tr>
       </table></div>
       <p class="muted" style="margin-top:8px;">High-yield distinction: <b>round ligament</b> = anterior/superior, no major vessel, divided first. <b>IP ligament</b> = lateral/posterior, contains the ovarian vessels, divided only if removing the ovary — always find the ureter first.</p>
+      <div class="sec-label">"Water under the bridge" — diagram</div>
+      <svg viewBox="0 0 340 220" style="width:100%; height:auto; margin-top:6px;">
+        <rect x="0" y="0" width="340" height="220" fill="#fdf9f7" rx="10"/>
+        <path d="M 170 15 Q 130 25 120 55 Q 110 85 130 110 Q 150 135 170 165 Q 190 135 210 110 Q 230 85 220 55 Q 210 25 170 15 Z" fill="#f4d4de" stroke="#b5486e" stroke-width="1.5"/>
+        <text x="170" y="70" text-anchor="middle" font-size="11" fill="#8a3a5c" font-weight="600">Uterus</text>
+        <path d="M 60 40 Q 100 60 128 95" fill="none" stroke="#d4536e" stroke-width="4" stroke-linecap="round"/>
+        <text x="55" y="35" text-anchor="middle" font-size="10" fill="#993c1d" font-weight="600">Uterine artery</text>
+        <text x="55" y="47" text-anchor="middle" font-size="9" fill="#993c1d">(the "bridge")</text>
+        <path d="M 90 20 C 85 60, 95 100, 100 140 C 103 165, 108 185, 115 205" fill="none" stroke="#377fb0" stroke-width="3" stroke-linecap="round"/>
+        <text x="60" y="205" text-anchor="middle" font-size="10" fill="#0c447c" font-weight="600">Ureter</text>
+        <text x="60" y="217" text-anchor="middle" font-size="9" fill="#0c447c">(the "water")</text>
+        <circle cx="97" cy="90" r="5" fill="#3c3489"/>
+        <text x="150" y="95" text-anchor="middle" font-size="9.5" fill="#26215c" font-weight="600">crossing point —</text>
+        <text x="150" y="107" text-anchor="middle" font-size="9.5" fill="#26215c" font-weight="600">clamp here with care</text>
+        <text x="170" y="205" text-anchor="middle" font-size="9" fill="#6b6b76">Ureter passes UNDER the uterine artery</text>
+        <text x="170" y="215" text-anchor="middle" font-size="9" fill="#6b6b76">~1–2cm lateral to the cervix (internal os)</text>
+      </svg>
       </div>
     </details>
 
@@ -398,6 +432,34 @@
         <tr><td>8</td><td>Other (cervical, parasitic)</td><td>Case-specific</td></tr>
       </table></div>
       <p class="muted" style="margin-top:8px;">Rule of thumb: Type 0–2 = "in the cavity, go hysteroscopic." Type 3+ = "in the wall, go laparoscopic/open."</p>
+      <div class="sec-label">Cross-section diagram</div>
+      <svg viewBox="0 0 340 210" style="width:100%; height:auto; margin-top:6px;">
+        <rect x="0" y="0" width="340" height="210" fill="#fdf9f7" rx="10"/>
+        <rect x="40" y="30" width="260" height="150" rx="4" fill="#f4d4de" stroke="#b5486e" stroke-width="1.5"/>
+        <rect x="65" y="55" width="210" height="100" rx="2" fill="#fdf9f7" stroke="#993c1d" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="170" y="48" text-anchor="middle" font-size="9" fill="#8a3a5c">serosa (outer)</text>
+        <text x="170" y="70" text-anchor="middle" font-size="9" fill="#993c1d">cavity (endometrium)</text>
+        <circle cx="170" cy="105" r="10" fill="#ede0c8" stroke="#854f0b" stroke-width="1"/>
+        <text x="170" y="108" text-anchor="middle" font-size="8" fill="#412402">0</text>
+        <circle cx="150" cy="90" r="9" fill="#ede0c8" stroke="#854f0b" stroke-width="1"/>
+        <text x="150" y="93" text-anchor="middle" font-size="8" fill="#412402">1</text>
+        <circle cx="130" cy="105" r="11" fill="#ede0c8" stroke="#854f0b" stroke-width="1"/>
+        <text x="130" y="108" text-anchor="middle" font-size="8" fill="#412402">2</text>
+        <circle cx="190" cy="105" r="12" fill="#c8dcf0" stroke="#0c447c" stroke-width="1"/>
+        <text x="190" y="108" text-anchor="middle" font-size="8" fill="#042c53">3</text>
+        <circle cx="215" cy="105" r="13" fill="#c8dcf0" stroke="#0c447c" stroke-width="1"/>
+        <text x="215" y="108" text-anchor="middle" font-size="8" fill="#042c53">4</text>
+        <circle cx="240" cy="95" r="11" fill="#d3e8d3" stroke="#27500a" stroke-width="1"/>
+        <text x="240" y="98" text-anchor="middle" font-size="8" fill="#173404">5</text>
+        <circle cx="258" cy="75" r="10" fill="#d3e8d3" stroke="#27500a" stroke-width="1"/>
+        <text x="258" y="78" text-anchor="middle" font-size="8" fill="#173404">6</text>
+        <circle cx="272" cy="50" r="9" fill="#d3e8d3" stroke="#27500a" stroke-width="1"/>
+        <text x="272" y="53" text-anchor="middle" font-size="8" fill="#173404">7</text>
+        <line x1="272" y1="50" x2="285" y2="35" stroke="#27500a" stroke-width="1.5"/>
+        <text x="105" y="195" text-anchor="middle" font-size="9" fill="#854f0b" font-weight="600">0–2: submucosal (HSC)</text>
+        <text x="200" y="195" text-anchor="middle" font-size="9" fill="#0c447c" font-weight="600">3–4: intramural (LSC/open)</text>
+        <text x="270" y="205" text-anchor="middle" font-size="9" fill="#27500a" font-weight="600">5–7: subserosal (LSC)</text>
+      </svg>
       </div>
     </details>
 
@@ -505,7 +567,18 @@
         <li>Identify the <b>bladder reflection/peritoneal fold</b> before developing the bladder flap</li>
       </ul>
       <div class="sec-label">Surgical steps — sequence</div>
-      <p>Port placement → transect round ligament (opens broad ligament) → transect/ligate tube ± utero-ovarian ligament or IP ligament (depending on whether ovaries are conserved) → develop bladder flap by incising the <b>vesicouterine fascia</b> to separate the bladder off the lower uterine segment/cervix → skeletonize and ligate uterine arteries at the level of the internal os → transect cardinal ligaments (lateral) then uterosacral ligaments (posterior) → colpotomy (open vaginal cuff circumferentially) → deliver specimen → close vaginal cuff → cystoscopy.</p>
+      <ol style="padding-left:20px; font-size:0.86rem;">
+        <li>Port placement</li>
+        <li>Transect round ligament (opens broad ligament)</li>
+        <li>Transect/ligate tube ± utero-ovarian ligament or IP ligament (depending on whether ovaries are conserved)</li>
+        <li>Develop bladder flap by incising the <b>vesicouterine fascia</b> to separate the bladder off the lower uterine segment/cervix</li>
+        <li>Skeletonize and ligate uterine arteries at the level of the internal os</li>
+        <li>Transect cardinal ligaments (lateral), then uterosacral ligaments (posterior)</li>
+        <li>Colpotomy (open vaginal cuff circumferentially)</li>
+        <li>Deliver specimen</li>
+        <li>Close vaginal cuff</li>
+        <li>Cystoscopy</li>
+      </ol>
       <div class="sec-label">Blood supply — what gets divided</div>
       <ul>
         <li><b>Uterine artery</b> — main supply, branch of the internal iliac (anterior division); identified and ligated at the level of the internal os, right where it crosses over the ureter ("water under the bridge") — the single highest-stakes vessel in the case</li>
@@ -530,6 +603,11 @@
         <li>Opportunistic BS reduces ovarian cancer risk — most high-grade serous cancers arise from the fallopian tube fimbria, not the ovary</li>
         <li>Cystoscopy checks bilateral ureteral jets (± indigo carmine/fluorescein) — absent jet → concern for injury</li>
       </ul>
+      <div class="sec-label">Picture guides</div>
+      <div class="watch-links">
+        <a href="https://teachmeanatomy.info/pelvis/vasculature/arterial-supply/" target="_blank" rel="noopener">TeachMeAnatomy — Arteries of the Pelvis<span>Labeled diagram: uterine artery origin, course, "water under the bridge"</span></a>
+        <a href="https://teachmeanatomy.info/pelvis/viscera/ureters/" target="_blank" rel="noopener">TeachMeAnatomy — The Ureters<span>Labeled diagram: ureter course relative to uterine vessels</span></a>
+      </div>
       <div class="sec-label">Your role — what to do</div>
       <div class="role-box">
         <ul>
@@ -569,7 +647,14 @@
         <li>Identify the uterine vessels along the lateral broad ligament to avoid inadvertent injury during deep enucleation</li>
       </ul>
       <div class="sec-label">Surgical steps — sequence</div>
-      <p>Vasopressin/vasoconstrictor injected into the myometrium overlying the fibroid (reduces bleeding) → serosal/myometrial incision made down to the fibroid pseudocapsule → enucleate the fibroid with traction (tenaculum/corkscrew) and countertraction (scissors/energy along the capsule plane) → inspect for cavity breach (if entered, closure includes reapproximating endometrium separately) → multi-layer closure: deep myometrium, superficial myometrium, then serosa (imbricating layers reduces dead space and hematoma risk) → morcellation in a containment bag for specimen removal. TXA often given systemically.</p>
+      <ol style="padding-left:20px; font-size:0.86rem;">
+        <li>Vasopressin/vasoconstrictor injected into the myometrium overlying the fibroid (reduces bleeding)</li>
+        <li>Serosal/myometrial incision made down to the fibroid pseudocapsule</li>
+        <li>Enucleate the fibroid with traction (tenaculum/corkscrew) and countertraction (scissors/energy along the capsule plane)</li>
+        <li>Inspect for cavity breach (if entered, closure includes reapproximating endometrium separately)</li>
+        <li>Multi-layer closure: deep myometrium, superficial myometrium, then serosa (imbricating layers reduces dead space and hematoma risk)</li>
+        <li>Morcellation in a containment bag for specimen removal (TXA often given systemically)</li>
+      </ol>
       <div class="sec-label">Blood supply — what gets divided</div>
       <ul>
         <li>No named vessel is deliberately ligated up front (unlike TLH) — bleeding here comes from the <b>myometrial vasculature feeding the fibroid pseudocapsule</b>, branches of the arcuate arteries (which arise from the uterine artery and encircle the myometrium)</li>
@@ -591,6 +676,10 @@
         <li>Whether the cavity was entered determines future delivery counseling</li>
         <li>Power morcellation risks disseminating an occult sarcoma — hence containment bags</li>
       </ul>
+      <div class="sec-label">Picture guides</div>
+      <div class="watch-links">
+        <a href="https://teachmeanatomy.info/pelvis/female-reproductive-tract/uterus/" target="_blank" rel="noopener">TeachMeAnatomy — The Uterus<span>Labeled diagram: uterine wall layers, vasculature overview</span></a>
+      </div>
       <div class="sec-label">Your role — what to do</div>
       <div class="role-box">
         <ul>
@@ -622,7 +711,14 @@
         <li>Progestins may reduce bleeding symptoms but don't resolve the polyp — mechanical removal is definitive</li>
       </ul>
       <div class="sec-label">Surgical steps</div>
-      <p>Cervical dilation (± preop miso) → hysteroscope + distension media → cavity survey → polyp resected at base (scissors/graspers/morcellator) → D&C samples remainder → specimens sent separately if possible.</p>
+      <ol style="padding-left:20px; font-size:0.86rem;">
+        <li>Cervical dilation (± preop miso)</li>
+        <li>Hysteroscope + distension media</li>
+        <li>Cavity survey</li>
+        <li>Polyp resected at base (scissors/graspers/morcellator)</li>
+        <li>D&C samples remainder</li>
+        <li>Specimens sent separately if possible</li>
+      </ol>
       <div class="sec-label">Blood supply — what to consider</div>
       <ul>
         <li>Each polyp has a single central <b>feeder vessel</b> (a basal-layer arteriole) — this is usually what's actually causing the abnormal bleeding, not diffuse endometrial bleeding</li>
@@ -643,6 +739,10 @@
         <li>Tamoxifen is a known risk factor for polyp formation</li>
         <li>"See and treat" = diagnostic + therapeutic in one setting — good answer if asked why hysteroscopy is favored</li>
       </ul>
+      <div class="sec-label">Picture guides</div>
+      <div class="watch-links">
+        <a href="https://teachmeanatomy.info/pelvis/female-reproductive-tract/uterus/" target="_blank" rel="noopener">TeachMeAnatomy — The Uterus<span>Diagram: cavity shape, cornua/tubal ostia orientation</span></a>
+      </div>
       <div class="sec-label">Your role — what to do</div>
       <div class="role-box">
         <ul>
@@ -694,6 +794,10 @@
         <li>Home med holds (e.g., GLP-1 agonists) apply regardless of how "minor" the procedure is</li>
         <li>Bipolar resectoscopes use saline (safer, higher fluid deficit threshold) vs. monopolar (needs electrolyte-poor media)</li>
       </ul>
+      <div class="sec-label">Picture guides</div>
+      <div class="watch-links">
+        <a href="https://teachmeanatomy.info/pelvis/female-reproductive-tract/uterus/" target="_blank" rel="noopener">TeachMeAnatomy — The Uterus<span>Diagram: myometrium layers, where submucosal fibroids sit relative to the cavity</span></a>
+      </div>
       <div class="sec-label">Your role — what to do</div>
       <div class="role-box">
         <ul>
@@ -725,7 +829,11 @@
         <li>Atypical hyperplasia or cancer found → management escalates (often hysterectomy)</li>
       </ul>
       <div class="sec-label">Surgical steps</div>
-      <p>D&C/sampling first (send pathology) → if benign, levonorgestrel IUD placed → confirm fundal placement.</p>
+      <ol style="padding-left:20px; font-size:0.86rem;">
+        <li>D&C/sampling first (send pathology)</li>
+        <li>If benign, levonorgestrel IUD placed</li>
+        <li>Confirm fundal placement</li>
+      </ol>
       <div class="sec-label">Blood supply — what to consider</div>
       <ul>
         <li>The endometrium is supplied by <b>spiral arterioles</b> (functional layer, shed with menses) and <b>basal arterioles</b> (basal layer, not shed) — both branch from the radial arteries within the myometrium</li>
@@ -788,7 +896,19 @@
         <li>Bladder margin if anterior disease is present</li>
       </ul>
       <div class="sec-label">Surgical steps — sequence</div>
-      <p>Diagnostic laparoscopy first → systematically map/stage disease (ASRM staging) → identify ureters bilaterally before any dissection in distorted areas → adhesiolysis to restore normal anatomic planes (release bowel/ovary/pelvic sidewall adhesions) → ovarian cystectomy for endometriomas (strip cyst wall from healthy ovarian cortex, preserving ovary if possible) or oophorectomy via IP ligament if ovary is unsalvageable → excise/ablate peritoneal and cul-de-sac implants → if cul-de-sac is obliterated, carefully develop the <b>rectovaginal fascia (Denonvilliers' fascia)</b> plane to separate the rectum off the posterior vagina/cervix → transect round ligament → proceed with TLH/BS (same core steps as standard TLH, including vesicouterine fascia/bladder flap, uterine vessel ligation, cardinal/uterosacral ligament transection, colpotomy) → CRS involvement if bowel wall infiltrated (shaving superficial disease, disc excision for partial-thickness, or segmental resection for full-thickness/circumferential disease, sometimes requiring mobilization through the presacral fascia) → cystoscopy at the end.</p>
+      <ol style="padding-left:20px; font-size:0.86rem;">
+        <li>Diagnostic laparoscopy first</li>
+        <li>Systematically map/stage disease (ASRM staging)</li>
+        <li>Identify ureters bilaterally before any dissection in distorted areas</li>
+        <li>Adhesiolysis to restore normal anatomic planes (release bowel/ovary/pelvic sidewall adhesions)</li>
+        <li>Ovarian cystectomy for endometriomas (strip cyst wall from healthy ovarian cortex, preserving ovary if possible) or oophorectomy via IP ligament if ovary is unsalvageable</li>
+        <li>Excise/ablate peritoneal and cul-de-sac implants</li>
+        <li>If cul-de-sac is obliterated, carefully develop the <b>rectovaginal fascia (Denonvilliers' fascia)</b> plane to separate the rectum off the posterior vagina/cervix</li>
+        <li>Transect round ligament</li>
+        <li>Proceed with TLH/BS (same core steps as standard TLH, including vesicouterine fascia/bladder flap, uterine vessel ligation, cardinal/uterosacral ligament transection, colpotomy)</li>
+        <li>CRS involvement if bowel wall infiltrated (shaving superficial disease, disc excision for partial-thickness, or segmental resection for full-thickness/circumferential disease, sometimes requiring mobilization through the presacral fascia)</li>
+        <li>Cystoscopy at the end</li>
+      </ol>
       <div class="sec-label">Blood supply — what gets divided</div>
       <ul>
         <li><b>Uterine artery</b> — same as standard TLH, ligated at the internal os after ureter identification</li>
@@ -812,6 +932,11 @@
         <li>Multiple consents needed since extent of disease often isn't clear until the surgeon is inside</li>
         <li>Classic triad: dysmenorrhea, dyspareunia, dyschezia — presentation is highly variable</li>
       </ul>
+      <div class="sec-label">Picture guides</div>
+      <div class="watch-links">
+        <a href="https://teachmeanatomy.info/pelvis/viscera/ureters/" target="_blank" rel="noopener">TeachMeAnatomy — The Ureters<span>Diagram: ureter course through the pelvis, key for endo-distorted anatomy</span></a>
+        <a href="https://teachmeanatomy.info/abdomen/viscera/rectum/" target="_blank" rel="noopener">TeachMeAnatomy — The Rectum<span>Diagram: rectal position relative to posterior vagina/cervix</span></a>
+      </div>
       <div class="sec-label">Your role — what to do</div>
       <div class="role-box">
         <ul>
